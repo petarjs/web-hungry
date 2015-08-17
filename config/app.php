@@ -146,6 +146,7 @@ return [
 
         Hungry\Providers\AnnotationsServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
+        Zizaco\Entrust\EntrustServiceProvider::class
 
     ],
 
@@ -195,6 +196,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Entrust'   => Zizaco\Entrust\EntrustFacade::class
 
     ],
 

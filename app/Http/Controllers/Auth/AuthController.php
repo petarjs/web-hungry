@@ -3,6 +3,7 @@
 namespace Hungry\Http\Controllers\Auth;
 
 use Hungry\User;
+use Laravel\Socialite\Facades\Socialite;
 use Validator;
 use Hungry\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -65,24 +66,37 @@ class AuthController extends Controller
     /**
      * Redirect the user to the GitHub authentication page.
      *
+     * @param $provider
      * @return Response
      */
-    public function redirectToProvider()
+    public function redirectToProvider($provider)
     {
-        return Socialite::driver('google')->redirect();
+        if(!$provider) {
+            return \View::make('auth.login');
+        }
+        return Socialite::with($provider)->redirect();
+    }
+
+    public function getGoogle(){
+        return $this->redirectToProvider('google');
+    }
+
+    public function getGoolgeCallback(){
+        return $this->handleProviderCallback('google');
     }
 
     /**
      * Obtain the user information from GitHub.
      *
+     * @Get("/auth/google/callback")
      * @return Response
      */
-    public function handleProviderCallback()
+    public function handleProviderCallback($provider)
     {
         try {
-            $user = Socialite::driver('google')->user();
+            $user = Socialite::with($provider)->user();
         } catch (Exception $e) {
-            return Redirect::to('auth/google');
+            return Redirect::to($provider . '/google');
         }
 
         $authUser = $this->findOrCreateUser($user);

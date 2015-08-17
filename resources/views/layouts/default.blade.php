@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hungry</title>
 
-  <link rel="stylesheet" href="/css/font-awesome.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/css/materialize.min.css">
 
   <!-- Fonts -->
   <link href='//fonts.googleapis.com/css?family=Roboto:400,300,800' rel='stylesheet' type='text/css'>
@@ -32,5 +32,6 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.8.0/lodash.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/js/materialize.min.js"></script>
 </body>
 </html>

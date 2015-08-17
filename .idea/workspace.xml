@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="60a81b0f-4c22-4990-b55a-c4241dfdc0f7" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.env.example" afterPath="$PROJECT_DIR$/.env.example" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.env" afterPath="$PROJECT_DIR$/.env" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/layouts/default.blade.php" afterPath="$PROJECT_DIR$/resources/views/layouts/default.blade.php" />
     </list>
     <ignored path="web-hungry.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,10 +47,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".env.example" pinned="false" current-in-tab="true">
+      <file leaf-file-name=".env.example" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.env.example">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.50091076" vertical-offset="0" max-vertical-offset="725">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="725">
               <caret line="11" column="19" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
               <folding />
             </state>
@@ -78,11 +77,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="default.blade.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="default.blade.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/resources/views/layouts/default.blade.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.5555553" vertical-offset="0" max-vertical-offset="1050">
-              <caret line="6" column="16" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
+            <state vertical-scroll-proportion="1.6699411" vertical-offset="0" max-vertical-offset="1075">
+              <caret line="34" column="103" selection-start-line="34" selection-start-column="103" selection-end-line="34" selection-end-column="103" />
               <folding />
             </state>
           </provider>
@@ -143,12 +142,12 @@
         <option value="$PROJECT_DIR$/database/migrations/2014_10_12_000000_create_users_table.php" />
         <option value="$PROJECT_DIR$/app/User.php" />
         <option value="$PROJECT_DIR$/app/Models/User.php" />
-        <option value="$PROJECT_DIR$/resources/views/layouts/default.blade.php" />
         <option value="$PROJECT_DIR$/resources/views/auth/login.blade.php" />
         <option value="$PROJECT_DIR$/app/Http/routes.php" />
         <option value="$PROJECT_DIR$/app/Http/Controllers/Auth/AuthController.php" />
         <option value="$PROJECT_DIR$/.env" />
         <option value="$PROJECT_DIR$/.env.example" />
+        <option value="$PROJECT_DIR$/resources/views/layouts/default.blade.php" />
       </list>
     </option>
   </component>
@@ -558,14 +557,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resources/views/layouts/default.blade.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.5555553" vertical-offset="0" max-vertical-offset="1050">
-          <caret line="6" column="16" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config/services.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-15.62963" vertical-offset="578" max-vertical-offset="1250">
@@ -608,8 +599,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.env.example">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.50091076" vertical-offset="0" max-vertical-offset="725">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="725">
           <caret line="11" column="19" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/views/layouts/default.blade.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.6699411" vertical-offset="0" max-vertical-offset="1075">
+          <caret line="34" column="103" selection-start-line="34" selection-start-column="103" selection-end-line="34" selection-end-column="103" />
           <folding />
         </state>
       </provider>

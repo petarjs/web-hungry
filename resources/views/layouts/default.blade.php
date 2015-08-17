@@ -17,6 +17,9 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
+
+  <link rel="stylesheet" href="{{ asset('css/vendors.css') }}"/>
+  <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
 </head>
 <body>
 <nav id="main-nav">
@@ -33,5 +36,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.8.0/lodash.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/js/materialize.min.js"></script>
+<script src="{{ asset('js/vendors.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

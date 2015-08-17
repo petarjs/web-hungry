@@ -2,8 +2,9 @@
 
 namespace Hungry\Http\Controllers\Auth;
 
-use Hungry\User;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Hungry\Models\User;
 use Validator;
 use Hungry\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -81,7 +82,7 @@ class AuthController extends Controller
         return $this->redirectToProvider('google');
     }
 
-    public function getGoolgeCallback(){
+    public function getGoogleCallback(){
         return $this->handleProviderCallback('google');
     }
 
@@ -103,7 +104,7 @@ class AuthController extends Controller
 
         Auth::login($authUser, true);
 
-        return Redirect::to('home');
+        return redirect('home');
     }
 
     /**
@@ -114,7 +115,7 @@ class AuthController extends Controller
      */
     private function findOrCreateUser($user)
     {
-        if ($authUser = User::where('google_id', $user->google_id)->first()) {
+        if ($authUser = User::where('google_id', $user->id)->first()) {
             return $authUser;
         }
 

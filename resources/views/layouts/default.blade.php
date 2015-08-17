@@ -24,7 +24,7 @@
 <body>
 <nav id="main-nav">
   <div class="main">
-    Hungry
+    Hungry <a href="auth/logout">Logout</a>
   </div>
 </nav>
 

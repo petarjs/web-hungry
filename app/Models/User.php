@@ -1,6 +1,6 @@
 <?php
 
-namespace Hungry;
+namespace Hungry\Models;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;

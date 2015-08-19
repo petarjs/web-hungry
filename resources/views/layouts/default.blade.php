@@ -31,7 +31,7 @@
     @if(isset($user) && $user->hasRole('admin'))
       <a class="btn" href="{{ action('Admin\FoodController@getIndex') }}">Manage Food</a>
     @endif
-    <a class="btn" href="auth/logout">Logout</a>
+    <a class="btn" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a>
   </div>
 </nav>
 

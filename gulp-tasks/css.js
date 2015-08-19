@@ -27,7 +27,6 @@ function vendorCssTask() {
       vendorCssArray.push(config.srcPath + stylesheet);
     });
   }
-
   return gulp.src(vendorCssArray)
                     .pipe(plugins.concat('vendors.css'))
                     .pipe(gulp.dest(config.buildPath + '/css'));

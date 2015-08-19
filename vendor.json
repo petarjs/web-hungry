@@ -1,4 +1,6 @@
 {
   "scripts": [],
-  "stylesheets": []
+  "stylesheets": [
+    "/bower_components/fontawesome/css/font-awesome.min.css"
+  ]
 }

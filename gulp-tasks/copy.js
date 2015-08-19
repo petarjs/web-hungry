@@ -5,7 +5,7 @@ var _;
 
 function copyFontsTask() {
   return gulp.src([
-      config.srcPath + '/bower_components/font-awesome/fonts/**'
+      config.srcPath + '/bower_components/fontawesome/fonts/**'
     ])
     .pipe(gulp.dest(config.buildPath + '/fonts'));
 }

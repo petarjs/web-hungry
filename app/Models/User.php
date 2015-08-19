@@ -33,4 +33,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+
+    public function eatenFood() {
+      return $this->belongsToMany('Hungry\Models\MenuFood', 'menu_foods');
+    }
+
+    public function likedFood() {
+      return $this->belongsToMany('Hungry\Models\Food', 'likes');
+    }
 }

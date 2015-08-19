@@ -29,5 +29,7 @@ class Kernel extends HttpKernel
         'auth' => \Hungry\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest' => \Hungry\Http\Middleware\RedirectIfAuthenticated::class,
+        'admin' => \Hungry\Http\Middleware\Admin::class,
+        'super-admin' => \Hungry\Http\Middleware\SuperAdmin::class,
     ];
 }

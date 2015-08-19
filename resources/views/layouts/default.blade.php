@@ -24,7 +24,14 @@
 <body>
 <nav id="main-nav">
   <div class="main">
-    Hungry <a href="auth/logout">Logout</a>
+    Hungry
+    @if(isset($user) && $user->hasRole('super-admin'))
+      <a class="btn" href="{{ action('SuperAdmin\UserController@getIndex') }}">Manage Users</a>
+    @endif
+    @if(isset($user) && $user->hasRole('admin'))
+      <a class="btn" href="{{ action('Admin\FoodController@getIndex') }}">Manage Food</a>
+    @endif
+    <a class="btn" href="auth/logout">Logout</a>
   </div>
 </nav>
 

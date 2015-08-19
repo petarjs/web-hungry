@@ -1,6 +1,6 @@
 <?php
 
-namespace Hungry;
+namespace Hungry\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

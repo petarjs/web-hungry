@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'model' => Hungry\User::class,
+    'model' => Hungry\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------

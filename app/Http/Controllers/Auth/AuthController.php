@@ -126,4 +126,9 @@ class AuthController extends Controller
           'avatar' => $user->avatar
         ]);
     }
+
+    public function logout() {
+        Auth::logout();
+        return redirect('/');
+    }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="Hungry">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,30 +20,32 @@
 
   <link rel="stylesheet" href="{{ asset('css/vendors.css') }}"/>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
+  <script>
+    var userId = '{{ $user->id }}';
+    var roles = '{{ join($user->roles->lists('name')->toArray(), ",") }}';
+  </script>
+
 </head>
-<body>
-<nav id="main-nav">
-  <div class="main">
-    Hungry
-    @if(isset($user) && $user->hasRole('super-admin'))
-      <a class="btn" href="{{ action('SuperAdmin\UserController@getIndex') }}">Manage Users</a>
-    @endif
-    @if(isset($user) && $user->hasRole('admin'))
-      <a class="btn" href="{{ action('Admin\FoodController@getIndex') }}">Manage Food</a>
-    @endif
-    <a class="btn" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a>
-  </div>
-</nav>
+<body ng-controller="AppController as appVm">
+  <nav id="main-nav">
+    <div class="main">
+      Hungry - 
+      <a ng-if="appVm.hasRole('super-admin')" class="btn" href="{{ action('SuperAdmin\UserController@getIndex') }}">Manage Users</a>
+      <a ng-if="appVm.hasRole('admin')" class="btn" href="{{ action('Admin\FoodController@getIndex') }}">Manage Food</a>
+      <a ng-if="appVm.hasRole('user')" class="btn" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a>
+    </div>
+  </nav>
 
-@yield('content')
+  <div ui-view></div>
 
-<!-- Scripts -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.8.0/lodash.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/js/materialize.min.js"></script>
-<script src="{{ asset('js/vendors.js') }}"></script>
-<script src="{{ asset('js/app.js') }}"></script>
+  <!-- Scripts -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.8.0/lodash.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/js/materialize.min.js"></script>
+  <script src="{{ asset('js/vendors.js') }}"></script>
+  <script src="{{ asset('js/app.js') }}"></script>
+  <script src="{{ asset('js/partials.js') }}"></script>
 </body>
 </html>

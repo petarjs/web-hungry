@@ -29,7 +29,7 @@ function appScriptsTask() {
 
 function appPartialsTask() {
   return gulp.src([
-      config.srcPath + '/assets/**/*.html'
+      config.srcPath + '/assets/scripts/**/*.html'
     ])
     .pipe(plugins.ngHtml2js({
       moduleName: 'hungry.templates',

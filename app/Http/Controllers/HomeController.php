@@ -10,7 +10,7 @@ use Hungry\Http\Controllers\Controller;
 class HomeController extends Controller
 {
   /**
-   * @Get("/home")
+   * @Get("/")
    * @return \Illuminate\View\View
    */
   public function getHome() {

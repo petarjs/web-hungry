@@ -11,8 +11,7 @@
     .config(configureRoutes);
 
   function configureRoutes ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/login');
-    // $locationProvider.html5Mode(true);
+    $urlRouterProvider.otherwise('/');
 
     $stateProvider
       .state('login', {

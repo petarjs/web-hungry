@@ -24,7 +24,6 @@
     var userId = '{{ $user->id }}';
     var roles = '{{ join($user->roles->lists('name')->toArray(), ",") }}';
   </script>
-
 </head>
 <body ng-controller="AppController as appVm">
   <nav id="main-nav">

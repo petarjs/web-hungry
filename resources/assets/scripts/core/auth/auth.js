@@ -4,7 +4,7 @@
     .service('Auth', Auth);
 
   function Auth ($window) {
-    var roles = $window.roles.split(',');
+    var roles = $window.roles ? $window.roles.split(',') : [];
 
     return {
       hasRole: hasRole

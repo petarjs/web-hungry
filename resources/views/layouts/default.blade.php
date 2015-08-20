@@ -21,8 +21,12 @@
   <link rel="stylesheet" href="{{ asset('css/vendors.css') }}"/>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
   <script>
-    var userId = '{{ $user->id }}';
-    var roles = '{{ join($user->roles->lists('name')->toArray(), ",") }}';
+    var userId;
+    var roles;
+    @if(isset($user))
+      userId = '{{ $user->id }}';
+      roles = '{{ join($user->roles->lists('name')->toArray(), ",") }}';
+    @endif
   </script>
 </head>
 <body ng-controller="AppController as appVm">

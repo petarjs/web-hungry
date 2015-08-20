@@ -10,6 +10,7 @@
 
   <!-- Fonts -->
   <link href='//fonts.googleapis.com/css?family=Roboto:400,300,800' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700' rel='stylesheet' type='text/css'>
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -30,16 +31,27 @@
   </script>
 </head>
 <body ng-controller="AppController as appVm">
-  <nav id="main-nav">
-    <div class="main">
-      Hungry - 
-      <a ng-if="appVm.hasRole('super-admin')" class="btn" href="{{ action('SuperAdmin\UserController@getIndex') }}">Manage Users</a>
-      <a ng-if="appVm.hasRole('admin')" class="btn" href="{{ action('Admin\FoodController@getIndex') }}">Manage Food</a>
-      <a ng-if="appVm.hasRole('user')" class="btn" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a>
-    </div>
-  </nav>
+  <div class="container">
+    <header class="header">
+      <div class="__logo">
+        HUNGRY
+        <span class="__subtitle">Cosmic</span>
+        <span class="right __menu">
+          <a class="dropdown-button" href="#" data-activates="main-menu">
+            <i class="__icon fa fa-ellipsis-v"></i>
+          </a>
+          <ul id='main-menu' class='dropdown-content'>
+            <li><a ng-if="appVm.hasRole('super-admin')" href="{{ action('SuperAdmin\UserController@getIndex') }}">Users</a></li>
+            <li><a ng-if="appVm.hasRole('admin')" href="{{ action('Admin\FoodController@getIndex') }}">Food</a></li>
+            <li class="divider"></li>
+            <li><a ng-if="appVm.hasRole('user')" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a></li>
+          </ul>
+        </span>
+      </div>
+    </header>
 
-  <div ui-view></div>
+    <div ui-view></div>
+  </div>
 
   <!-- Scripts -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>

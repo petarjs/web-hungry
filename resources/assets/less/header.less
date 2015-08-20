@@ -1,0 +1,49 @@
+.header {
+  margin: 1rem 0 3rem 0;
+  position: relative;
+
+  .__logo {
+    font-family: 'Roboto Slab';
+    font-weight: 700;
+    font-size: 4rem;
+    color: @color-primary;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      background-image: url('../images/logo.png');
+      background-repeat: no-repeat;
+      background-size: 35px 65px;
+      width: 35px;
+      height: 65px;
+      vertical-align: bottom;
+    }
+
+    &::after {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      left: 310px;
+      right: 0;
+      top: 24px;
+      height: 3px;
+      border-top: 3px solid @color-primary;
+    }
+  }
+
+  .__subtitle {
+    color: @color-gray;
+    font-size: 2rem;
+    font-weight: 400;
+    font-family: 'Roboto';
+  }
+
+  .__menu {
+    font-size: 2rem;
+    padding-top: 2rem;
+
+    .__icon {
+      color: @color-dark;
+    }
+  }
+}

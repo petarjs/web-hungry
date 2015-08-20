@@ -28,9 +28,11 @@
       userId = '{{ $user->id }}';
       roles = '{{ join($user->roles->lists('name')->toArray(), ",") }}';
     @endif
+
+    var api = '{{ URL::to('/') . "/api" }}';
   </script>
 </head>
-<body ng-controller="AppController as appVm">
+<body>
   <div class="container">
     <header class="header">
       <div class="__logo">
@@ -41,10 +43,10 @@
             <i class="__icon fa fa-ellipsis-v"></i>
           </a>
           <ul id='main-menu' class='dropdown-content'>
-            <li><a ng-if="appVm.hasRole('super-admin')" href="{{ action('SuperAdmin\UserController@getIndex') }}">Users</a></li>
-            <li><a ng-if="appVm.hasRole('admin')" href="{{ action('Admin\FoodController@getIndex') }}">Food</a></li>
+            <li><a ng-if="$root.helpers.hasRole('super-admin')" href="{{ action('SuperAdmin\UserController@getIndex') }}">Users</a></li>
+            <li><a ng-if="$root.helpers.hasRole('admin')" href="{{ action('Admin\FoodController@getIndex') }}">Food</a></li>
             <li class="divider"></li>
-            <li><a ng-if="appVm.hasRole('user')" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a></li>
+            <li><a ng-if="$root.helpers.hasRole('user')" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a></li>
           </ul>
         </span>
       </div>

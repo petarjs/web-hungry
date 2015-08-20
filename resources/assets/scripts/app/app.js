@@ -3,9 +3,19 @@
     .module('Hungry.app')
     .controller('AppController', AppController);
 
-  function AppController(Auth) {
+  function AppController(AppState, user) {
     var vm = this;
 
-    vm.hasRole = Auth.hasRole;
+    var state = {};
+    var changeUser = AppState.change('user');
+
+    AppState.listen('user', function(user) { state.user = user; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+    }
+
   }
 })(); 

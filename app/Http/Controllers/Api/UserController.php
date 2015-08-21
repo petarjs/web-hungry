@@ -19,7 +19,7 @@ class UserController extends Controller
      * @Middleware("super-admin")
      */
     public function getUsers() {
-      $users = User::with('roles');
+      $users = User::with('roles')->get();
 
       return \Response::json($users, 200);
     }
@@ -33,5 +33,19 @@ class UserController extends Controller
       return \Response::json($user, 200);
     }
 
-    
+    /**
+     * @Put("/{id}/toggle-role/{role_id}")
+     */
+    public function getToggleRole($id, $role_id) {
+      $role = Role::findOrFail($role_id);
+      $user = User::findOrFail($id);
+
+      if($user->roles->where('id', $role->id)->isEmpty()) {
+        $user->attachRole($role);
+      } else {
+        $user->detachRole($role);
+      }
+
+      return User::with('roles')->find($id);
+    }
 }

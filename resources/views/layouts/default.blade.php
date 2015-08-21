@@ -43,7 +43,7 @@
             <i class="__icon fa fa-ellipsis-v"></i>
           </a>
           <ul id='main-menu' class='dropdown-content'>
-            <li><a ng-if="$root.helpers.hasRole('super-admin')" href="{{ action('SuperAdmin\UserController@getIndex') }}">Users</a></li>
+            <li><a ng-if="$root.helpers.hasRole('super-admin')" ui-sref="app.users">Users</a></li>
             <li><a ng-if="$root.helpers.hasRole('admin')" href="{{ action('Admin\FoodController@getIndex') }}">Food</a></li>
             <li class="divider"></li>
             <li><a ng-if="$root.helpers.hasRole('user')" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a></li>

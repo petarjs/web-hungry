@@ -6,7 +6,8 @@
   function UsersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
     return {
       getUser: getUser,
-      getUsers: getUsers
+      getUsers: getUsers,
+      toggleRole: toggleRole
     };
 
     function getUser(id) {
@@ -21,6 +22,16 @@
     function getUsers() {
       var url = appConfig.api.concat('/users');
       return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function toggleRole(user, role) {
+      var url = appConfig.api.concat('/users/:id/toggle-role/:roleId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: user.id,
+        roleId: role.id
+      });
+
+      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

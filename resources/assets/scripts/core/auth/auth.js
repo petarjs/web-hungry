@@ -10,8 +10,14 @@
       hasRole: hasRole
     };
 
-    function hasRole (role) {
-      return roles.indexOf(role) !== -1;
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
     }
   }
 })(); 

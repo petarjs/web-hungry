@@ -92,30 +92,6 @@
 })(); 
 (function () {
   angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, user, roles) {
-    var vm = this;
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-    }
-
-  }
-})(); 
-(function () {
-  angular
     .module('Hungry.core.api-helpers')
     .service('ApiHelpers', ApiHelpers);
 
@@ -240,6 +216,30 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, user, roles) {
+    var vm = this;
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+    }
+
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.core.api.roles')
     .factory('Roles', RolesFactory);
 
@@ -250,7 +250,9 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     function getRoles() {
       var url = appConfig.api.concat('/roles');
-      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+      return $http.get(url, {
+        cache: true
+      }).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

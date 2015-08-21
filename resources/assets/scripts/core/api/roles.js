@@ -10,7 +10,9 @@
 
     function getRoles() {
       var url = appConfig.api.concat('/roles');
-      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+      return $http.get(url, {
+        cache: true
+      }).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

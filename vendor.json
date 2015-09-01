@@ -2,9 +2,11 @@
   "scripts": [
     "/bower_components/angular/angular.js",
     "/bower_components/angular-ui-router/release/angular-ui-router.js",
-    "/bower_components/ramda/dist/ramda.js"
+    "/bower_components/ramda/dist/ramda.js",
+    "/bower_components/dropzone/downloads/dropzone.js"
   ],
   "stylesheets": [
-    "/bower_components/fontawesome/css/font-awesome.min.css"
+    "/bower_components/fontawesome/css/font-awesome.min.css",
+    "/bower_components/dropzone/downloads/css/dropzone.css"
   ]
 }

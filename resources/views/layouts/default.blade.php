@@ -11,6 +11,7 @@
   <!-- Fonts -->
   <link href='//fonts.googleapis.com/css?family=Roboto:400,300,800' rel='stylesheet' type='text/css'>
   <link href='//fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -40,11 +41,11 @@
         <span class="__subtitle">Cosmic</span>
         <span class="right __menu">
           <a class="dropdown-button" href="#" data-activates="main-menu">
-            <i class="__icon fa fa-ellipsis-v"></i>
+            <i class="__icon material-icons">more_vert</i>
           </a>
           <ul id='main-menu' class='dropdown-content'>
             <li><a ng-if="$root.helpers.hasRole('super-admin')" ui-sref="app.users">Users</a></li>
-            <li><a ng-if="$root.helpers.hasRole('admin')" href="{{ action('Admin\FoodController@getIndex') }}">Food</a></li>
+            <li><a ng-if="$root.helpers.hasRole('admin')" ui-sref="app.food">Food</a></li>
             <li class="divider"></li>
             <li><a ng-if="$root.helpers.hasRole('user')" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a></li>
           </ul>

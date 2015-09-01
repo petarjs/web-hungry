@@ -10,6 +10,8 @@
   angular.module('Hungry.core.api.roles', []);
   angular.module('Hungry.app', []);
   angular.module('Hungry.super-admin.users', []);
+  angular.module('Hungry.admin.food', []);
+  angular.module('Hungry.core.directives.dropzone', []);
   
   angular
     .module('Hungry', [
@@ -27,13 +29,17 @@
       'Hungry.core.api.roles',
 
       'Hungry.app',
-      'Hungry.super-admin.users'
+      'Hungry.super-admin.users',
+      'Hungry.admin.food',
+
+      'Hungry.core.directives.dropzone'
     ])
     .config(configureRoutes)
     .run(appRun);
 
-  function configureRoutes ($stateProvider, $urlRouterProvider) {
+  function configureRoutes ($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) {
     $urlRouterProvider.otherwise('/');
+    $urlMatcherFactoryProvider.strictMode(false);
 
     $stateProvider
       .state('login', {
@@ -55,16 +61,32 @@
           }
         }
       })
+
       .state('app.home', {
         url: '',
         templateUrl: 'home/home',
         role: 'user',
       })
+      
       .state('app.users', {
         url: 'users',
         controller: 'UsersController as vm',
         templateUrl: 'super-admin/users/users',
         role: 'super-admin',
+      })
+      
+      .state('app.food', {
+        url: 'food',
+        controller: 'FoodController as vm',
+        templateUrl: 'admin/food/food',
+        role: 'admin',
+      })
+      
+      .state('app.food-create', {
+        url: 'food/create',
+        controller: 'FoodCreateController as vm',
+        templateUrl: 'admin/food/create',
+        role: 'admin',
       });
   }
 
@@ -240,6 +262,97 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.admin.food')
+    .controller('FoodCreateController', FoodCreateController);
+
+  function FoodCreateController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    vm.dropzoneOpts = {
+      parallelUploads: 1,
+      maxFileSize: 30
+    };
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.admin.food')
+    .controller('FoodController', FoodController);
+
+  function FoodController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.core.api.roles')
     .factory('Roles', RolesFactory);
 
@@ -315,6 +428,58 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       }
     }
   }
+})(); 
+(function () {
+  angular.module('Hungry.core.directives.dropzone')
+    .directive('dropZone', function () {
+      return {
+          scope: {
+              action: "@",
+              autoProcess: "=?",
+              callBack: "&?",
+              dataMax: "=?",
+              mimetypes: "=?",
+              message: "@?",
+          },
+          link: function (scope, element, attrs) {
+              console.log("Creating dropzone");
+
+              // Autoprocess the form
+              if (scope.autoProcess != null && scope.autoProcess == "false") {
+                  scope.autoProcess = false;
+              } else {
+                  scope.autoProcess = true;
+              }
+
+              // Max file size
+              if (scope.dataMax == null) {
+                  scope.dataMax = Dropzone.prototype.defaultOptions.maxFilesize;
+              } else {
+                  scope.dataMax = parseInt(scope.dataMax);
+              }
+
+              // Message for the uploading
+              if (scope.message == null) {
+                  scope.message = Dropzone.prototype.defaultOptions.dictDefaultMessage;
+              }
+
+              element.dropzone({
+                  url: scope.action,
+                  maxFilesize: scope.dataMax,
+                  paramName: "file",
+                  acceptedFiles: scope.mimetypes,
+                  maxThumbnailFilesize: scope.dataMax,
+                  dictDefaultMessage: scope.message,
+                  autoProcessQueue: scope.autoProcess,
+                  success: function (file, response) {
+                      if (scope.callBack != null) {
+                          scope.callBack({response: response});
+                      }
+                  }
+              });
+          }
+      }
+  });
 })(); 
 (function () {
   angular

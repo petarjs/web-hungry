@@ -10,6 +10,8 @@
   angular.module('Hungry.core.api.roles', []);
   angular.module('Hungry.app', []);
   angular.module('Hungry.super-admin.users', []);
+  angular.module('Hungry.admin.food', []);
+  angular.module('Hungry.core.directives.dropzone', []);
   
   angular
     .module('Hungry', [
@@ -27,13 +29,17 @@
       'Hungry.core.api.roles',
 
       'Hungry.app',
-      'Hungry.super-admin.users'
+      'Hungry.super-admin.users',
+      'Hungry.admin.food',
+
+      'Hungry.core.directives.dropzone'
     ])
     .config(configureRoutes)
     .run(appRun);
 
-  function configureRoutes ($stateProvider, $urlRouterProvider) {
+  function configureRoutes ($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) {
     $urlRouterProvider.otherwise('/');
+    $urlMatcherFactoryProvider.strictMode(false);
 
     $stateProvider
       .state('login', {
@@ -55,16 +61,32 @@
           }
         }
       })
+
       .state('app.home', {
         url: '',
         templateUrl: 'home/home',
         role: 'user',
       })
+      
       .state('app.users', {
         url: 'users',
         controller: 'UsersController as vm',
         templateUrl: 'super-admin/users/users',
         role: 'super-admin',
+      })
+      
+      .state('app.food', {
+        url: 'food',
+        controller: 'FoodController as vm',
+        templateUrl: 'admin/food/food',
+        role: 'admin',
+      })
+      
+      .state('app.food-create', {
+        url: 'food/create',
+        controller: 'FoodCreateController as vm',
+        templateUrl: 'admin/food/create',
+        role: 'admin',
       });
   }
 

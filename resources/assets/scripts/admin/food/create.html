@@ -1,0 +1,25 @@
+<h3>Create a Food</h3>
+
+<div class="row">
+  <form class="col s12">
+    <div class="row">
+      <div class="col s6">
+        <div class="input-field">
+          <textarea id="last_name" class="validate materialize-textarea"></textarea>
+          <label for="last_name">Description</label>
+        </div>
+        <button class="btn">Save</button>
+      </div>
+      <div class="input-field col s6">
+        <div action="/file/upload/" class="dropzone" drop-zone
+             call-back="myCallBackMethod(response)"
+             data-max="1"
+             auto-process="'true'"
+             message="Drop file here or click to select"
+             mimetypes="'.jpg,.jpeg,.png'"
+             id="file-dropzone">
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

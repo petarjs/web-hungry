@@ -87,7 +87,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Obtain the user information from GitHub.
+     * Obtain the user information from Google.
      *
      * @Get("/auth/google/callback")
      * @return Response

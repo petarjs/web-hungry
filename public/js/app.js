@@ -262,6 +262,61 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.core.api.roles')
+    .factory('Roles', RolesFactory);
+
+  function RolesFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getRoles: getRoles
+    };
+
+    function getRoles() {
+      var url = appConfig.api.concat('/roles');
+      return $http.get(url, {
+        cache: true
+      }).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api.users')
+    .factory('Users', UsersFactory);
+
+  function UsersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getUser: getUser,
+      getUsers: getUsers,
+      toggleRole: toggleRole
+    };
+
+    function getUser(id) {
+      var url = appConfig.api.concat('/users/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: id
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getUsers() {
+      var url = appConfig.api.concat('/users');
+      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function toggleRole(user, role) {
+      var url = appConfig.api.concat('/users/:id/toggle-role/:roleId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: user.id,
+        roleId: role.id
+      });
+
+      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.admin.food')
     .controller('FoodCreateController', FoodCreateController);
 
@@ -352,84 +407,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
-  angular
-    .module('Hungry.core.api.roles')
-    .factory('Roles', RolesFactory);
-
-  function RolesFactory($http, appConfig, UrlReplacer, ApiHelpers) {
-    return {
-      getRoles: getRoles
-    };
-
-    function getRoles() {
-      var url = appConfig.api.concat('/roles');
-      return $http.get(url, {
-        cache: true
-      }).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.api.users')
-    .factory('Users', UsersFactory);
-
-  function UsersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
-    return {
-      getUser: getUser,
-      getUsers: getUsers,
-      toggleRole: toggleRole
-    };
-
-    function getUser(id) {
-      var url = appConfig.api.concat('/users/:id');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: id
-      });
-
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function getUsers() {
-      var url = appConfig.api.concat('/users');
-      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function toggleRole(user, role) {
-      var url = appConfig.api.concat('/users/:id/toggle-role/:roleId');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: user.id,
-        roleId: role.id
-      });
-
-      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
-
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
-
-    return {
-      hasRole: hasRole
-    };
-
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
-    }
-  }
-})(); 
-(function () {
   angular.module('Hungry.core.directives.dropzone')
     .directive('dropZone', function () {
       return {
@@ -480,6 +457,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
           }
       }
   });
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
+    }
+  }
 })(); 
 (function () {
   angular

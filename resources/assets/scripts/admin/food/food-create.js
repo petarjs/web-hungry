@@ -3,13 +3,18 @@
     .module('Hungry.admin.food')
     .controller('FoodCreateController', FoodCreateController);
 
-  function FoodCreateController(AppState, Users, user, $window) {
+  function FoodCreateController($rootScope, AppState, Users, user, $window, Foods, $state) {
     var vm = this;
 
     var state = {};
     var changeUsers = AppState.change('users');
+    
 
     vm.state = state;
+    vm.food = {
+      description: '',
+      image: ''
+    };
 
     vm.isCurrentUser = isCurrentUser;
     vm.toggleRole = toggleRole;
@@ -19,8 +24,12 @@
       maxFileSize: 30
     };
 
+    vm.saveFood = saveFood;
+
     AppState.listen('users', function(users) { state.users = users; });
     AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    $rootScope.$on('dropzone:uploaded', onImageUploaded);
 
     activate();
 
@@ -42,6 +51,18 @@
           oldUser.roles = user.roles;
           changeUsers(state.users);
         });
+    }
+
+    function saveFood(food) {
+      Foods
+        .saveFood(food)
+        .then(function() {
+          $state.go('app.food');
+        });
+    }
+
+    function onImageUploaded(ev, response) {
+      vm.food.image = response.url;
     }
 
   }

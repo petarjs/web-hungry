@@ -1,14 +1,15 @@
 (function () {
   angular.module('Hungry.core.directives.dropzone')
-    .directive('dropZone', function () {
+    .directive('dropZone', function ($window, $rootScope) {
       return {
           scope: {
               action: "@",
               autoProcess: "=?",
-              callBack: "&?",
+              callback: "&",
               dataMax: "=?",
               mimetypes: "=?",
               message: "@?",
+              name: "=?"
           },
           link: function (scope, element, attrs) {
               console.log("Creating dropzone");
@@ -35,16 +36,17 @@
               element.dropzone({
                   url: scope.action,
                   maxFilesize: scope.dataMax,
-                  paramName: "file",
+                  paramName: attrs.name,
                   acceptedFiles: scope.mimetypes,
                   maxThumbnailFilesize: scope.dataMax,
                   dictDefaultMessage: scope.message,
                   autoProcessQueue: scope.autoProcess,
                   success: function (file, response) {
-                      if (scope.callBack != null) {
-                          scope.callBack({response: response});
-                      }
-                  }
+                    $rootScope.$emit('dropzone:uploaded', response);
+                  },
+                  sending: function(file, xhr, formData) {
+                    formData.append("_token", $window.csrfToken);
+                  },
               });
           }
       }

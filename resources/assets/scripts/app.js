@@ -8,6 +8,7 @@
   angular.module('Hungry.core.url-replacer', []);
   angular.module('Hungry.core.api.users', []);
   angular.module('Hungry.core.api.roles', []);
+  angular.module('Hungry.core.api.foods', []);
   angular.module('Hungry.app', []);
   angular.module('Hungry.super-admin.users', []);
   angular.module('Hungry.admin.food', []);
@@ -27,6 +28,7 @@
 
       'Hungry.core.api.users',
       'Hungry.core.api.roles',
+      'Hungry.core.api.foods',
 
       'Hungry.app',
       'Hungry.super-admin.users',
@@ -90,7 +92,9 @@
       });
   }
 
-  function appRun ($rootScope, $state, Auth) {
+  function appRun ($rootScope, $state, Auth, $http, $window) {
+    $http.defaults.headers.common['X-CSRF-TOKEN'] = $window.csrfToken;
+    
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
       if (toState.role && !Auth.hasRole(toState.role)){
         $state.transitionTo("login");

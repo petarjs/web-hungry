@@ -30,6 +30,8 @@
       roles = '{{ join($user->roles->lists('name')->toArray(), ",") }}';
     @endif
 
+    var csrfToken = '{{ csrf_token() }}';
+
     var api = '{{ URL::to('/') . "/api" }}';
   </script>
 </head>

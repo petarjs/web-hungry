@@ -20,8 +20,7 @@ class FoodController extends Controller
      */
     public function getIndex() {
       $food = Food::all();
-
-      return view('admin.food.index', compact('food'));
+      return $food;
     }
 
     /**
@@ -29,30 +28,16 @@ class FoodController extends Controller
      */
     public function postCreate(FoodRequest $request) {
       $newFood = Food::create([
-        'description' => $request->description,
-        'image' => $request->image
+        'description' => $request->description
       ]);
 
+      $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $request->image));
+      $imageUrl = 'uploads/' . $newFood->id . '.jpg';
+      file_put_contents($imageUrl, $data);
+
+      $newFood->image = $imageUrl;
+      $newFood->save();
+
       return $newFood;
-    }
-
-    /**
-     * @Post("/upload")
-     */
-    public function uploadImage() {
-      $image  = \Input::file('image');
-
-      if($image) {
-        $destinationPath = public_path() . '/uploads';
-        $filename = $image->getClientOriginalName();
-
-        $upload_success = \Input::file('image')->move($destinationPath, $filename);
-
-        if($upload_success) {
-          return \Response::json(['url' => $destinationPath . '/' . $filename], 200);
-        } else {
-          return \Response::json('error', 400);
-        }
-      }
     }
 }

@@ -3,11 +3,12 @@
     .module('Hungry.admin.food')
     .controller('FoodController', FoodController);
 
-  function FoodController(AppState, Users, user, $window) {
+  function FoodController(AppState, Users, user, $window, Foods) {
     var vm = this;
 
     var state = {};
     var changeUsers = AppState.change('users');
+    var changeFoods = AppState.change('foods');
 
     vm.state = state;
 
@@ -16,6 +17,7 @@
 
     AppState.listen('users', function(users) { state.users = users; });
     AppState.listen('roles', function(roles) { state.roles = roles; });
+    AppState.listen('foods', function(foods) { state.foods = foods; });
 
     activate();
 
@@ -23,6 +25,10 @@
       Users
         .getUsers()
         .then(changeUsers);
+
+      Foods
+        .getFoods()
+        .then(changeFoods);
     }
 
     function isCurrentUser(user) {

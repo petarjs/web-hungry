@@ -19,11 +19,6 @@
     vm.isCurrentUser = isCurrentUser;
     vm.toggleRole = toggleRole;
 
-    vm.dropzoneOpts = {
-      parallelUploads: 1,
-      maxFileSize: 30
-    };
-
     vm.saveFood = saveFood;
 
     AppState.listen('users', function(users) { state.users = users; });
@@ -54,16 +49,11 @@
     }
 
     function saveFood(food) {
-      $rootScope.$emit('dropzone:queue:process');
 
       var onFoodSaved = Foods.saveFood(food);
-      
-      var onDropzoneUploaded = $rootScope.$on('dropzone:queue:complete', function() {
-        onDropzoneUploaded();
         onFoodSaved.then(function() {
           $state.go('app.food');
         });
-      }); 
     }
 
     function onImageUploaded(ev, response) {

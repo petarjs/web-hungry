@@ -19,6 +19,7 @@
     "fontawesome": "~4.4.0",
     "angular-ui-router": "~0.2.15",
     "ramda": "~0.17.1",
-    "angular-dropzone": "~0.1.2"
+    "angular-dropzone": "~0.1.2",
+    "angular-file-data-url": "~0.1.1"
   }
 }

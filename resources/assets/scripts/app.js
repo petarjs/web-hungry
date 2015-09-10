@@ -17,6 +17,7 @@
   angular
     .module('Hungry', [
       'ui.router',
+      'file-data-url',
       'hungry.templates',
 
       'Hungry.core.auth',

@@ -17,6 +17,7 @@
   angular
     .module('Hungry', [
       'ui.router',
+      'file-data-url',
       'hungry.templates',
 
       'Hungry.core.auth',
@@ -165,7 +166,8 @@ angular.module('Hungry.core.app-state').factory('AppState', function(StateServic
   var state = {
     user: {},
     users: [],
-    roles: []
+    roles: [],
+    foods: []
   };
 
   var listeners = [];
@@ -285,11 +287,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.isCurrentUser = isCurrentUser;
     vm.toggleRole = toggleRole;
 
-    vm.dropzoneOpts = {
-      parallelUploads: 1,
-      maxFileSize: 30
-    };
-
     vm.saveFood = saveFood;
 
     AppState.listen('users', function(users) { state.users = users; });
@@ -320,16 +317,11 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     }
 
     function saveFood(food) {
-      $rootScope.$emit('dropzone:queue:process');
 
       var onFoodSaved = Foods.saveFood(food);
-      
-      var onDropzoneUploaded = $rootScope.$on('dropzone:queue:complete', function() {
-        onDropzoneUploaded();
         onFoodSaved.then(function() {
           $state.go('app.food');
         });
-      }); 
     }
 
     function onImageUploaded(ev, response) {
@@ -343,11 +335,12 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.admin.food')
     .controller('FoodController', FoodController);
 
-  function FoodController(AppState, Users, user, $window) {
+  function FoodController(AppState, Users, user, $window, Foods) {
     var vm = this;
 
     var state = {};
     var changeUsers = AppState.change('users');
+    var changeFoods = AppState.change('foods');
 
     vm.state = state;
 
@@ -356,6 +349,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     AppState.listen('users', function(users) { state.users = users; });
     AppState.listen('roles', function(roles) { state.roles = roles; });
+    AppState.listen('foods', function(foods) { state.foods = foods; });
 
     activate();
 
@@ -363,6 +357,10 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       Users
         .getUsers()
         .then(changeUsers);
+
+      Foods
+        .getFoods()
+        .then(changeFoods);
     }
 
     function isCurrentUser(user) {
@@ -388,13 +386,19 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
   function FoodsFactory($http, appConfig, UrlReplacer, ApiHelpers) {
     return {
-      saveFood: saveFood
+      saveFood: saveFood,
+      getFoods: getFoods
     };
 
     function saveFood(food) {
       var url = appConfig.api.concat('/admin/food/create');
 
       return $http.post(url, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getFoods() {
+      var url = appConfig.api.concat('/admin/food');
+      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 
@@ -450,6 +454,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       });
 
       return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
     }
   }
 })(); 
@@ -549,28 +576,5 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         });
     }
 
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
-
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
-
-    return {
-      hasRole: hasRole
-    };
-
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
-    }
   }
 })(); 

@@ -54,11 +54,16 @@
     }
 
     function saveFood(food) {
-      Foods
-        .saveFood(food)
-        .then(function() {
+      $rootScope.$emit('dropzone:queue:process');
+
+      var onFoodSaved = Foods.saveFood(food);
+      
+      var onDropzoneUploaded = $rootScope.$on('dropzone:queue:complete', function() {
+        onDropzoneUploaded();
+        onFoodSaved.then(function() {
           $state.go('app.food');
         });
+      }); 
     }
 
     function onImageUploaded(ev, response) {

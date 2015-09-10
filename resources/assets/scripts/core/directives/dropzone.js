@@ -14,13 +14,6 @@
           link: function (scope, element, attrs) {
               console.log("Creating dropzone");
 
-              // Autoprocess the form
-              if (scope.autoProcess != null && scope.autoProcess == "false") {
-                  scope.autoProcess = false;
-              } else {
-                  scope.autoProcess = true;
-              }
-
               // Max file size
               if (scope.dataMax == null) {
                   scope.dataMax = Dropzone.prototype.defaultOptions.maxFilesize;
@@ -40,14 +33,22 @@
                   acceptedFiles: scope.mimetypes,
                   maxThumbnailFilesize: scope.dataMax,
                   dictDefaultMessage: scope.message,
-                  autoProcessQueue: scope.autoProcess,
+                  autoProcessQueue: scope.autoProcess === 'false' ? false : true,
                   success: function (file, response) {
                     $rootScope.$emit('dropzone:uploaded', response);
                   },
                   sending: function(file, xhr, formData) {
                     formData.append("_token", $window.csrfToken);
                   },
+                  init: function() {
+                    this.on('queuecomplete', function() {
+                      $rootScope.$emit('dropzone:queue:uploaded');
+                    });
+
+                    $rootScope.$on('dropzone:queue:process', this.processQueue);
+                  }
               });
+
           }
       }
   });

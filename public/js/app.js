@@ -266,6 +266,123 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.admin.food')
+    .controller('FoodCreateController', FoodCreateController);
+
+  function FoodCreateController($rootScope, AppState, Users, user, $window, Foods, $state) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+    
+
+    vm.state = state;
+    vm.food = {
+      description: '',
+      image: ''
+    };
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    vm.dropzoneOpts = {
+      parallelUploads: 1,
+      maxFileSize: 30
+    };
+
+    vm.saveFood = saveFood;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    $rootScope.$on('dropzone:uploaded', onImageUploaded);
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
+    function saveFood(food) {
+      $rootScope.$emit('dropzone:queue:process');
+
+      var onFoodSaved = Foods.saveFood(food);
+      
+      var onDropzoneUploaded = $rootScope.$on('dropzone:queue:complete', function() {
+        onDropzoneUploaded();
+        onFoodSaved.then(function() {
+          $state.go('app.food');
+        });
+      }); 
+    }
+
+    function onImageUploaded(ev, response) {
+      vm.food.image = response.url;
+    }
+
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.admin.food')
+    .controller('FoodController', FoodController);
+
+  function FoodController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.core.api.foods')
     .factory('Foods', FoodsFactory);
 
@@ -337,80 +454,66 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
-  angular
-    .module('Hungry.admin.food')
-    .controller('FoodCreateController', FoodCreateController);
+  angular.module('Hungry.core.directives.dropzone')
+    .directive('dropZone', function ($window, $rootScope) {
+      return {
+          scope: {
+              action: "@",
+              autoProcess: "=?",
+              callback: "&",
+              dataMax: "=?",
+              mimetypes: "=?",
+              message: "@?",
+              name: "=?"
+          },
+          link: function (scope, element, attrs) {
+              console.log("Creating dropzone");
 
-  function FoodCreateController($rootScope, AppState, Users, user, $window, Foods, $state) {
-    var vm = this;
+              // Max file size
+              if (scope.dataMax == null) {
+                  scope.dataMax = Dropzone.prototype.defaultOptions.maxFilesize;
+              } else {
+                  scope.dataMax = parseInt(scope.dataMax);
+              }
 
-    var state = {};
-    var changeUsers = AppState.change('users');
-    
+              // Message for the uploading
+              if (scope.message == null) {
+                  scope.message = Dropzone.prototype.defaultOptions.dictDefaultMessage;
+              }
 
-    vm.state = state;
-    vm.food = {
-      description: '',
-      image: ''
-    };
+              element.dropzone({
+                  url: scope.action,
+                  maxFilesize: scope.dataMax,
+                  paramName: attrs.name,
+                  acceptedFiles: scope.mimetypes,
+                  maxThumbnailFilesize: scope.dataMax,
+                  dictDefaultMessage: scope.message,
+                  autoProcessQueue: scope.autoProcess === 'false' ? false : true,
+                  success: function (file, response) {
+                    $rootScope.$emit('dropzone:uploaded', response);
+                  },
+                  sending: function(file, xhr, formData) {
+                    formData.append("_token", $window.csrfToken);
+                  },
+                  init: function() {
+                    this.on('queuecomplete', function() {
+                      $rootScope.$emit('dropzone:queue:uploaded');
+                    });
 
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
+                    $rootScope.$on('dropzone:queue:process', this.processQueue);
+                  }
+              });
 
-    vm.dropzoneOpts = {
-      parallelUploads: 1,
-      maxFileSize: 30
-    };
-
-    vm.saveFood = saveFood;
-
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    $rootScope.$on('dropzone:uploaded', onImageUploaded);
-
-    activate();
-
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
-    }
-
-    function saveFood(food) {
-      Foods
-        .saveFood(food)
-        .then(function() {
-          $state.go('app.food');
-        });
-    }
-
-    function onImageUploaded(ev, response) {
-      vm.food.image = response.url;
-    }
-
-  }
+          }
+      }
+  });
 })(); 
 (function () {
   angular
-    .module('Hungry.admin.food')
-    .controller('FoodController', FoodController);
+    .module('Hungry.super-admin.users')
+    .controller('UsersController', UsersController);
 
-  function FoodController(AppState, Users, user, $window) {
+  function UsersController(AppState, Users, user, $window) {
     var vm = this;
 
     var state = {};
@@ -469,102 +572,5 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         });
       }
     }
-  }
-})(); 
-(function () {
-  angular.module('Hungry.core.directives.dropzone')
-    .directive('dropZone', function ($window, $rootScope) {
-      return {
-          scope: {
-              action: "@",
-              autoProcess: "=?",
-              callback: "&",
-              dataMax: "=?",
-              mimetypes: "=?",
-              message: "@?",
-              name: "=?"
-          },
-          link: function (scope, element, attrs) {
-              console.log("Creating dropzone");
-
-              // Autoprocess the form
-              if (scope.autoProcess != null && scope.autoProcess == "false") {
-                  scope.autoProcess = false;
-              } else {
-                  scope.autoProcess = true;
-              }
-
-              // Max file size
-              if (scope.dataMax == null) {
-                  scope.dataMax = Dropzone.prototype.defaultOptions.maxFilesize;
-              } else {
-                  scope.dataMax = parseInt(scope.dataMax);
-              }
-
-              // Message for the uploading
-              if (scope.message == null) {
-                  scope.message = Dropzone.prototype.defaultOptions.dictDefaultMessage;
-              }
-
-              element.dropzone({
-                  url: scope.action,
-                  maxFilesize: scope.dataMax,
-                  paramName: attrs.name,
-                  acceptedFiles: scope.mimetypes,
-                  maxThumbnailFilesize: scope.dataMax,
-                  dictDefaultMessage: scope.message,
-                  autoProcessQueue: scope.autoProcess,
-                  success: function (file, response) {
-                    $rootScope.$emit('dropzone:uploaded', response);
-                  },
-                  sending: function(file, xhr, formData) {
-                    formData.append("_token", $window.csrfToken);
-                  },
-              });
-          }
-      }
-  });
-})(); 
-(function () {
-  angular
-    .module('Hungry.super-admin.users')
-    .controller('UsersController', UsersController);
-
-  function UsersController(AppState, Users, user, $window) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-
-    vm.state = state;
-
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
-
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
-    }
-
   }
 })(); 

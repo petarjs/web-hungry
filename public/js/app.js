@@ -18,6 +18,7 @@
     .module('Hungry', [
       'ui.router',
       'file-data-url',
+      'oitozero.ngSweetAlert',
       'hungry.templates',
 
       'Hungry.core.auth',
@@ -116,30 +117,6 @@
     };
   }
 
-})(); 
-(function () {
-  angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, user, roles) {
-    var vm = this;
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-    }
-
-  }
 })(); 
 (function () {
   angular
@@ -268,6 +245,30 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, user, roles) {
+    var vm = this;
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+    }
+
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.admin.food')
     .controller('FoodCreateController', FoodCreateController);
 
@@ -335,7 +336,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.admin.food')
     .controller('FoodController', FoodController);
 
-  function FoodController(AppState, Users, user, $window, Foods) {
+  function FoodController(AppState, Users, user, $window, Foods, SweetAlert) {
     var vm = this;
 
     var state = {};
@@ -346,6 +347,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     vm.isCurrentUser = isCurrentUser;
     vm.toggleRole = toggleRole;
+    vm.deleteFood = deleteFood;
 
     AppState.listen('users', function(users) { state.users = users; });
     AppState.listen('roles', function(roles) { state.roles = roles; });
@@ -377,6 +379,32 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         });
     }
 
+    function deleteFood(food) {
+      SweetAlert.swal({
+         title: "Delete this food?",
+         text: "Your will not be able to recover this!",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonColor: "#DD6B55",
+         confirmButtonText: "Yes, delete it!",
+         closeOnConfirm: false,
+         showLoaderOnConfirm: true
+      }, function(shouldDelete) {
+        if(shouldDelete) {
+          Foods
+            .deleteFood(food)
+            .then(function() {
+              Foods
+                .getFoods()
+                .then(changeFoods)
+                .then(function() {
+                  SweetAlert.swal('Delete successful!');
+                });
+            });
+        }
+      });
+    }
+
   }
 })(); 
 (function () {
@@ -387,7 +415,8 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   function FoodsFactory($http, appConfig, UrlReplacer, ApiHelpers) {
     return {
       saveFood: saveFood,
-      getFoods: getFoods
+      getFoods: getFoods,
+      deleteFood: deleteFood
     };
 
     function saveFood(food) {
@@ -399,6 +428,15 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function getFoods() {
       var url = appConfig.api.concat('/admin/food');
       return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function deleteFood(food) {
+      var url = appConfig.api.concat('/admin/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: food.id
+      });
+
+      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

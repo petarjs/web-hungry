@@ -48,4 +48,11 @@ class FoodController extends Controller
 
       return $newFood;
     }
+
+    /**
+     * @Delete("/{id}")
+     */
+    public function deleteFood($id) {
+      Food::destroy($id);
+    }
 }

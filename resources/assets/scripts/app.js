@@ -18,6 +18,7 @@
     .module('Hungry', [
       'ui.router',
       'file-data-url',
+      'oitozero.ngSweetAlert',
       'hungry.templates',
 
       'Hungry.core.auth',

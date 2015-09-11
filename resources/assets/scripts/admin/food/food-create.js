@@ -3,12 +3,12 @@
     .module('Hungry.admin.food')
     .controller('FoodCreateController', FoodCreateController);
 
-  function FoodCreateController($rootScope, AppState, Users, user, $window, Foods, $state) {
+  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state) {
     var vm = this;
 
     var state = {};
     var changeUsers = AppState.change('users');
-    
+    var isEdit = $stateParams.id;
 
     vm.state = state;
     vm.food = {
@@ -16,15 +16,22 @@
       image: ''
     };
 
+    if(isEdit) {
+      Foods
+        .getFood($stateParams.id)
+        .then(function(food) {
+          vm.food = food;
+        });
+    }
+
     vm.isCurrentUser = isCurrentUser;
     vm.toggleRole = toggleRole;
+    vm.isEdit = isEdit;
 
     vm.saveFood = saveFood;
 
     AppState.listen('users', function(users) { state.users = users; });
     AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    $rootScope.$on('dropzone:uploaded', onImageUploaded);
 
     activate();
 
@@ -49,15 +56,10 @@
     }
 
     function saveFood(food) {
-
       var onFoodSaved = Foods.saveFood(food);
-        onFoodSaved.then(function() {
-          $state.go('app.food');
-        });
-    }
-
-    function onImageUploaded(ev, response) {
-      vm.food.image = response.url;
+      onFoodSaved.then(function() {
+        $state.go('app.food');
+      });
     }
 
   }

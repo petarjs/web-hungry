@@ -55,4 +55,11 @@ class FoodController extends Controller
     public function deleteFood($id) {
       Food::destroy($id);
     }
+
+    /**
+     * @Get("/{id}")
+     */
+    public function getFood($id) {
+      return Food::find($id);
+    }
 }

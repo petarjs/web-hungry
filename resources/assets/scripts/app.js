@@ -91,6 +91,13 @@
         controller: 'FoodCreateController as vm',
         templateUrl: 'admin/food/create',
         role: 'admin',
+      })
+      
+      .state('app.food-edit', {
+        url: 'food/edit/:id',
+        controller: 'FoodCreateController as vm',
+        templateUrl: 'admin/food/create',
+        role: 'admin',
       });
   }
 

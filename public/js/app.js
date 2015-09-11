@@ -91,6 +91,13 @@
         controller: 'FoodCreateController as vm',
         templateUrl: 'admin/food/create',
         role: 'admin',
+      })
+      
+      .state('app.food-edit', {
+        url: 'food/edit/:id',
+        controller: 'FoodCreateController as vm',
+        templateUrl: 'admin/food/create',
+        role: 'admin',
       });
   }
 
@@ -117,6 +124,30 @@
     };
   }
 
+})(); 
+(function () {
+  angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, user, roles) {
+    var vm = this;
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+    }
+
+  }
 })(); 
 (function () {
   angular
@@ -245,39 +276,15 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, user, roles) {
-    var vm = this;
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-    }
-
-  }
-})(); 
-(function () {
-  angular
     .module('Hungry.admin.food')
     .controller('FoodCreateController', FoodCreateController);
 
-  function FoodCreateController($rootScope, AppState, Users, user, $window, Foods, $state) {
+  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state) {
     var vm = this;
 
     var state = {};
     var changeUsers = AppState.change('users');
-    
+    var isEdit = $stateParams.id;
 
     vm.state = state;
     vm.food = {
@@ -285,15 +292,22 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       image: ''
     };
 
+    if(isEdit) {
+      Foods
+        .getFood($stateParams.id)
+        .then(function(food) {
+          vm.food = food;
+        });
+    }
+
     vm.isCurrentUser = isCurrentUser;
     vm.toggleRole = toggleRole;
+    vm.isEdit = isEdit;
 
     vm.saveFood = saveFood;
 
     AppState.listen('users', function(users) { state.users = users; });
     AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    $rootScope.$on('dropzone:uploaded', onImageUploaded);
 
     activate();
 
@@ -318,15 +332,10 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     }
 
     function saveFood(food) {
-
       var onFoodSaved = Foods.saveFood(food);
-        onFoodSaved.then(function() {
-          $state.go('app.food');
-        });
-    }
-
-    function onImageUploaded(ev, response) {
-      vm.food.image = response.url;
+      onFoodSaved.then(function() {
+        $state.go('app.food');
+      });
     }
 
   }
@@ -416,11 +425,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     return {
       saveFood: saveFood,
       getFoods: getFoods,
+      getFood: getFood,
       deleteFood: deleteFood
     };
 
     function saveFood(food) {
+      if(food.id) {
+        return updateFood(food);
+      } else {
+        return createFood(food);
+      }
+    }
+
+    function createFood(food) {
       var url = appConfig.api.concat('/admin/food/create');
+
+      return $http.post(url, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function updateFood(food) {
+      var url = appConfig.api.concat('/admin/food/create');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: food.id
+      });
 
       return $http.post(url, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
@@ -428,6 +455,15 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function getFoods() {
       var url = appConfig.api.concat('/admin/food');
       return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getFood(id) {
+      var url = appConfig.api.concat('/admin/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: id
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
     function deleteFood(food) {

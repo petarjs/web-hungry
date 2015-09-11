@@ -11,7 +11,7 @@
         <button class="btn" ng-click="vm.saveFood(vm.food)">Save</button>
       </div>
       <div class="input-field col s6">
-        <input type="file" ng-file ng-model="vm.food.image" accept="image/jpeg">
+        <input type="file" ng-file ng-model="vm.food.image" accept="image/jpeg,image/png">
         <img src="{{ vm.food.image }}" alt="">
       </div>
     </div>

@@ -31,12 +31,20 @@ class FoodController extends Controller
         'description' => $request->description
       ]);
 
-      $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $request->image));
-      $imageUrl = 'uploads/' . $newFood->id . '.jpg';
-      file_put_contents($imageUrl, $data);
+      $data = $request->image;
 
-      $newFood->image = $imageUrl;
-      $newFood->save();
+      if($data) {
+        list($type, $data) = explode(';', $data);
+        list($typeStuff, $extension) = explode('/', $type);
+        list(, $data) = explode(',', $data);
+        $data = base64_decode($data);
+
+        $imageUrl = 'uploads/' . $newFood->id . '.' . $extension;
+        file_put_contents($imageUrl, $data);
+
+        $newFood->image = $imageUrl;
+        $newFood->save();
+      }
 
       return $newFood;
     }

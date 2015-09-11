@@ -418,6 +418,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
+    }
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.core.api.foods')
     .factory('Foods', FoodsFactory);
 
@@ -444,12 +467,12 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     }
 
     function updateFood(food) {
-      var url = appConfig.api.concat('/admin/food/create');
+      var url = appConfig.api.concat('/admin/food/:id');
       var realUrl = UrlReplacer.replaceParams(url, {
         id: food.id
       });
 
-      return $http.post(url, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
+      return $http.put(realUrl, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
     function getFoods() {
@@ -528,29 +551,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       });
 
       return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
-
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
-
-    return {
-      hasRole: hasRole
-    };
-
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
     }
   }
 })(); 

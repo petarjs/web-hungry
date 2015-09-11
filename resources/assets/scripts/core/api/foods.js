@@ -26,12 +26,12 @@
     }
 
     function updateFood(food) {
-      var url = appConfig.api.concat('/admin/food/create');
+      var url = appConfig.api.concat('/admin/food/:id');
       var realUrl = UrlReplacer.replaceParams(url, {
         id: food.id
       });
 
-      return $http.post(url, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
+      return $http.put(realUrl, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
     function getFoods() {

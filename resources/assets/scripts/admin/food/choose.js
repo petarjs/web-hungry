@@ -19,12 +19,7 @@
 
     activate();
 
-    function activate() {
-
-      Foods
-        .getFoods()
-        .then(changeFoods);
-    }
+    function activate() {}
 
     function hide() {
       $mdDialog.hide();

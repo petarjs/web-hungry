@@ -65,6 +65,9 @@
           },
           roles: function(Roles) {
             return Roles.getRoles();
+          },
+          foods: function(Foods) {
+            return Foods.getFoods();
           }
         }
       })
@@ -139,30 +142,6 @@
     }
   }
 
-})(); 
-(function () {
-  angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, user, roles) {
-    var vm = this;
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-    }
-
-  }
 })(); 
 (function () {
   angular
@@ -295,6 +274,33 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, user, roles, foods) {
+    var vm = this;
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+    var changeFoods = AppState.change('foods');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+      changeFoods(foods);
+    }
+
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.admin.food')
     .controller('ChooseFoodController', ChooseFoodController);
 
@@ -314,12 +320,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     activate();
 
-    function activate() {
-
-      Foods
-        .getFoods()
-        .then(changeFoods);
-    }
+    function activate() {}
 
     function hide() {
       $mdDialog.hide();
@@ -344,7 +345,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     var vm = this;
 
     var state = {};
-    var changeUsers = AppState.change('users');
+    var changeFoods = AppState.change('foods');
     var isEdit = $stateParams.id;
 
     vm.state = state;
@@ -361,44 +362,26 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         });
     }
 
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
     vm.isEdit = isEdit;
 
     vm.saveFood = saveFood;
 
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
     activate();
 
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
-    }
+    function activate() {}
 
     function saveFood(food) {
       vm.loading = true;
-      var onFoodSaved = Foods.saveFood(food);
-      onFoodSaved.then(function() {
-        vm.loading = false;
-        $state.go('app.food');
-      });
+      Foods.saveFood(food)
+        .then(function() {
+          Foods
+            .getFoods()
+            .then(changeFoods)
+            .then(function() {
+              vm.loading = false;
+              $state.go('app.food');
+            });
+        })
     }
 
   }
@@ -412,43 +395,20 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     var vm = this;
 
     var state = {};
-    var changeUsers = AppState.change('users');
     var changeFoods = AppState.change('foods');
 
     vm.state = state;
 
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
     vm.deleteFood = deleteFood;
 
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
     AppState.listen('foods', function(foods) { state.foods = foods; });
 
     activate();
 
     function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-
       Foods
         .getFoods()
         .then(changeFoods);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
     }
 
     function deleteFood(food) {
@@ -546,49 +506,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       }, function() {
         $scope.status = 'You cancelled the dialog.';
       });
-    }
-
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.super-admin.users')
-    .controller('UsersController', UsersController);
-
-  function UsersController(AppState, Users, user, $window) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-
-    vm.state = state;
-
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
-
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
     }
 
   }
@@ -772,5 +689,48 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         });
       }
     }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.super-admin.users')
+    .controller('UsersController', UsersController);
+
+  function UsersController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
   }
 })(); 

@@ -65,6 +65,9 @@
           },
           roles: function(Roles) {
             return Roles.getRoles();
+          },
+          foods: function(Foods) {
+            return Foods.getFoods();
           }
         }
       })

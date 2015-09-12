@@ -20,6 +20,7 @@
       'file-data-url',
       'oitozero.ngSweetAlert',
       'hungry.templates',
+      'ngMaterial',
 
       'Hungry.core.auth',
       'Hungry.core.state',

@@ -34,23 +34,23 @@ class FoodController extends Controller
       $data = $request->image;
 
       if($data) {
-        $newFood->image = $this->saveImage($data);
+        $imageUrl = $newFood->getImageUrl();
+        $newFood->image = $this->saveImage($data, $imageUrl);
         $newFood->save();
       }
 
       return $newFood;
     }
 
-    private function saveImage($base64) {
+    private function saveImage($base64, $url) {
       list($type, $data) = explode(';', $base64);
       list($typeStuff, $extension) = explode('/', $type);
       list(, $data) = explode(',', $data);
       $data = base64_decode($data);
+      $url .= '.' . $extension;
 
-      $imageUrl = 'uploads/' . $newFood->id . '.' . $extension;
-      file_put_contents($imageUrl, $data);
-
-      return $imageUrl;
+      file_put_contents($url, $data);
+      return $url;
     }
 
     /**
@@ -73,7 +73,10 @@ class FoodController extends Controller
     public function editFood($id, FoodRequest $request) {
       $food = Food::findOrFail($id);
       $food->description = $request->description;
-      $food->image = $this->saveImage($request->image);
+      if($food->image != $request->image) {
+        $imageUrl = $food->getImageUrl();
+        $food->image = $this->saveImage($request->image, $imageUrl);
+      }
       $food->save();
       return $food;
     }

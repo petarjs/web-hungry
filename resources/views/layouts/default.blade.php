@@ -6,12 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hungry</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/css/materialize.min.css">
-
   <!-- Fonts -->
   <link href='//fonts.googleapis.com/css?family=Roboto:400,300,800' rel='stylesheet' type='text/css'>
   <link href='//fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,700' rel='stylesheet' type='text/css'>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.css">
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,15 +41,43 @@
         HUNGRY
         <span class="__subtitle">Cosmic</span>
         <span class="right __menu">
-          <a class="dropdown-button" href="#" data-activates="main-menu">
-            <i class="__icon material-icons">more_vert</i>
-          </a>
-          <ul id='main-menu' class='dropdown-content'>
-            <li><a ng-if="$root.helpers.hasRole('super-admin')" ui-sref="app.users">Users</a></li>
-            <li><a ng-if="$root.helpers.hasRole('admin')" ui-sref="app.food">Food</a></li>
-            <li class="divider"></li>
-            <li><a ng-if="$root.helpers.hasRole('user')" href="{{ action('Auth\AuthController@getLogout') }}">Logout</a></li>
-          </ul>
+          <md-menu md-position-mode="target-right target">
+            <md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+              <i class="material-icons">more_vert</i>
+            </md-button>
+
+            <md-menu-content width="4" >
+              
+              <md-menu-item ng-if="$root.helpers.hasRole('super-admin')">
+                <md-button ui-sref="app.users">
+                    <div layout="row">
+                      <p flex>Users</p>
+                      <i class="material-icons">people</i>
+                    </div>
+                </md-button>
+              </md-menu-item>
+
+              <md-menu-item ng-if="$root.helpers.hasRole('admin')">
+                <md-button ui-sref="app.food">
+                    <div layout="row">
+                      <p flex>Food</p>
+                      <i class="material-icons">local_dining</i>
+                    </div>
+                </md-button>
+              </md-menu-item>
+
+              <md-menu-item ng-if="$root.helpers.hasRole('user')">
+                <md-button ng-href="{{ action('Auth\AuthController@getLogout') }}">
+                  <div layout="row">
+                    <p flex>Logout</p>
+                    <i class="material-icons">exit_to_app</i>
+                  </div>
+                </md-button>
+              </md-menu-item>
+
+            </md-menu-content>
+          </md-menu>
+
         </span>
       </div>
     </header>
@@ -63,7 +90,6 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.8.0/lodash.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/js/materialize.min.js"></script>
   <script src="{{ asset('js/vendors.js') }}"></script>
   <script src="{{ asset('js/app.js') }}"></script>
   <script src="{{ asset('js/partials.js') }}"></script>

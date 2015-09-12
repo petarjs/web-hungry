@@ -3,14 +3,18 @@
     "/bower_components/angular/angular.js",
     "/bower_components/angular-ui-router/release/angular-ui-router.js",
     "/bower_components/ramda/dist/ramda.js",
-    "/bower_components/dropzone/downloads/dropzone.js",
     "/bower_components/angular-file-data-url/dist/fileDataUrl.js",
     "/bower_components/sweetalert/dist/sweetalert.min.js",
-    "/bower_components/angular-sweetalert/SweetAlert.js"
+    "/bower_components/angular-sweetalert/SweetAlert.js",
+    "/bower_components/angular-animate/angular-animate.js",
+    "/bower_components/angular-aria/angular-aria.js",
+    "/bower_components/angular-material/angular-material.js"
+
   ],
   "stylesheets": [
     "/bower_components/fontawesome/css/font-awesome.min.css",
     "/bower_components/dropzone/downloads/css/dropzone.css",
-    "/bower_components/sweetalert/dist/sweetalert.css"
+    "/bower_components/sweetalert/dist/sweetalert.css",
+    "/bower_components/angular-material/angular-material.css"
   ]
 }

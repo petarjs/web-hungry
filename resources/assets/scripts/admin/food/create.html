@@ -1,19 +1,21 @@
 <h3>Create a Food</h3>
 
-<div class="row">
-  <form class="col s12">
-    <div class="row">
-      <div class="col s6">
-        <div class="input-field">
-          <textarea id="description" class="validate materialize-textarea" ng-model="vm.food.description"></textarea>
-          <label for="description">Description</label>
-        </div>
-        <button class="btn" ng-click="vm.saveFood(vm.food)">Save</button>
+<md-progress-circular md-mode="indeterminate" ng-show="vm.loading"></md-progress-circular>
+
+<form layout="row">
+  <div flex>
+    <md-input-container flex>
+      <div class="input-field">
+        <textarea id="description" class="validate materialize-textarea" ng-model="vm.food.description"></textarea>
+        <label for="description">Description</label>
       </div>
-      <div class="input-field col s6">
-        <input type="file" ng-file ng-model="vm.food.image" accept="image/jpeg,image/png">
-        <img src="{{ vm.food.image }}" alt="">
-      </div>
-    </div>
-  </form>
-</div>
+    </md-input-container>
+    <md-button class="md-raised" ng-click="vm.saveFood(vm.food)">Save</md-button>
+  </div>
+  <div flex>
+    <md-input-container flex>
+      <input type="file" ng-file ng-model="vm.food.image" accept="image/jpeg,image/png">
+      <img src="{{ vm.food.image }}" alt="">
+    </md-input-container>
+  </div>
+</form>

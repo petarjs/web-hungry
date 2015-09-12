@@ -16,13 +16,14 @@
   ],
   "dependencies": {
     "angular": "~1.4.4",
-    "fontawesome": "~4.4.0",
-    "angular-ui-router": "~0.2.15",
-    "ramda": "~0.17.1",
     "angular-file-data-url": "~0.1.1",
-    "angular-sweetalert": "latest"
+    "angular-material": "~0.11.0",
+    "angular-sweetalert": "latest",
+    "angular-ui-router": "~0.2.15",
+    "fontawesome": "~4.4.0",
+    "ramda": "~0.17.1"
   },
   "resolutions": {
-    "angular": "~1.4.4"
+    "angular": "1.4.5"
   }
 }

@@ -14,4 +14,8 @@ class Food extends Model
   public function likedBy() {
     return $this->belongsToMany('Hungry\Models\User', 'likes');
   }
+
+  public function getImageUrl() {
+    return 'uploads/' . $this->id;
+  }
 }

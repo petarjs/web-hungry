@@ -56,8 +56,10 @@
     }
 
     function saveFood(food) {
+      vm.loading = true;
       var onFoodSaved = Foods.saveFood(food);
       onFoodSaved.then(function() {
+        vm.loading = false;
         $state.go('app.food');
       });
     }

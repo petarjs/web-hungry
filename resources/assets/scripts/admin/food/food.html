@@ -1,21 +1,19 @@
 <h3>Manage Meals</h3>
 
-<a ui-sref="app.food-create" class="btn">Create</a>
 
-<div class="row">
-  
-  <div class="card col s4" ng-repeat="food in vm.state.foods">
-    <div class="card-image waves-effect waves-block waves-light">
-      <img class="activator" ng-src="{{ food.image }}">
+<md-button ui-sref="app.food-create" class="md-raised md-primary">Create</md-button>
+
+<div layout="row" layout-wrap>
+
+  <md-card flex="25" ng-repeat="food in vm.state.foods">
+    <img ng-src="{{ food.image }}" class="md-card-image" alt="{{ food.description }}">
+    <md-card-content>
+      <h2 class="md-title">{{ food.description }}</h2>
+    </md-card-content>
+    <div class="md-actions" layout="row" layout-align="end center">
+      <md-button flex ui-sref="app.food-edit({ id: food.id })">Edit</md-button>
+      <md-button flex class="md-warn" ng-click="vm.deleteFood(food)">Delete</md-button>
     </div>
-    <div class="card-content">
-      <span class="card-title activator grey-text text-darken-4">{{ food.description }}<i class="material-icons right">more_vert</i></span>
-    </div>
-    <div class="card-reveal">
-      <span class="card-title grey-text text-darken-4">{{ food.description }}<i class="material-icons right">close</i></span>
-      <p><button class="btn" ng-click="vm.deleteFood(food)">Delete</button></p>
-      <p><button class="btn" ui-sref="app.food-edit({ id: food.id })">Edit</button></p>
-    </div>
-  </div>
+  </md-card>
   
 </div>

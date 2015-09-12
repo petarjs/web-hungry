@@ -5,12 +5,12 @@
 <form layout="row">
   <div flex>
     <md-input-container flex>
-      <div class="input-field">
-        <textarea id="description" class="validate materialize-textarea" ng-model="vm.food.description"></textarea>
-        <label for="description">Description</label>
-      </div>
+      <textarea id="description" class="validate materialize-textarea" ng-model="vm.food.description"></textarea>
+      <label for="description">Description</label>
     </md-input-container>
-    <md-button class="md-raised" ng-click="vm.saveFood(vm.food)">Save</md-button>
+
+    <md-button class="md-raised va-m" ui-sref="app.food">Back</md-button>
+    <md-button class="md-raised md-primary" ng-click="vm.saveFood(vm.food)">Save</md-button>
   </div>
   <div flex>
     <md-input-container flex>

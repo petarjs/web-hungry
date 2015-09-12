@@ -1,5 +1,8 @@
 <?php
 
+date_default_timezone_set('Europe/Belgrade');
+\Config::set('app.timezone', 'Europe/Belgrade');
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -16,3 +19,8 @@ Route::controllers([
   'password' => 'Auth\PasswordController',
 ]);
 
+Route::get('a', function() {
+  $timestamp = (int) '1441576800';
+
+  return \Carbon\Carbon::createFromTimeStamp($timestamp);
+});

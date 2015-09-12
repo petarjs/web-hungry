@@ -9,10 +9,11 @@
   angular.module('Hungry.core.api.users', []);
   angular.module('Hungry.core.api.roles', []);
   angular.module('Hungry.core.api.foods', []);
+  angular.module('Hungry.core.api.menus', []);
   angular.module('Hungry.app', []);
   angular.module('Hungry.super-admin.users', []);
   angular.module('Hungry.admin.food', []);
-  angular.module('Hungry.core.directives.dropzone', []);
+  angular.module('Hungry.admin.menus', []);
   
   angular
     .module('Hungry', [
@@ -32,12 +33,13 @@
       'Hungry.core.api.users',
       'Hungry.core.api.roles',
       'Hungry.core.api.foods',
+      'Hungry.core.api.menus',
 
       'Hungry.app',
       'Hungry.super-admin.users',
       'Hungry.admin.food',
+      'Hungry.admin.menus',
 
-      'Hungry.core.directives.dropzone'
     ])
     .config(configureRoutes)
     .run(appRun);
@@ -99,6 +101,13 @@
         controller: 'FoodCreateController as vm',
         templateUrl: 'admin/food/create',
         role: 'admin',
+      })
+
+      .state('app.menus', {
+        url: 'menus',
+        controller: 'MenuController as vm',
+        templateUrl: 'admin/menu/menu',
+        role: 'admin',
       });
   }
 
@@ -121,8 +130,13 @@
     });
 
     $rootScope.helpers = {
-      hasRole: Auth.hasRole
+      hasRole: Auth.hasRole,
+      getDayName: getDayName
     };
+
+    function getDayName(day) {
+      return moment(day).format('ddd');
+    }
   }
 
 })(); 

@@ -1,0 +1,26 @@
+<h3>Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}</h3>
+<md-button class="md-raised">
+  <i class="material-icons">publish</i> Publish
+</md-button>
+<hr>
+
+<div layout="row" layout-wrap>
+  <md-content flex="20" flex-sm="100" flex-md="50" ng-repeat="menu in vm.state.menus">
+    {{ $root.helpers.getDayName(menu.date) }}
+    <div class="lock-size" layout="row" layout-align="center center">
+      <md-fab-speed-dial md-open="menu.isOpen" md-direction="'up'" ng-class="'md-fling'">
+        <md-fab-trigger>
+          <md-button aria-label="menu" class="md-fab md-warn">
+            <i class="material-icons">more_horiz</i>
+          </md-button>
+        </md-fab-trigger>
+        <md-fab-actions>
+          <md-button aria-label="Add" class="md-fab md-raised md-mini" ng-click="vm.showFoodDialog(menu, $event)">
+            <i class="material-icons">add</i>
+          </md-button>
+        </md-fab-actions>
+      </md-fab-speed-dial>
+    </div>
+  </md-content>
+
+</div>

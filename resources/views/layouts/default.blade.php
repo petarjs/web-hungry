@@ -66,6 +66,15 @@
                 </md-button>
               </md-menu-item>
 
+              <md-menu-item ng-if="$root.helpers.hasRole('admin')">
+                <md-button ui-sref="app.menus">
+                    <div layout="row">
+                      <p flex>Menus</p>
+                      <i class="material-icons">receipt</i>
+                    </div>
+                </md-button>
+              </md-menu-item>
+
               <md-menu-item ng-if="$root.helpers.hasRole('user')">
                 <md-button ng-href="{{ action('Auth\AuthController@getLogout') }}">
                   <div layout="row">

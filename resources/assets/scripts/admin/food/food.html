@@ -4,16 +4,18 @@
 <md-button ui-sref="app.food-create" class="md-raised md-primary">Create</md-button>
 
 <div layout="row" layout-wrap>
-
-  <md-card flex="25" ng-repeat="food in vm.state.foods">
-    <img ng-src="{{ food.image }}" class="md-card-image" alt="{{ food.description }}">
-    <md-card-content>
-      <h2 class="md-title">{{ food.description }}</h2>
-    </md-card-content>
-    <div class="md-actions" layout="row" layout-align="end center">
-      <md-button flex ui-sref="app.food-edit({ id: food.id })">Edit</md-button>
-      <md-button flex class="md-warn" ng-click="vm.deleteFood(food)">Delete</md-button>
-    </div>
-  </md-card>
+  
+  <div flex="25" flex-sm="100" flex-md="50" ng-repeat="food in vm.state.foods">
+    <md-card>
+      <img ng-src="{{ food.image }}" class="md-card-image" alt="{{ food.description }}">
+      <md-card-content>
+        <h2 class="md-title">{{ food.description }}</h2>
+      </md-card-content>
+      <div class="md-actions" layout="row" layout-align="end center">
+        <md-button flex ui-sref="app.food-edit({ id: food.id })">Edit</md-button>
+        <md-button flex class="md-warn" ng-click="vm.deleteFood(food)">Delete</md-button>
+      </div>
+    </md-card>
+  </div>
   
 </div>

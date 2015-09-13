@@ -48,4 +48,14 @@ class MenuController extends Controller
 
       return $menus;
     }
+
+    /**
+     * @Post("/publish")
+     */
+    public function publishMenus() {
+      $week = \Input::get('week');
+      Menu::where('week', $week)->update(['published' => true]);
+
+      return Menu::where('week', $week)->get();
+    }
 }

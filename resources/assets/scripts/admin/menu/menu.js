@@ -10,9 +10,11 @@
     var changeUsers = AppState.change('users');
     var changeFoods = AppState.change('foods');
     var changeMenus = AppState.change('menus');
+    vm.changeMenus = changeMenus;
 
     vm.state = state;
     vm.loading = false;
+    vm.menusPublished = false;
 
     /**
      * Current week start date (monday)
@@ -23,9 +25,10 @@
     vm.showFoodDialog = showFoodDialog;
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
+    vm.publishMenus = publishMenus;
 
     AppState.listen('foods', function(foods) { state.foods = foods; });
-    AppState.listen('menus', function(menus) { state.menus = menus; });
+    AppState.listen('menus', function(menus) { state.menus = menus; checkMenusPublished(); });
 
     $scope.$watch(function() {
       return vm.week;
@@ -73,6 +76,33 @@
           });
       }, function onUserCanceled() {
         
+      });
+    }
+
+    function publishMenus(week) {
+      SweetAlert.swal({
+         title: "Publish menus for this week?",
+         text: "When you publish the menus, users will be able to see them and order food.",
+         type: "info",
+         showCancelButton: true,
+         confirmButtonText: "Publish",
+         closeOnConfirm: false,
+         showLoaderOnConfirm: true
+      }, function(shouldPublish) {
+        if(shouldPublish) {
+          Menus
+            .publishMenus(week)
+            .then(vm.changeMenus)
+            .then(function() {
+              SweetAlert.swal('Menus published!');
+            });
+        }
+      });
+    }
+
+    function checkMenusPublished() {
+      vm.menusPublished = _.all(vm.state.menus, function(menu) {
+        return menu.published;
       });
     }
 

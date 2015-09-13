@@ -7,7 +7,7 @@
     return {
       getMenus: getMenus,
       addFoodToMenu: addFoodToMenu,
-      publishMenu: publishMenu
+      publishMenus: publishMenus
     };
 
     /**
@@ -32,10 +32,11 @@
       return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
-    function publishMenu(menu) {
-      var url = appConfig.api.concat('/admin/menus/:id/publish');
+    function publishMenus(week) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/menus/publish?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
-        id: menu.id
+        week: phpWeek
       });
       return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }

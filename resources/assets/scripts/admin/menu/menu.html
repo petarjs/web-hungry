@@ -3,8 +3,11 @@
   Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
   <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
 </h3>
-<md-button class="md-raised">
+<md-button ng-if="!vm.menusPublished" class="md-raised" ng-click="vm.publishMenus(vm.week)">
   <i class="material-icons">publish</i> Publish
+</md-button>
+<md-button ng-if="vm.menusPublished" ng-disabled="true">
+  <i class="material-icons">check</i> Published
 </md-button>
 
 <md-progress-circular ng-show="vm.loading" md-mode="indeterminate"></md-progress-circular>

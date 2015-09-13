@@ -3,32 +3,24 @@
   Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
   <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
 </h3>
-<md-button ng-if="!vm.menusPublished" class="md-raised" ng-click="vm.publishMenus(vm.week)">
-  <i class="material-icons">publish</i> Publish
-</md-button>
-<md-button ng-if="vm.menusPublished" ng-disabled="true">
-  <i class="material-icons">check</i> Published
-</md-button>
 
-<md-progress-circular ng-show="vm.loading" md-mode="indeterminate"></md-progress-circular>
+<md-progress-circular ng-show="vm.loading" md-mode="indeterminate" md-diameter="24"></md-progress-circular>
 
-<hr>
+<div ng-show="!vm.loading">
+    <md-button ng-if="!vm.menusPublished" class="md-raised" ng-click="vm.publishMenus(vm.week)">
+      <i class="material-icons">publish</i> Publish
+    </md-button>
+    <md-button ng-if="vm.menusPublished" ng-disabled="true">
+      <i class="material-icons">check</i> Published
+  </md-button>
+</div>
 
 <div layout="row" layout-wrap>
   <md-content flex="20" flex-sm="100" flex-md="50" ng-repeat="menu in vm.state.menus">
 
-    <md-fab-speed-dial class="md-fling right" md-open="menu.isOpen" md-direction="down">
-      <md-fab-trigger>
-        <md-button aria-label="menu" class="md-fab md-mini md-warn">
-          <i class="material-icons">more_horiz</i>
-        </md-button>
-      </md-fab-trigger>
-      <md-fab-actions>
-        <md-button aria-label="Add" class="md-fab md-raised md-mini" ng-click="vm.showFoodDialog(menu, $event)">
-          <i class="material-icons">add</i>
-        </md-button>
-      </md-fab-actions>
-    </md-fab-speed-dial>
+    <md-button aria-label="Add" class="md-fab md-raised md-mini right" ng-click="vm.showFoodDialog(menu, $event)">
+      <i class="material-icons">add</i>
+    </md-button>
 
     <h3>{{ $root.helpers.getDayName(menu.date) }}</h3>
 

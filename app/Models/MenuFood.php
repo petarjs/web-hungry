@@ -8,6 +8,11 @@ class MenuFood extends Model
 {
     protected $table = 'menu_foods';
 
+    protected $fillable = [
+      'menu_id',
+      'food_id'
+    ];
+
     public function menu() {
       return $this->belongsTo('Hungry\Models\Menu');
     }

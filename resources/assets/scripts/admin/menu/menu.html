@@ -2,6 +2,9 @@
 <md-button class="md-raised">
   <i class="material-icons">publish</i> Publish
 </md-button>
+
+<md-progress-circular ng-show="vm.loading" md-mode="indeterminate"></md-progress-circular>
+
 <hr>
 
 <div layout="row" layout-wrap>
@@ -20,6 +23,12 @@
           </md-button>
         </md-fab-actions>
       </md-fab-speed-dial>
+    </div>
+
+    <div>
+      <h3 ng-repeat="menuFood in menu.menu_foods">
+        {{ menuFood.food.description }}
+      </h3>
     </div>
   </md-content>
 

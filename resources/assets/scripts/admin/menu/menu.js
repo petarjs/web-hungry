@@ -3,7 +3,7 @@
     .module('Hungry.admin.menus')
     .controller('MenuController', MenuController);
 
-  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
+  function MenuController($scope, $q, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
     var vm = this;
 
     var state = {};
@@ -12,6 +12,7 @@
     var changeMenus = AppState.change('menus');
 
     vm.state = state;
+    vm.loading = false;
 
     /**
      * Current week start date (monday)
@@ -34,14 +35,17 @@
     activate();
 
     function activate() {
+      vm.loading = true;
 
-      Foods
+      var foodsLoading = Foods
         .getFoods()
         .then(changeFoods);
 
-      Menus
+      var menusLoading = Menus
         .getMenus(vm.week.valueOf())
         .then(changeMenus);
+
+      $q.all([foodsLoading, menusLoading]).then(function() { vm.loading = false; });
     }
 
     function setNextWeek() {
@@ -64,9 +68,15 @@
         }
       })
       .then(function(food) {
-        Menus.addFoodToMenu(menu, food);
-      }, function() {
-        $scope.status = 'You cancelled the dialog.';
+        vm.loading = true;
+        Menus
+          .addFoodToMenu(menu, food)
+          .then(changeMenus)
+          .then(function() {
+            vm.loading = false;
+          });
+      }, function onUserCanceled() {
+        
       });
     }
 

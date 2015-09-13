@@ -52,6 +52,6 @@ class Menu extends Model
       $newMenus[] = $newMenu->id;
     }
 
-    return self::with('menuFoods')->find($newMenus);
+    return self::with(['menuFoods', 'menuFoods.menu', 'menuFoods.food'])->find($newMenus);
   }
 }

@@ -54,3 +54,19 @@ body {
 .va-m {
   vertical-align: middle;
 }
+.h100 {
+  height: 100%;
+}
+.md-button .material-icons {
+  line-height: 36px;
+  vertical-align: middle;
+}
+.md-button.md-fab .material-icons {
+  line-height: 54px;
+}
+.md-button.md-fab.md-mini .material-icons {
+  line-height: 40px;
+}
+.md-open-menu-container .material-icons {
+  line-height: 48px;
+}

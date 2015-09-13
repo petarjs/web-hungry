@@ -50,7 +50,7 @@
               
               <md-menu-item ng-if="$root.helpers.hasRole('super-admin')">
                 <md-button ui-sref="app.users">
-                    <div layout="row">
+                    <div layout="row" class="h100">
                       <p flex>Users</p>
                       <i class="material-icons">people</i>
                     </div>
@@ -59,7 +59,7 @@
 
               <md-menu-item ng-if="$root.helpers.hasRole('admin')">
                 <md-button ui-sref="app.food">
-                    <div layout="row">
+                    <div layout="row" class="h100">
                       <p flex>Food</p>
                       <i class="material-icons">local_dining</i>
                     </div>
@@ -68,7 +68,7 @@
 
               <md-menu-item ng-if="$root.helpers.hasRole('admin')">
                 <md-button ui-sref="app.menus">
-                    <div layout="row">
+                    <div layout="row" class="h100">
                       <p flex>Menus</p>
                       <i class="material-icons">receipt</i>
                     </div>
@@ -77,7 +77,7 @@
 
               <md-menu-item ng-if="$root.helpers.hasRole('user')">
                 <md-button ng-href="{{ action('Auth\AuthController@getLogout') }}">
-                  <div layout="row">
+                  <div layout="row" class="h100">
                     <p flex>Logout</p>
                     <i class="material-icons">exit_to_app</i>
                   </div>

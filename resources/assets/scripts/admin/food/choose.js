@@ -3,13 +3,15 @@
     .module('Hungry.admin.food')
     .controller('ChooseFoodController', ChooseFoodController);
 
-  function ChooseFoodController(AppState, Users, $window, Foods, SweetAlert, $mdDialog) {
+  function ChooseFoodController(AppState, Users, $window, Foods, SweetAlert, $mdDialog, appConfig, menu) {
     var vm = this;
 
     var state = {};
     var changeFoods = AppState.change('foods');
 
     vm.state = state;
+    vm.menu = menu;
+    vm.menuDate = moment(menu.date).format(appConfig.date.format)
 
     vm.hide = hide;
     vm.cancel = cancel;

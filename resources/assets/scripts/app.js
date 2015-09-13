@@ -114,7 +114,7 @@
       });
   }
 
-  function appRun ($rootScope, $state, Auth, $http, $window) {
+  function appRun ($rootScope, $state, Auth, $http, $window, appConfig) {
     $http.defaults.headers.common['X-CSRF-TOKEN'] = $window.csrfToken;
     
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){

@@ -58,7 +58,10 @@
         templateUrl: 'admin/food/choose',
         parent: angular.element(document.body),
         targetEvent: ev,
-        clickOutsideToClose:true
+        clickOutsideToClose:true,
+        locals: {
+          menu: menu
+        }
       })
       .then(function(food) {
         Menus.addFoodToMenu(menu, food);

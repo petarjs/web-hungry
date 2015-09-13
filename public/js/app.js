@@ -172,135 +172,6 @@
 })(); 
 (function () {
   angular
-    .module('Hungry.core.api-helpers')
-    .service('ApiHelpers', ApiHelpers);
-
-  function ApiHelpers() {
-    return {
-      extractData: extractData,
-      handleError: handleError
-    };
-
-    function extractData(response) {
-      return response.data;
-    }
-
-    function handleError(error) {
-      console.log(error);
-      return error;
-    }
-  }
-})(); 
-angular.module('Hungry.core.app-state').factory('AppState', function(StateService) {
-  var state = {
-    user: {},
-    users: [],
-    roles: [],
-    foods: [],
-    menus: []
-  };
-
-  var listeners = [];
-
-  var get    = StateService.get(state);
-  var change = StateService.change(state, listeners);
-  var listen = StateService.listen(state, listeners);
-
-  return {
-    get: get,
-    change: change,
-    listen: listen
-  };
-});
-(function () {
-  angular
-    .module('Hungry.core.config')
-    .constant('appConfig', {
-      api: window.api,
-      date: {
-        format: 'DD.MM.YY.'
-      }
-    });
-
-})(); 
-angular.module('Hungry.core.state').factory('StateService', function() {
-  var clone = R.clone;
-  var curry = R.curry;
-  var filter = R.filter;
-
-  function get(state) {
-    return function() {
-      return clone(state);
-    };
-  }
-
-  function getStateProp(state, prop) {
-    return clone(state[prop]);
-  }
-
-  var change = curry(function(state, listeners, prop, data) {
-    var sameProp = filter(function(l) { return l.prop === prop; });
-
-    state[prop] = data;
-
-    R.forEach(function(listener) {
-      listener.action(getStateProp(state, listener.prop));
-    }, sameProp(listeners));
-
-    return getStateProp(state, prop);
-  });
-
-  var listen = curry(function(state, listeners, prop, action) {
-    var listener = {prop: prop, action: action};
-    listeners.push(listener);
-
-    var unsubscribe = function() {
-      return listeners.splice(listeners.indexOf(listener), 1);
-    };
-
-    action(getStateProp(state, prop));
-
-    return unsubscribe;
-  });
-
-  return {
-    get: get,
-    change: change,
-    listen: listen
-  };
-});
-(function () {
-  angular
-    .module('Hungry.core.url-replacer')
-    .service('UrlReplacer', UrlReplacer);
-
-  function UrlReplacer() {
-    var placeholderSymbol = ':';
-
-    return {
-      setPlaceholderSymbol: setPlaceholderSymbol,
-      replaceParams: replaceParams
-    }
-
-    function setPlaceholderSymbol(symbol) {
-      placeholderSymbol = symbol;
-    };
-
-    function replaceParams(url, data){
-      var joinedKeys = _.map(_.keys(data), function(key) {
-        return placeholderSymbol + key;
-      }).join('|');
-      var re = new RegExp(joinedKeys, 'gi');
-
-      return url.replace(re, function(matched){
-          return data[matched.replace(placeholderSymbol, '')];
-      });
-    };
-
-  }
-})(); 
-(function () {
-  angular
     .module('Hungry.admin.food')
     .controller('ChooseFoodController', ChooseFoodController);
 
@@ -443,10 +314,182 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.super-admin.users')
+    .controller('UsersController', UsersController);
+
+  function UsersController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api-helpers')
+    .service('ApiHelpers', ApiHelpers);
+
+  function ApiHelpers() {
+    return {
+      extractData: extractData,
+      handleError: handleError
+    };
+
+    function extractData(response) {
+      return response.data;
+    }
+
+    function handleError(error) {
+      console.log(error);
+      return error;
+    }
+  }
+})(); 
+angular.module('Hungry.core.app-state').factory('AppState', function(StateService) {
+  var state = {
+    user: {},
+    users: [],
+    roles: [],
+    foods: [],
+    menus: []
+  };
+
+  var listeners = [];
+
+  var get    = StateService.get(state);
+  var change = StateService.change(state, listeners);
+  var listen = StateService.listen(state, listeners);
+
+  return {
+    get: get,
+    change: change,
+    listen: listen
+  };
+});
+(function () {
+  angular
+    .module('Hungry.core.config')
+    .constant('appConfig', {
+      api: window.api,
+      date: {
+        format: 'DD.MM.YY.'
+      }
+    });
+
+})(); 
+angular.module('Hungry.core.state').factory('StateService', function() {
+  var clone = R.clone;
+  var curry = R.curry;
+  var filter = R.filter;
+
+  function get(state) {
+    return function() {
+      return clone(state);
+    };
+  }
+
+  function getStateProp(state, prop) {
+    return clone(state[prop]);
+  }
+
+  var change = curry(function(state, listeners, prop, data) {
+    var sameProp = filter(function(l) { return l.prop === prop; });
+
+    state[prop] = data;
+
+    R.forEach(function(listener) {
+      listener.action(getStateProp(state, listener.prop));
+    }, sameProp(listeners));
+
+    return getStateProp(state, prop);
+  });
+
+  var listen = curry(function(state, listeners, prop, action) {
+    var listener = {prop: prop, action: action};
+    listeners.push(listener);
+
+    var unsubscribe = function() {
+      return listeners.splice(listeners.indexOf(listener), 1);
+    };
+
+    action(getStateProp(state, prop));
+
+    return unsubscribe;
+  });
+
+  return {
+    get: get,
+    change: change,
+    listen: listen
+  };
+});
+(function () {
+  angular
+    .module('Hungry.core.url-replacer')
+    .service('UrlReplacer', UrlReplacer);
+
+  function UrlReplacer() {
+    var placeholderSymbol = ':';
+
+    return {
+      setPlaceholderSymbol: setPlaceholderSymbol,
+      replaceParams: replaceParams
+    }
+
+    function setPlaceholderSymbol(symbol) {
+      placeholderSymbol = symbol;
+    };
+
+    function replaceParams(url, data){
+      var joinedKeys = _.map(_.keys(data), function(key) {
+        return placeholderSymbol + key;
+      }).join('|');
+      var re = new RegExp(joinedKeys, 'gi');
+
+      return url.replace(re, function(matched){
+          return data[matched.replace(placeholderSymbol, '')];
+      });
+    };
+
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.admin.menus')
     .controller('MenuController', MenuController);
 
-  function MenuController($scope, $q, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
+  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
     var vm = this;
 
     var state = {};
@@ -464,6 +507,8 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.week = moment().startOf('isoWeek');
 
     vm.showFoodDialog = showFoodDialog;
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
 
     AppState.listen('foods', function(foods) { state.foods = foods; });
     AppState.listen('menus', function(menus) { state.menus = menus; });
@@ -472,31 +517,25 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       return vm.week;
     }, function() {
       vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = vm.week.add(4, 'days').format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+      activate();
     });
-
-    activate();
 
     function activate() {
       vm.loading = true;
 
-      var foodsLoading = Foods
-        .getFoods()
-        .then(changeFoods);
-
-      var menusLoading = Menus
+      Menus
         .getMenus(vm.week.valueOf())
-        .then(changeMenus);
-
-      $q.all([foodsLoading, menusLoading]).then(function() { vm.loading = false; });
+        .then(changeMenus)
+        .then(function() { vm.loading = false; });
     }
 
     function setNextWeek() {
-      vm.week = vm.week.add(1, 'weeks').startOf('isoWeek');
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
     }
 
     function setPrevWeek() {
-      vm.week = vm.week.subtract(1, 'weeks').startOf('isoWeek');
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
     }
 
     function showFoodDialog(menu, ev) {
@@ -523,6 +562,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       });
     }
 
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
+    }
   }
 })(); 
 (function () {
@@ -681,71 +743,5 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
       return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
-
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
-
-    return {
-      hasRole: hasRole
-    };
-
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.super-admin.users')
-    .controller('UsersController', UsersController);
-
-  function UsersController(AppState, Users, user, $window) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-
-    vm.state = state;
-
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
-
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
-    }
-
   }
 })(); 

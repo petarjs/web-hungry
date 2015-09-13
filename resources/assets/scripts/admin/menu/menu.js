@@ -3,7 +3,7 @@
     .module('Hungry.admin.menus')
     .controller('MenuController', MenuController);
 
-  function MenuController($scope, $q, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
+  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
     var vm = this;
 
     var state = {};
@@ -21,6 +21,8 @@
     vm.week = moment().startOf('isoWeek');
 
     vm.showFoodDialog = showFoodDialog;
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
 
     AppState.listen('foods', function(foods) { state.foods = foods; });
     AppState.listen('menus', function(menus) { state.menus = menus; });
@@ -29,31 +31,25 @@
       return vm.week;
     }, function() {
       vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = vm.week.add(4, 'days').format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+      activate();
     });
-
-    activate();
 
     function activate() {
       vm.loading = true;
 
-      var foodsLoading = Foods
-        .getFoods()
-        .then(changeFoods);
-
-      var menusLoading = Menus
+      Menus
         .getMenus(vm.week.valueOf())
-        .then(changeMenus);
-
-      $q.all([foodsLoading, menusLoading]).then(function() { vm.loading = false; });
+        .then(changeMenus)
+        .then(function() { vm.loading = false; });
     }
 
     function setNextWeek() {
-      vm.week = vm.week.add(1, 'weeks').startOf('isoWeek');
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
     }
 
     function setPrevWeek() {
-      vm.week = vm.week.subtract(1, 'weeks').startOf('isoWeek');
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
     }
 
     function showFoodDialog(menu, ev) {

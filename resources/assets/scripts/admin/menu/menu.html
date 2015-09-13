@@ -1,4 +1,8 @@
-<h3>Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}</h3>
+<h3>
+  <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
+  Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
+  <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
+</h3>
 <md-button class="md-raised">
   <i class="material-icons">publish</i> Publish
 </md-button>

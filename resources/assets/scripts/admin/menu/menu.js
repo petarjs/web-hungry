@@ -26,6 +26,7 @@
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
     vm.publishMenus = publishMenus;
+    vm.removeMenuFood = removeMenuFood;
 
     AppState.listen('foods', function(foods) { state.foods = foods; });
     AppState.listen('menus', function(menus) { state.menus = menus; checkMenusPublished(); });
@@ -104,6 +105,16 @@
       vm.menusPublished = _.all(vm.state.menus, function(menu) {
         return menu.published;
       });
+    }
+
+    function removeMenuFood(menuFood) {
+      vm.loading = true;
+      Menus
+        .removeMenuFood(menuFood)
+        .then(vm.changeMenus)
+        .then(function() {
+          vm.loading = false;
+        });
     }
 
   }

@@ -58,4 +58,19 @@ class MenuController extends Controller
 
       return Menu::where('week', $week)->get();
     }
+
+    /**
+     * @Delete("/food/{id}")
+     *
+     * @param  $id - id of the MenuFood to remove
+     */
+    public function removeMenuFood($id) {
+      $menuFood = MenuFood::findOrFail($id);
+      $week = $menuFood->menu->week;
+      $menuFood->delete();
+
+      $menus = Menu::with(['menuFoods', 'menuFoods.menu', 'menuFoods.food'])->where('week', $week)->get();
+
+      return $menus;
+    }
 }

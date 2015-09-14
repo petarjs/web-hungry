@@ -469,6 +469,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
     vm.publishMenus = publishMenus;
+    vm.removeMenuFood = removeMenuFood;
 
     AppState.listen('foods', function(foods) { state.foods = foods; });
     AppState.listen('menus', function(menus) { state.menus = menus; checkMenusPublished(); });
@@ -549,6 +550,16 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       });
     }
 
+    function removeMenuFood(menuFood) {
+      vm.loading = true;
+      Menus
+        .removeMenuFood(menuFood)
+        .then(vm.changeMenus)
+        .then(function() {
+          vm.loading = false;
+        });
+    }
+
   }
 })(); 
 (function () {
@@ -620,7 +631,8 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     return {
       getMenus: getMenus,
       addFoodToMenu: addFoodToMenu,
-      publishMenus: publishMenus
+      publishMenus: publishMenus,
+      removeMenuFood: removeMenuFood
     };
 
     /**
@@ -652,6 +664,14 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         week: phpWeek
       });
       return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function removeMenuFood(menuFood) {
+      var url = appConfig.api.concat('/admin/menus/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: menuFood.id
+      });
+      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

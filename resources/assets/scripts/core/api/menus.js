@@ -7,7 +7,8 @@
     return {
       getMenus: getMenus,
       addFoodToMenu: addFoodToMenu,
-      publishMenus: publishMenus
+      publishMenus: publishMenus,
+      removeMenuFood: removeMenuFood
     };
 
     /**
@@ -39,6 +40,14 @@
         week: phpWeek
       });
       return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function removeMenuFood(menuFood) {
+      var url = appConfig.api.concat('/admin/menus/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: menuFood.id
+      });
+      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

@@ -18,7 +18,7 @@
 <div layout="row" layout-wrap>
   <md-content flex="20" flex-sm="100" flex-md="50" ng-repeat="menu in vm.state.menus">
 
-    <md-button aria-label="Add" class="md-fab md-raised md-mini right" ng-click="vm.showFoodDialog(menu, $event)">
+    <md-button ng-show="!vm.isOldMenu(menu)" aria-label="Add" class="md-fab md-raised md-mini right" ng-click="vm.showFoodDialog(menu, $event)">
       <i class="material-icons">add</i>
     </md-button>
 
@@ -31,7 +31,7 @@
           <h2 class="md-title">{{ menuFood.food.description }}</h2>
         </md-card-content>
         <div class="md-actions" layout="row" layout-align="end center">
-          <md-button flex ng-click="vm.removeMenuFood(menuFood)">Remove</md-button>
+          <md-button ng-show="!vm.isOldMenu(menuFood.menu)" flex ng-click="vm.removeMenuFood(menuFood)">Remove</md-button>
         </div>
       </md-card>
     </div>

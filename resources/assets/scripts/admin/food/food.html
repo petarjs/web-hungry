@@ -7,7 +7,7 @@
   
   <div flex="25" flex-sm="100" flex-md="50" ng-repeat="food in vm.state.foods">
     <md-card>
-      <img ng-src="{{ food.image }}" class="md-card-image" alt="{{ food.description }}">
+      <img ng-if="food.image" ng-src="{{ food.image }}" class="md-card-image" alt="{{ food.description }}">
       <md-card-content>
         <h2 class="md-title">{{ food.description }}</h2>
       </md-card-content>

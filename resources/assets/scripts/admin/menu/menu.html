@@ -26,7 +26,7 @@
 
     <div ng-repeat="menuFood in menu.menu_foods">
       <md-card>
-        <img ng-src="{{ menuFood.food.image }}" class="md-card-image" alt="{{ menuFood.food.description }}">
+        <img ng-if="menuFood.food.image" ng-src="{{ menuFood.food.image }}" class="md-card-image" alt="{{ menuFood.food.description }}">
         <md-card-content>
           <h2 class="md-title">{{ menuFood.food.description }}</h2>
         </md-card-content>

@@ -304,7 +304,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.admin.food')
     .controller('ChooseFoodController', ChooseFoodController);
 
-  function ChooseFoodController(AppState, Users, $window, Foods, SweetAlert, $mdDialog, appConfig, menu) {
+  function ChooseFoodController($scope, AppState, Users, $window, Foods, SweetAlert, $mdDialog, appConfig, menu) {
     var vm = this;
 
     var state = {};
@@ -318,7 +318,10 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.cancel = cancel;
     vm.selectFood = selectFood;
 
-    AppState.listen('foods', function(foods) { vm.state.foods = foods; });
+    AppState.listen('foods', function(foods) { 
+      vm.state.foods = foods; 
+      vm.foodsDisplay = filterSelectedFoods(vm.state.foods); 
+    });
 
     activate();
 
@@ -334,6 +337,16 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     function selectFood(food) {
       $mdDialog.hide(food);
+    }
+
+    function filterSelectedFoods(foods) {
+      return _.filter(foods, function(food) {
+        var alreadyInMenu = _.some(menu.menu_foods, function(menuFood) {
+          return menuFood.food.id === food.id;
+        });
+
+        return !alreadyInMenu;
+      });
     }
 
   }

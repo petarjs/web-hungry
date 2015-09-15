@@ -12,9 +12,9 @@
   <md-dialog-content style="max-width:800px;max-height:810px;">
     <div layout="row" layout-wrap class="choose-food__foods">
       
-      <div flex="33" flex-sm="50" flex-md="33" ng-repeat="food in vm.state.foods">
+      <div flex="33" flex-sm="50" flex-md="33" ng-repeat="food in vm.foodsDisplay">
         <md-card>
-          <img ng-src="{{ food.image }}" class="md-card-image" alt="{{ food.description }}">
+          <img ng-if="food.image" ng-src="{{ food.image }}" class="md-card-image" alt="{{ food.description }}">
           <md-card-content>
             <h2 class="md-title">{{ food.description }}</h2>
           </md-card-content>

@@ -20,7 +20,6 @@
 
     AppState.listen('foods', function(foods) { 
       vm.state.foods = foods; 
-      vm.foodsDisplay = filterSelectedFoods(vm.state.foods); 
     });
 
     activate();
@@ -37,16 +36,6 @@
 
     function selectFood(food) {
       $mdDialog.hide(food);
-    }
-
-    function filterSelectedFoods(foods) {
-      return _.filter(foods, function(food) {
-        var alreadyInMenu = _.some(menu.menu_foods, function(menuFood) {
-          return menuFood.food.id === food.id;
-        });
-
-        return !alreadyInMenu;
-      });
     }
 
     function isAlreadySelected(food) {

@@ -60,7 +60,7 @@
               <md-menu-item ng-if="$root.helpers.hasRole('admin')">
                 <md-button ui-sref="app.food">
                     <div layout="row" class="h100">
-                      <p flex>Food</p>
+                      <p flex>Manage Food</p>
                       <i class="material-icons">local_dining</i>
                     </div>
                 </md-button>
@@ -71,6 +71,15 @@
                     <div layout="row" class="h100">
                       <p flex>Menus</p>
                       <i class="material-icons">receipt</i>
+                    </div>
+                </md-button>
+              </md-menu-item>
+
+              <md-menu-item ng-if="$root.helpers.hasRole('user')">
+                <md-button ui-sref="app.order-food">
+                    <div layout="row" class="h100">
+                      <p flex>Order Food</p>
+                      <i class="material-icons">local_pizza</i>
                     </div>
                 </md-button>
               </md-menu-item>

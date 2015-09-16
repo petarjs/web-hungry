@@ -41,6 +41,9 @@
 .header .__menu .__icon {
   color: #404040;
 }
+.food.food--faded {
+  opacity: 0.6;
+}
 body {
   font-family: 'Roboto';
   font-weight: 400;

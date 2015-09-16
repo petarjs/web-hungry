@@ -16,6 +16,7 @@
     vm.hide = hide;
     vm.cancel = cancel;
     vm.selectFood = selectFood;
+    vm.isAlreadySelected = isAlreadySelected;
 
     AppState.listen('foods', function(foods) { 
       vm.state.foods = foods; 
@@ -45,6 +46,12 @@
         });
 
         return !alreadyInMenu;
+      });
+    }
+
+    function isAlreadySelected(food) {
+      return _.some(menu.menu_foods, function(menuFood) {
+        return menuFood.food.id === food.id;
       });
     }
 

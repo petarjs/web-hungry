@@ -145,33 +145,6 @@
 })(); 
 (function () {
   angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, user, roles, foods) {
-    var vm = this;
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-    var changeFoods = AppState.change('foods');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-    AppState.listen('foods', function(foods) { state.foods = foods; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-      changeFoods(foods);
-    }
-
-  }
-})(); 
-(function () {
-  angular
     .module('Hungry.core.api-helpers')
     .service('ApiHelpers', ApiHelpers);
 
@@ -301,6 +274,33 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, user, roles, foods) {
+    var vm = this;
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+    var changeFoods = AppState.change('foods');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+      changeFoods(foods);
+    }
+
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.admin.food')
     .controller('ChooseFoodController', ChooseFoodController);
 
@@ -317,6 +317,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.hide = hide;
     vm.cancel = cancel;
     vm.selectFood = selectFood;
+    vm.isAlreadySelected = isAlreadySelected;
 
     AppState.listen('foods', function(foods) { 
       vm.state.foods = foods; 
@@ -346,6 +347,12 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         });
 
         return !alreadyInMenu;
+      });
+    }
+
+    function isAlreadySelected(food) {
+      return _.some(menu.menu_foods, function(menuFood) {
+        return menuFood.food.id === food.id;
       });
     }
 

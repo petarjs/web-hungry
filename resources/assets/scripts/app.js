@@ -14,6 +14,7 @@
   angular.module('Hungry.super-admin.users', []);
   angular.module('Hungry.admin.food', []);
   angular.module('Hungry.admin.menus', []);
+  angular.module('Hungry.user.food', []);
   
   angular
     .module('Hungry', [
@@ -39,6 +40,7 @@
       'Hungry.super-admin.users',
       'Hungry.admin.food',
       'Hungry.admin.menus',
+      'Hungry.user.food'
 
     ])
     .config(configureRoutes)
@@ -111,6 +113,13 @@
         controller: 'MenuController as vm',
         templateUrl: 'admin/menu/menu',
         role: 'admin',
+      })
+
+      .state('app.order-food', {
+        url: 'order-food',
+        controller: 'OrderFoodController as vm',
+        templateUrl: 'user/food',
+        role: 'user',
       });
   }
 

@@ -1,0 +1,24 @@
+<h3>Order Food</h3>
+
+<md-content class="md-padding">
+  <div layout="row">
+    <div flex>Hello</div>
+    <div flex>
+      <div>
+        <h3>
+          <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
+          Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
+          <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
+        </h3>
+      </div>
+      <md-tabs md-selected="vm.selectedTabIndex" md-border-bottom md-autoselect>
+        <md-tab ng-repeat="tab in vm.dayTabs"
+                label="{{ tab.title }}">
+          <div class="" style="padding: 25px; text-align: center;">
+            Hello!
+          </div>
+        </md-tab>
+      </md-tabs>
+    </div>
+  </div>
+</md-content>

@@ -331,12 +331,14 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       title: 'Fri'
     }];
 
+    vm.selectedTabIndex = 0;
+
     /**
      * Current week start date (monday)
      * @type Moment
      */
     vm.week = moment().startOf('isoWeek');
-    
+
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
 
@@ -345,6 +347,8 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     }, function() {
       vm.weekStart = vm.week.format(appConfig.date.format);
       vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+      vm.selectedTabIndex = 0;
+      
       activate();
     });
 

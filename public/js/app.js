@@ -227,7 +227,8 @@ angular.module('Hungry.core.app-state').factory('AppState', function(StateServic
     .constant('appConfig', {
       api: window.api,
       date: {
-        format: 'DD.MM.YY.'
+        format: 'DD.MM.YY.',
+        formatServer: 'YYYY-MM-DD 00:00:00'
       }
     });
 
@@ -313,7 +314,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.user.food')
     .controller('OrderFoodController', OrderFoodController);
 
-  function OrderFoodController($scope, AppState, user, $window, appConfig) {
+  function OrderFoodController($scope, AppState, user, $window, appConfig, Menus) {
     var vm = this;
 
     var state = {};
@@ -336,17 +337,22 @@ angular.module('Hungry.core.state').factory('StateService', function() {
      * @type Moment
      */
     vm.week = moment().startOf('isoWeek');
-
+    vm.loading = false;
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
+    vm.getMenuFoodsForDay = getMenuFoodsForDay;
+
+    var changeMenus = AppState.change('menus');
+    AppState.listen('menus', function(menus) { state.menus = menus; });
 
     $scope.$watch(function() {
       return vm.week;
     }, function() {
       vm.weekStart = vm.week.format(appConfig.date.format);
       vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+
       if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
         vm.selectedTabIndex = moment().isoWeekday() - 1;
       } else {
@@ -356,9 +362,13 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       activate();
     });
 
-    activate();
-
     function activate() {
+      vm.loading = true;
+
+      Menus
+        .getMenusForUser(vm.week.valueOf())
+        .then(changeMenus)
+        .then(function() { vm.loading = false; });
     }
 
     function setNextWeek() {
@@ -367,6 +377,19 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     function setPrevWeek() {
       vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getMenuFoodsForDay(dayIndex) {
+      var day = vm.week.clone().add(dayIndex, 'days').format(appConfig.date.formatServer);
+      var menu = _.findWhere(vm.state.menus, {
+        date: day
+      });
+
+      if(menu) {
+        return menu.menu_foods;
+      } else {
+        return [];
+      }
     }
 
   }
@@ -716,6 +739,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   function MenusFactory($http, appConfig, UrlReplacer, ApiHelpers) {
     return {
       getMenus: getMenus,
+      getMenusForUser: getMenusForUser,
       addFoodToMenu: addFoodToMenu,
       publishMenus: publishMenus,
       removeMenuFood: removeMenuFood
@@ -728,6 +752,19 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function getMenus(week) {
       var phpWeek = week/1000;
       var url = appConfig.api.concat('/admin/menus?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek
+      });
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    /**
+     * Gets menus for a week for user
+     * @param  {string} week - timestamp of the monday for a week
+     */
+    function getMenusForUser(week) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/menus/user?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
         week: phpWeek
       });

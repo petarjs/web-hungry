@@ -1,24 +1,40 @@
-<h3>Order Food</h3>
+<h3>
+  Order Food
+  <md-progress-circular ng-show="vm.loading" md-mode="indeterminate" md-diameter="24"></md-progress-circular>
+</h3>
 
-<md-content class="md-padding">
-  <div layout="row" layout-wrap>
-    <div flex flex-md="100">Hello</div>
-    <div flex flex-md="100">
-      <div>
-        <h3>
-          <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
-          Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
-          <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
-        </h3>
-      </div>
-      <md-tabs md-selected="vm.selectedTabIndex" md-border-bottom md-dynamic-height="false" md-center-tabs="true">
+<div layout="row" layout-wrap>
+  <div flex flex-md="100">Hello</div>
+  <div flex flex-md="100">
+    <div>
+      <h3>
+        <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
+        Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
+        <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
+      </h3>
+    </div>
+
+    <div layout="column">
+      <md-tabs flex class="menu-days" md-selected="vm.selectedTabIndex" md-border-bottom md-dynamic-height="false" md-center-tabs="true">
         <md-tab ng-repeat="tab in vm.dayTabs"
                 label="{{ tab.title }}">
-          <div class="" style="padding: 25px; text-align: center;">
-            Hello!
+          <div layout="column" layout-fill style="padding: 25px; text-align: center;">
+            <md-content>
+              <div ng-repeat="menuFood in vm.getMenuFoodsForDay($index)">
+                <md-card>
+                  <img ng-if="menuFood.food.image" ng-src="{{ menuFood.food.image }}" class="md-card-image" alt="{{ menuFood.food.description }}">
+                  <md-card-content>
+                    <h2 class="md-title">{{ menuFood.food.description }}</h2>
+                  </md-card-content>
+                  <div class="md-actions" layout="row" layout-align="end center">
+                    <md-button ng-show="!vm.isOldMenu(menuFood.menu)" flex ng-click="vm.removeMenuFood(menuFood)">Remove</md-button>
+                  </div>
+                </md-card>
+              </div>
+            </md-content>
           </div>
         </md-tab>
       </md-tabs>
     </div>
   </div>
-</md-content>
+</div>

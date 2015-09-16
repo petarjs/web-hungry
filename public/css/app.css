@@ -44,6 +44,9 @@
 .food.food--faded {
   opacity: 0.6;
 }
+.menu-days {
+  height: 600px;
+}
 body {
   font-family: 'Roboto';
   font-weight: 400;

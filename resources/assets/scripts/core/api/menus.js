@@ -6,6 +6,7 @@
   function MenusFactory($http, appConfig, UrlReplacer, ApiHelpers) {
     return {
       getMenus: getMenus,
+      getMenusForUser: getMenusForUser,
       addFoodToMenu: addFoodToMenu,
       publishMenus: publishMenus,
       removeMenuFood: removeMenuFood
@@ -18,6 +19,19 @@
     function getMenus(week) {
       var phpWeek = week/1000;
       var url = appConfig.api.concat('/admin/menus?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek
+      });
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    /**
+     * Gets menus for a week for user
+     * @param  {string} week - timestamp of the monday for a week
+     */
+    function getMenusForUser(week) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/menus/user?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
         week: phpWeek
       });

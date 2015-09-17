@@ -4,6 +4,7 @@
   angular.module('Hungry.core.state', []);
   angular.module('Hungry.core.app-state', []);
   angular.module('Hungry.core.config', []);
+  angular.module('Hungry.core.loader', []);
   angular.module('Hungry.core.api-helpers', []);
   angular.module('Hungry.core.url-replacer', []);
   angular.module('Hungry.core.api.users', []);
@@ -29,6 +30,7 @@
       'Hungry.core.state',
       'Hungry.core.app-state',
       'Hungry.core.config',
+      'Hungry.core.loader',
       'Hungry.core.api-helpers',
       'Hungry.core.url-replacer',
 
@@ -317,7 +319,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.user.food')
     .controller('OrderFoodController', OrderFoodController);
 
-  function OrderFoodController($scope, AppState, user, $window, appConfig, Menus, Orders, $q) {
+  function OrderFoodController($scope, AppState, user, $window, appConfig, Menus, Orders, $q, Loader) {
     var vm = this;
 
     var state = {};
@@ -380,6 +382,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     function activate() {
       vm.loading = true;
+      Loader.start();
 
       var menusLoading = Menus
         .getMenusForUser(vm.week.valueOf())
@@ -393,6 +396,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         .all([menusLoading, ordersLoading])
         .then(function() {
           vm.loading = false;
+          Loader.stop();
         });
     }
 
@@ -728,6 +732,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
+    }
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.core.api.foods')
     .factory('Foods', FoodsFactory);
 
@@ -942,25 +969,31 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
+  'use strict';
+
   angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
+    .module('Hungry.core.loader')
+    .service('Loader', LoaderService);
 
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
-
-    return {
-      hasRole: hasRole
+  function LoaderService($mdToast) {
+    var toastConfig = {
+      position: 'top right',
+      parent: angular.element(document.body),
+      templateUrl: 'core/loader/loader',
+      hideDelay: false
     };
 
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
+    return {
+      start: start,
+      stop: stop
+    };
+
+    function start() {
+      $mdToast.show(toastConfig);
+    }
+
+    function stop() {
+      // $mdToast.hide();
     }
   }
 })(); 

@@ -115,3 +115,23 @@ body {
 .choose-food__foods .md-actions {
   padding-left: 0;
 }
+md-progress-circular.light .md-inner .md-left .md-half-circle,
+md-progress-circular.light .md-inner .md-right .md-half-circle {
+  border-top-color: #FFFFFF;
+}
+md-progress-circular.light .md-inner .md-right .md-half-circle {
+  border-right-color: #FFFFFF;
+}
+md-progress-circular.light .md-inner .md-left .md-half-circle {
+  border-left-color: #FFFFFF;
+}
+.loader {
+  height: 50px;
+  width: 50px;
+  min-width: 0;
+  right: 10px;
+  left: auto;
+}
+.loader > div {
+  margin-left: -50px;
+}

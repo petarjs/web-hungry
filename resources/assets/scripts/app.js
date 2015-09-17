@@ -4,6 +4,7 @@
   angular.module('Hungry.core.state', []);
   angular.module('Hungry.core.app-state', []);
   angular.module('Hungry.core.config', []);
+  angular.module('Hungry.core.loader', []);
   angular.module('Hungry.core.api-helpers', []);
   angular.module('Hungry.core.url-replacer', []);
   angular.module('Hungry.core.api.users', []);
@@ -29,6 +30,7 @@
       'Hungry.core.state',
       'Hungry.core.app-state',
       'Hungry.core.config',
+      'Hungry.core.loader',
       'Hungry.core.api-helpers',
       'Hungry.core.url-replacer',
 

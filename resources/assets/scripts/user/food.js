@@ -3,7 +3,7 @@
     .module('Hungry.user.food')
     .controller('OrderFoodController', OrderFoodController);
 
-  function OrderFoodController($scope, AppState, user, $window, appConfig, Menus, Orders, $q) {
+  function OrderFoodController($scope, AppState, user, $window, appConfig, Menus, Orders, $q, Loader) {
     var vm = this;
 
     var state = {};
@@ -66,6 +66,7 @@
 
     function activate() {
       vm.loading = true;
+      Loader.start();
 
       var menusLoading = Menus
         .getMenusForUser(vm.week.valueOf())
@@ -79,6 +80,7 @@
         .all([menusLoading, ordersLoading])
         .then(function() {
           vm.loading = false;
+          Loader.stop();
         });
     }
 

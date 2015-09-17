@@ -10,6 +10,7 @@
   angular.module('Hungry.core.api.roles', []);
   angular.module('Hungry.core.api.foods', []);
   angular.module('Hungry.core.api.menus', []);
+  angular.module('Hungry.core.api.orders', []);
   angular.module('Hungry.app', []);
   angular.module('Hungry.super-admin.users', []);
   angular.module('Hungry.admin.food', []);
@@ -35,6 +36,7 @@
       'Hungry.core.api.roles',
       'Hungry.core.api.foods',
       'Hungry.core.api.menus',
+      'Hungry.core.api.orders',
 
       'Hungry.app',
       'Hungry.super-admin.users',
@@ -206,7 +208,8 @@ angular.module('Hungry.core.app-state').factory('AppState', function(StateServic
     users: [],
     roles: [],
     foods: [],
-    menus: []
+    menus: [],
+    orders: []
   };
 
   var listeners = [];
@@ -314,7 +317,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.user.food')
     .controller('OrderFoodController', OrderFoodController);
 
-  function OrderFoodController($scope, AppState, user, $window, appConfig, Menus) {
+  function OrderFoodController($scope, AppState, user, $window, appConfig, Menus, Orders, $q) {
     var vm = this;
 
     var state = {};
@@ -343,9 +346,15 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
     vm.getMenuFoodsForDay = getMenuFoodsForDay;
+    vm.isOldMenu = isOldMenu;
+    vm.orderMenuFood = orderMenuFood;
+    vm.getOrderedForDay = getOrderedForDay;
+    vm.onDayTabSelected = onDayTabSelected;
 
     var changeMenus = AppState.change('menus');
+    var changeOrders = AppState.change('orders');
     AppState.listen('menus', function(menus) { state.menus = menus; });
+    AppState.listen('orders', function(orders) { state.orders = orders; });
 
     $scope.$watch(function() {
       return vm.week;
@@ -365,10 +374,19 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function activate() {
       vm.loading = true;
 
-      Menus
+      var menusLoading = Menus
         .getMenusForUser(vm.week.valueOf())
-        .then(changeMenus)
-        .then(function() { vm.loading = false; });
+        .then(changeMenus);
+
+      var ordersLoading = Orders
+        .getOrders(vm.week.valueOf(), user)
+        .then(changeOrders);
+
+      $q
+        .all([menusLoading, ordersLoading])
+        .then(function() {
+          vm.loading = false;
+        });
     }
 
     function setNextWeek() {
@@ -377,6 +395,10 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     function setPrevWeek() {
       vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function isOldMenu(menu) {
+      return (parseInt(menu.week, 10) * 1000) < moment().startOf('isoWeek').valueOf();
     }
 
     function getMenuFoodsForDay(dayIndex) {
@@ -390,6 +412,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       } else {
         return [];
       }
+    }
+
+    function getOrderedForDay(dayIndex) {
+      var day = vm.week.clone().add(dayIndex, 'days').format(appConfig.date.formatServer);
+      var ordered = _.find(vm.state.orders, function(menuFood) {
+        return menuFood.menu.date === day;
+      });
+
+      if(ordered) {
+        return ordered;
+      } else {
+        return null;
+      }
+    }
+
+    function orderMenuFood(menuFood) {
+      Orders
+        .orderMenuFood(menuFood, user)
+        .then(changeOrders);
+    }
+
+    function onDayTabSelected(index) {
+      vm.orderedForDay = vm.getOrderedForDay(index);
     }
 
   }
@@ -795,6 +840,39 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         id: menuFood.id
       });
       return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api.orders')
+    .factory('Orders', OrdersFactory);
+
+  function OrdersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getOrders: getOrders,
+      orderMenuFood: orderMenuFood
+    };
+
+    function getOrders(week, user) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/orders?week=:week&user_id=:userId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
+        userId: user.id
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function orderMenuFood(menuFood, user) {
+      var url = appConfig.api.concat('/admin/orders/create?menu_food_id=:menuFoodId&user_id=:userId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        menuFoodId: menuFood.id,
+        userId: user.id
+      });
+
+      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

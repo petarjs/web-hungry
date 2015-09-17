@@ -4,7 +4,8 @@ angular.module('Hungry.core.app-state').factory('AppState', function(StateServic
     users: [],
     roles: [],
     foods: [],
-    menus: []
+    menus: [],
+    orders: []
   };
 
   var listeners = [];

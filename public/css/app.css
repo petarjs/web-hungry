@@ -80,6 +80,9 @@
   margin-top: -0.25em;
   margin-right: 0.25em;
 }
+.menu-days {
+  height: 600px;
+}
 body {
   font-family: 'Roboto';
   font-weight: 400;

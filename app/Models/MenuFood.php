@@ -22,6 +22,6 @@ class MenuFood extends Model
     }
 
     public function eatenBy() {
-      return $this->belongsToMany('Hungry\Models\User');
+      return $this->belongsToMany('Hungry\Models\User', 'eats');
     }
 }

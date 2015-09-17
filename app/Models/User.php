@@ -35,10 +35,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     protected $hidden = ['password', 'remember_token', 'created_at', 'updated_at', 'google_id'];
 
     public function eatenFood() {
-      return $this->belongsToMany('Hungry\Models\MenuFood', 'menu_foods');
+      return $this->belongsToMany('Hungry\Models\MenuFood', 'eats');
     }
 
     public function likedFood() {
       return $this->belongsToMany('Hungry\Models\Food', 'likes');
+    }
+
+    public function eatenFoodForWeek($week) {
+      return $this->eatenFood()->with(['menu', 'food'])->get()->filter(function($menuFood) use($week) {
+        return $menuFood->menu->week === $week;
+      });
     }
 }

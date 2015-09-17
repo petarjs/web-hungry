@@ -54,4 +54,9 @@ class Menu extends Model
 
     return self::with(['menuFoods', 'menuFoods.menu', 'menuFoods.food'])->find($newMenus);
   }
+
+  public static function isPublishedForWeek($week) {
+    $publishedMenus = self::where('week', $week)->where('published', true)->get();
+    return !$publishedMenus->isEmpty();
+  }
 }

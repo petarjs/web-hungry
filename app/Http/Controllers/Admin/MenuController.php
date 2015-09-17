@@ -32,6 +32,19 @@ class MenuController extends Controller
     }
 
     /**
+     * @Get("/user")
+     */
+    public function getMenusUser() {
+      $week = \Input::get('week');
+
+      if(Menu::isPublishedForWeek($week)) {
+        return Menu::with(['menuFoods', 'menuFoods.menu', 'menuFoods.food'])->where('week', $week)->get();
+      } else {
+        return [];
+      }
+    }
+
+    /**
      * @Put("/{id}")
      */
     public function addFoodToMenu($id) {

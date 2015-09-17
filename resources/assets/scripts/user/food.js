@@ -26,7 +26,6 @@
      * @type Moment
      */
     vm.week = moment().startOf('isoWeek');
-    vm.loading = false;
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
     vm.setNextWeek = setNextWeek;
@@ -65,7 +64,6 @@
     });
 
     function activate() {
-      vm.loading = true;
       Loader.start();
 
       var menusLoading = Menus
@@ -79,7 +77,6 @@
       $q
         .all([menusLoading, ordersLoading])
         .then(function() {
-          vm.loading = false;
           Loader.stop();
         });
     }

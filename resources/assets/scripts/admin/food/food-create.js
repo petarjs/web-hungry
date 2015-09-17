@@ -3,7 +3,7 @@
     .module('Hungry.admin.food')
     .controller('FoodCreateController', FoodCreateController);
 
-  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state) {
+  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state, Loader) {
     var vm = this;
 
     var state = {};
@@ -33,14 +33,14 @@
     function activate() {}
 
     function saveFood(food) {
-      vm.loading = true;
+      Loader.start();
       Foods.saveFood(food)
         .then(function() {
           Foods
             .getFoods()
             .then(changeFoods)
             .then(function() {
-              vm.loading = false;
+              Loader.stop();
               $state.go('app.food');
             });
         })

@@ -342,7 +342,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
      * @type Moment
      */
     vm.week = moment().startOf('isoWeek');
-    vm.loading = false;
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
     vm.setNextWeek = setNextWeek;
@@ -381,7 +380,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     });
 
     function activate() {
-      vm.loading = true;
       Loader.start();
 
       var menusLoading = Menus
@@ -395,7 +393,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       $q
         .all([menusLoading, ordersLoading])
         .then(function() {
-          vm.loading = false;
           Loader.stop();
         });
     }
@@ -455,132 +452,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
-    .module('Hungry.admin.menus')
-    .controller('MenuController', MenuController);
-
-  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-    var changeFoods = AppState.change('foods');
-    var changeMenus = AppState.change('menus');
-    vm.changeMenus = changeMenus;
-
-    vm.state = state;
-    vm.loading = false;
-    vm.menusPublished = false;
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().startOf('isoWeek');
-
-    vm.showFoodDialog = showFoodDialog;
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.publishMenus = publishMenus;
-    vm.removeMenuFood = removeMenuFood;
-    vm.isOldMenu = isOldMenu;
-
-    AppState.listen('foods', function(foods) { state.foods = foods; });
-    AppState.listen('menus', function(menus) { state.menus = menus; checkMenusPublished(); });
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-      activate();
-    });
-
-    function activate() {
-      vm.loading = true;
-
-      Menus
-        .getMenus(vm.week.valueOf())
-        .then(changeMenus)
-        .then(function() { vm.loading = false; });
-    }
-
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
-
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
-
-    function showFoodDialog(menu, ev) {
-      $mdDialog.show({
-        controller: 'ChooseFoodController as vm',
-        templateUrl: 'admin/food/choose',
-        parent: angular.element(document.body),
-        targetEvent: ev,
-        clickOutsideToClose:true,
-        locals: {
-          menu: menu
-        }
-      })
-      .then(function(food) {
-        vm.loading = true;
-        Menus
-          .addFoodToMenu(menu, food)
-          .then(changeMenus)
-          .then(function() {
-            vm.loading = false;
-          });
-      }, function onUserCanceled() {
-        
-      });
-    }
-
-    function publishMenus(week) {
-      SweetAlert.swal({
-         title: "Publish menus for this week?",
-         text: "When you publish the menus, users will be able to see them and order food.",
-         type: "info",
-         showCancelButton: true,
-         confirmButtonText: "Publish",
-         closeOnConfirm: false,
-         showLoaderOnConfirm: true
-      }, function(shouldPublish) {
-        if(shouldPublish) {
-          Menus
-            .publishMenus(week)
-            .then(vm.changeMenus)
-            .then(function() {
-              SweetAlert.swal('Menus published!');
-            });
-        }
-      });
-    }
-
-    function checkMenusPublished() {
-      vm.menusPublished = _.all(vm.state.menus, function(menu) {
-        return menu.published;
-      });
-    }
-
-    function removeMenuFood(menuFood) {
-      vm.loading = true;
-      Menus
-        .removeMenuFood(menuFood)
-        .then(vm.changeMenus)
-        .then(function() {
-          vm.loading = false;
-        });
-    }
-
-    function isOldMenu(menu) {
-      return (parseInt(menu.week, 10) * 1000) < moment().startOf('isoWeek').valueOf();
-    }
-
-  }
-})(); 
-(function () {
-  angular
     .module('Hungry.admin.food')
     .controller('ChooseFoodController', ChooseFoodController);
 
@@ -632,7 +503,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.admin.food')
     .controller('FoodCreateController', FoodCreateController);
 
-  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state) {
+  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state, Loader) {
     var vm = this;
 
     var state = {};
@@ -662,14 +533,14 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function activate() {}
 
     function saveFood(food) {
-      vm.loading = true;
+      Loader.start();
       Foods.saveFood(food)
         .then(function() {
           Foods
             .getFoods()
             .then(changeFoods)
             .then(function() {
-              vm.loading = false;
+              Loader.stop();
               $state.go('app.food');
             });
         })
@@ -732,25 +603,135 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
+    .module('Hungry.admin.menus')
+    .controller('MenuController', MenuController);
 
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
+  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog, Loader) {
+    var vm = this;
 
-    return {
-      hasRole: hasRole
-    };
+    var state = {};
+    var changeUsers = AppState.change('users');
+    var changeFoods = AppState.change('foods');
+    var changeMenus = AppState.change('menus');
+    vm.changeMenus = changeMenus;
 
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
+    vm.state = state;
+    vm.loading = false;
+    vm.menusPublished = false;
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().startOf('isoWeek');
+
+    vm.showFoodDialog = showFoodDialog;
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.publishMenus = publishMenus;
+    vm.removeMenuFood = removeMenuFood;
+    vm.isOldMenu = isOldMenu;
+
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+    AppState.listen('menus', function(menus) { state.menus = menus; checkMenusPublished(); });
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+      activate();
+    });
+
+    function activate() {
+      vm.loading = true;
+      Loader.start();
+
+      Menus
+        .getMenus(vm.week.valueOf())
+        .then(changeMenus)
+        .then(function() { vm.loading = false; Loader.stop(); });
     }
+
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function showFoodDialog(menu, ev) {
+      $mdDialog.show({
+        controller: 'ChooseFoodController as vm',
+        templateUrl: 'admin/food/choose',
+        parent: angular.element(document.body),
+        targetEvent: ev,
+        clickOutsideToClose:true,
+        locals: {
+          menu: menu
+        }
+      })
+      .then(function(food) {
+        vm.loading = true;
+        Loader.start();
+
+        Menus
+          .addFoodToMenu(menu, food)
+          .then(changeMenus)
+          .then(function() {
+            vm.loading = false;
+            Loader.stop();
+          });
+      }, function onUserCanceled() {
+        
+      });
+    }
+
+    function publishMenus(week) {
+      SweetAlert.swal({
+         title: "Publish menus for this week?",
+         text: "When you publish the menus, users will be able to see them and order food.",
+         type: "info",
+         showCancelButton: true,
+         confirmButtonText: "Publish",
+         closeOnConfirm: false,
+         showLoaderOnConfirm: true
+      }, function(shouldPublish) {
+        if(shouldPublish) {
+          Menus
+            .publishMenus(week)
+            .then(vm.changeMenus)
+            .then(function() {
+              SweetAlert.swal('Menus published!');
+            });
+        }
+      });
+    }
+
+    function checkMenusPublished() {
+      vm.menusPublished = _.all(vm.state.menus, function(menu) {
+        return menu.published;
+      });
+    }
+
+    function removeMenuFood(menuFood) {
+      vm.loading = true;
+      Loader.start();
+
+      Menus
+        .removeMenuFood(menuFood)
+        .then(vm.changeMenus)
+        .then(function() {
+          vm.loading = false;
+          Loader.stop();
+        });
+    }
+
+    function isOldMenu(menu) {
+      return (parseInt(menu.week, 10) * 1000) < moment().startOf('isoWeek').valueOf();
+    }
+
   }
 })(); 
 (function () {
@@ -969,6 +950,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
+  angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
+    }
+  }
+})(); 
+(function () {
   'use strict';
 
   angular
@@ -993,7 +997,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     }
 
     function stop() {
-      // $mdToast.hide();
+      $mdToast.hide();
     }
   }
 })(); 

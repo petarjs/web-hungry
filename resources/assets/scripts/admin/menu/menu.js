@@ -3,7 +3,7 @@
     .module('Hungry.admin.menus')
     .controller('MenuController', MenuController);
 
-  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog) {
+  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog, Loader) {
     var vm = this;
 
     var state = {};
@@ -42,11 +42,12 @@
 
     function activate() {
       vm.loading = true;
+      Loader.start();
 
       Menus
         .getMenus(vm.week.valueOf())
         .then(changeMenus)
-        .then(function() { vm.loading = false; });
+        .then(function() { vm.loading = false; Loader.stop(); });
     }
 
     function setNextWeek() {
@@ -70,11 +71,14 @@
       })
       .then(function(food) {
         vm.loading = true;
+        Loader.start();
+
         Menus
           .addFoodToMenu(menu, food)
           .then(changeMenus)
           .then(function() {
             vm.loading = false;
+            Loader.stop();
           });
       }, function onUserCanceled() {
         
@@ -110,11 +114,14 @@
 
     function removeMenuFood(menuFood) {
       vm.loading = true;
+      Loader.start();
+
       Menus
         .removeMenuFood(menuFood)
         .then(vm.changeMenus)
         .then(function() {
           vm.loading = false;
+          Loader.stop();
         });
     }
 

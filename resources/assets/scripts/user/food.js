@@ -35,7 +35,6 @@
     vm.isOldMenu = isOldMenu;
     vm.orderMenuFood = orderMenuFood;
     vm.getOrderedForDay = getOrderedForDay;
-    vm.onDayTabSelected = onDayTabSelected;
 
     var changeMenus = AppState.change('menus');
     var changeOrders = AppState.change('orders');
@@ -43,7 +42,11 @@
     AppState.listen('menus', function(menus) { state.menus = menus; });
     AppState.listen('orders', function(orders) { 
       state.orders = orders;
-      vm.orderedForDay = vm.getOrderedForDay(vm.selectedTabIndex);
+      
+      _.each(vm.dayTabs, function(tab, index) {
+        tab.menuFoods = vm.getMenuFoodsForDay(index);
+        tab.orderedForDay = getOrderedForDay(index);
+      });
     });
 
     $scope.$watch(function() {
@@ -121,10 +124,6 @@
       Orders
         .orderMenuFood(menuFood, user)
         .then(changeOrders);
-    }
-
-    function onDayTabSelected(index) {
-      vm.orderedForDay = vm.getOrderedForDay(index);
     }
 
   }

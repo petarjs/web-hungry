@@ -353,8 +353,12 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
     var changeMenus = AppState.change('menus');
     var changeOrders = AppState.change('orders');
+
     AppState.listen('menus', function(menus) { state.menus = menus; });
-    AppState.listen('orders', function(orders) { state.orders = orders; });
+    AppState.listen('orders', function(orders) { 
+      state.orders = orders;
+      vm.orderedForDay = vm.getOrderedForDay(vm.selectedTabIndex);
+    });
 
     $scope.$watch(function() {
       return vm.week;

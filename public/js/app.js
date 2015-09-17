@@ -353,14 +353,14 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     var changeMenus = AppState.change('menus');
     var changeOrders = AppState.change('orders');
 
-    AppState.listen('menus', function(menus) { state.menus = menus; });
+    AppState.listen('menus', function(menus) { 
+      state.menus = menus; 
+      updateTabs();
+    });
     AppState.listen('orders', function(orders) { 
       state.orders = orders;
       
-      _.each(vm.dayTabs, function(tab, index) {
-        tab.menuFoods = vm.getMenuFoodsForDay(index);
-        tab.orderedForDay = getOrderedForDay(index);
-      });
+      updateTabs();
     });
 
     $scope.$watch(function() {
@@ -438,6 +438,13 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       Orders
         .orderMenuFood(menuFood, user)
         .then(changeOrders);
+    }
+
+    function updateTabs() {
+      _.each(vm.dayTabs, function(tab, index) {
+        tab.menuFoods = vm.getMenuFoodsForDay(index);
+        tab.orderedForDay = getOrderedForDay(index);
+      });
     }
 
   }

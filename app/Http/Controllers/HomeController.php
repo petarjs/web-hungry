@@ -16,4 +16,12 @@ class HomeController extends Controller
   public function getHome() {
     return view('site.home');
   }
+
+  /**
+   * @Get("/user-unauthorized")
+   * @return \Illuminate\View\View
+   */
+  public function getUserUnauthorized() {
+    return view('site.user-unauthorized');
+  }
 }

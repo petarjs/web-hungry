@@ -3,8 +3,12 @@
     .module('Hungry.app')
     .controller('AppController', AppController);
 
-  function AppController(AppState, user, roles, foods) {
+  function AppController(AppState, user, roles, foods, $state) {
     var vm = this;
+
+    if(!user.roles || !user.roles.length) {
+      window.location.href = '/auth/login';
+    }
 
     var state = {};
     var changeUser = AppState.change('user');

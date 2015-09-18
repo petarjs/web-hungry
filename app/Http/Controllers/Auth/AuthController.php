@@ -102,9 +102,13 @@ class AuthController extends Controller
 
         $authUser = $this->findOrCreateUser($user);
 
-        Auth::login($authUser, true);
+        if($authUser->roles->isEmpty()) {
+          return redirect('/user-unauthorized');
+        } else {
+          Auth::login($authUser, true);
+        }
 
-        return redirect('/');
+        return redirect('/#/');
     }
 
     /**

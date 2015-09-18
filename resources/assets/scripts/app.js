@@ -81,7 +81,7 @@
       .state('app.home', {
         url: '',
         templateUrl: 'home/home',
-        role: 'user',
+        role: '',
       })
       
       .state('app.users', {
@@ -123,6 +123,12 @@
         url: 'order-food',
         controller: 'OrderFoodController as vm',
         templateUrl: 'user/food',
+        role: 'user',
+      })
+
+      .state('app.user-not-approved', {
+        url: 'not-approved',
+        templateUrl: 'user/not-approved',
         role: 'user',
       });
   }

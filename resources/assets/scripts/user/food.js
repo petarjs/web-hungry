@@ -109,7 +109,7 @@
     function getOrderedForDay(dayIndex) {
       var day = vm.week.clone().add(dayIndex, 'days').format(appConfig.date.formatServer);
       var ordered = _.find(vm.state.orders, function(menuFood) {
-        return menuFood.menu.date === day;
+        return menuFood.menu && (menuFood.menu.date === day);
       });
 
       if(ordered) {

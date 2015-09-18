@@ -39,6 +39,8 @@ class Menu extends Model
       'fri' => $weekMon->copy()->addDays(4)
     ];
 
+    $defaultFoods = Food::where('default', true)->get();
+
     $newMenus = [];
     foreach ($weekDays as $dayAbbr => $day) {
       $newMenu = Menu::create([
@@ -48,6 +50,13 @@ class Menu extends Model
         'created_at' => $now,
         'updated_at' => $now
       ]);
+
+      foreach ($defaultFoods as $defaultFood) {
+        MenuFood::create([
+          'food_id' => $defaultFood->id,
+          'menu_id' => $newMenu->id
+        ]);
+      }
 
       $newMenus[] = $newMenu->id;
     }

@@ -59,14 +59,17 @@
     }
 
     function toggleDefault(food) {
-      food.default = !food.default;
-
       var url = appConfig.api.concat('/admin/food/:id/toggle-default');
       var realUrl = UrlReplacer.replaceParams(url, {
         id: food.id
       });
 
-      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+      return $http
+        .put(realUrl)
+        .then(ApiHelpers.extractData, ApiHelpers.handleError)
+        .then(function(updatedFood) {
+          food.default = !food.default;
+        });
     }
   }
 })(); 

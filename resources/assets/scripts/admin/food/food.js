@@ -3,7 +3,7 @@
     .module('Hungry.admin.food')
     .controller('FoodController', FoodController);
 
-  function FoodController(AppState, Users, user, $window, Foods, SweetAlert, Loader) {
+  function FoodController($scope, AppState, Users, user, $window, Foods, SweetAlert, Loader, $mdBottomSheet) {
     var vm = this;
 
     var state = {};
@@ -52,7 +52,7 @@
 
     function toggleDefault(food) {
       Loader.start();
-      
+
       Foods
         .toggleDefault(food)
         .then(Loader.stop);

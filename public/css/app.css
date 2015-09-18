@@ -41,6 +41,9 @@
 .header .__menu .__icon {
   color: #404040;
 }
+.food {
+  position: relative;
+}
 .food.food--faded {
   opacity: 0.6;
 }

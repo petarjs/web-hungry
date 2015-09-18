@@ -46,7 +46,7 @@
               <i class="material-icons">more_vert</i>
             </md-button>
 
-            <md-menu-content width="4" >
+            <md-menu-content width="4" ng-cloak>
               
               <md-menu-item ng-if="$root.helpers.hasRole('super-admin')">
                 <md-button ui-sref="app.users">

@@ -18,4 +18,9 @@ class Food extends Model
   public function getImageUrl() {
     return 'uploads/' . $this->id;
   }
+
+  public function toggleDefault() {
+    $this->default = !$this->default;
+    $this->save();
+  }
 }

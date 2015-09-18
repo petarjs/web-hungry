@@ -8,7 +8,8 @@
       saveFood: saveFood,
       getFoods: getFoods,
       getFood: getFood,
-      deleteFood: deleteFood
+      deleteFood: deleteFood,
+      toggleDefault: toggleDefault
     };
 
     function saveFood(food) {
@@ -55,6 +56,17 @@
       });
 
       return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function toggleDefault(food) {
+      food.default = !food.default;
+
+      var url = appConfig.api.concat('/admin/food/:id/toggle-default');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: food.id
+      });
+
+      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

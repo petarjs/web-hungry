@@ -80,4 +80,13 @@ class FoodController extends Controller
       $food->save();
       return $food;
     }
+
+    /**
+     * @Put("/{id}/toggle-default")
+     */
+    public function toggleDefault($id) {
+      $food = Food::findOrFail($id);
+      $food->toggleDefault();
+      return $food;
+    }
 }

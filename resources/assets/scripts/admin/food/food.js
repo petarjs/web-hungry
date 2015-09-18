@@ -3,7 +3,7 @@
     .module('Hungry.admin.food')
     .controller('FoodController', FoodController);
 
-  function FoodController(AppState, Users, user, $window, Foods, SweetAlert) {
+  function FoodController(AppState, Users, user, $window, Foods, SweetAlert, Loader) {
     var vm = this;
 
     var state = {};
@@ -12,6 +12,7 @@
     vm.state = state;
 
     vm.deleteFood = deleteFood;
+    vm.toggleDefault = toggleDefault;
 
     AppState.listen('foods', function(foods) { state.foods = foods; });
 
@@ -47,6 +48,14 @@
             });
         }
       });
+    }
+
+    function toggleDefault(food) {
+      Loader.start();
+      
+      Foods
+        .toggleDefault(food)
+        .then(Loader.stop);
     }
 
   }

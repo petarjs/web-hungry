@@ -36,12 +36,14 @@ class UserSeeder extends Seeder {
     $superAdmin = User::create([
       'email' => 'petar.slovic@cosmicdevelopment.com',
       'google_id' => '116501228635594035629',
+      'name' => 'Petar Slovic',
       'avatar' => 'https://lh3.googleusercontent.com/-fDXQyzytF68/AAAAAAAAAAI/AAAAAAAAABY/AkUw0AA5x3o/photo.jpg?sz=50'
     ]);
 
     $admin = User::create([
       'email' => 'petar.slovic@gmail.com',
       'google_id' => '113124672295594628556',
+      'name' => 'Petar Slovic',
       'avatar' => 'https://lh4.googleusercontent.com/-m9sxqfJhgq8/AAAAAAAAAAI/AAAAAAAAEMk/rtpNg9O9RUU/photo.jpg?sz=50'
     ]);
 

@@ -60,7 +60,7 @@
               <md-menu-item ng-if="$root.helpers.hasRole('admin')">
                 <md-button ui-sref="app.food">
                     <div layout="row" class="h100">
-                      <p flex>Manage Food</p>
+                      <p flex>Food</p>
                       <i class="material-icons">local_dining</i>
                     </div>
                 </md-button>

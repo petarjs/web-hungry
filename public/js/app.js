@@ -644,6 +644,35 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
+  'use strict';
+
+  angular
+    .module('Hungry.core.loader')
+    .service('Loader', LoaderService);
+
+  function LoaderService($mdToast) {
+    var toastConfig = {
+      position: 'top right',
+      parent: angular.element(document.body),
+      templateUrl: 'core/loader/loader',
+      hideDelay: false
+    };
+
+    return {
+      start: start,
+      stop: stop
+    };
+
+    function start() {
+      $mdToast.show(toastConfig);
+    }
+
+    function stop() {
+      $mdToast.hide();
+    }
+  }
+})(); 
+(function () {
   angular
     .module('Hungry.core.api.foods')
     .factory('Foods', FoodsFactory);
@@ -1004,35 +1033,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       return (parseInt(menu.week, 10) * 1000) < moment().startOf('isoWeek').valueOf();
     }
 
-  }
-})(); 
-(function () {
-  'use strict';
-
-  angular
-    .module('Hungry.core.loader')
-    .service('Loader', LoaderService);
-
-  function LoaderService($mdToast) {
-    var toastConfig = {
-      position: 'top right',
-      parent: angular.element(document.body),
-      templateUrl: 'core/loader/loader',
-      hideDelay: false
-    };
-
-    return {
-      start: start,
-      stop: stop
-    };
-
-    function start() {
-      $mdToast.show(toastConfig);
-    }
-
-    function stop() {
-      $mdToast.hide();
-    }
   }
 })(); 
 (function () {

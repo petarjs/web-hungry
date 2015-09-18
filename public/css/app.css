@@ -86,6 +86,12 @@
 .menu-days {
   height: 600px;
 }
+.user .user__name {
+  margin-bottom: 0;
+}
+.user .user__email {
+  margin-top: 0;
+}
 body {
   font-family: 'Roboto';
   font-weight: 400;

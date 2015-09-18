@@ -120,7 +120,7 @@ class AuthController extends Controller
         }
 
         return User::create([
-          'name' => $user->name,
+          'name' => $user->name ? $user->name : $userData->user['name']['givenName'] . ' ' . $userData->user['name']['familyName'],
           'email' => $user->email,
           'google_id' => $user->id,
           'avatar' => $user->avatar

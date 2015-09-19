@@ -6,7 +6,8 @@
   function OrdersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
     return {
       getOrders: getOrders,
-      orderMenuFood: orderMenuFood
+      orderMenuFood: orderMenuFood,
+      getUserOrders: getUserOrders
     };
 
     function getOrders(week, user) {
@@ -28,6 +29,17 @@
       });
 
       return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getUserOrders(week) {
+      var phpWeek = week/1000;
+
+      var url = appConfig.api.concat('/admin/orders/users?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

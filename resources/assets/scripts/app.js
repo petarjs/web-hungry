@@ -16,6 +16,7 @@
   angular.module('Hungry.super-admin.users', []);
   angular.module('Hungry.admin.food', []);
   angular.module('Hungry.admin.menus', []);
+  angular.module('Hungry.admin.orders', []);
   angular.module('Hungry.user.food', []);
   
   angular
@@ -44,7 +45,8 @@
       'Hungry.super-admin.users',
       'Hungry.admin.food',
       'Hungry.admin.menus',
-      'Hungry.user.food'
+      'Hungry.user.food',
+      'Hungry.admin.orders'
 
     ])
     .config(configureRoutes)
@@ -126,10 +128,11 @@
         role: 'user',
       })
 
-      .state('app.user-not-approved', {
-        url: 'not-approved',
-        templateUrl: 'user/not-approved',
-        role: 'user',
+      .state('app.orders', {
+        url: 'admin/orders',
+        controller: 'AdminOrdersController as vm',
+        templateUrl: 'admin/orders/orders',
+        role: 'admin',
       });
   }
 

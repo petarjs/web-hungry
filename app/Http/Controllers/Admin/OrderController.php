@@ -40,4 +40,22 @@ class OrderController extends Controller
 
     return $user->eatenFoodForWeek($menuFood->menu->week);
   }
+
+  /**
+   * @Get("/users")
+   *
+   * Returns list of users with their ordered foods for the specified week
+   */
+  public function getUserOrders() {
+    $week = \Input::get('week');
+    $users = [];
+
+    User::all()->each(function($user) use($week, &$users) {
+      $arrayUser = $user->toArray();
+      $arrayUser['menu_foods'] = User::find($user->id)->eatenFoodForWeek($week);
+      $users[] = $arrayUser;
+    });
+
+    return $users;
+  }
 }

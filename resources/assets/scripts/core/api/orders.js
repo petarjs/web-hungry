@@ -8,7 +8,8 @@
       getOrders: getOrders,
       orderMenuFood: orderMenuFood,
       getUserOrders: getUserOrders,
-      getFoodOrdersForDay: getFoodOrdersForDay
+      getFoodOrdersForDay: getFoodOrdersForDay,
+      getOrderNumbersForWeek: getOrderNumbersForWeek
     };
 
     function getOrders(week, user) {
@@ -47,6 +48,17 @@
       var url = appConfig.api.concat('/admin/orders/food?day=:day');
       var realUrl = UrlReplacer.replaceParams(url, {
         day: day,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getOrderNumbersForWeek(week) {
+      var phpWeek = week/1000;
+
+      var url = appConfig.api.concat('/admin/orders/numbers?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
       });
 
       return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);

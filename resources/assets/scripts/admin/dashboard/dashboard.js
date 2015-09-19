@@ -18,7 +18,19 @@
     });
 
     vm.user = user;
-    vm.totalUsers = 50;
+
+    /**
+     * Number of orders for current week.
+     * @type {Number}
+     */
+    vm.numOrders = 0;
+
+    /**
+     * Total needed orders for a week.
+     * (number of users * 5 days in a week)
+     * @type {Number}
+     */
+    vm.numTotalOrders = 0;
 
     vm.days = [{
       title: 'Mon'
@@ -51,6 +63,7 @@
     vm.getNoOrdersForDay = getNoOrdersForDay;
     vm.getFoodOrdersForDay = getFoodOrdersForDay;
     vm.getFoodOrderPercentage = getFoodOrderPercentage;
+    vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
 
     $scope.$watch(function() {
       return vm.week;
@@ -74,7 +87,7 @@
     });
 
     function activate() {
-      
+      vm.getOrderNumbersForWeek();
     }
 
     function setNextWeek() {
@@ -114,6 +127,18 @@
       return _.sum(vm.state.foodOrders, function(food) {
         return food.users.length;
       });
+    }
+
+    function getOrderNumbersForWeek(week) {
+      Loader.start();
+
+      Orders
+        .getOrderNumbersForWeek(vm.week.valueOf())
+        .then(function(orderNumbers) {
+          vm.numOrders = orderNumbers.num_orders;
+          vm.numTotalOrders = orderNumbers.num_total_orders;
+        })
+        .then(Loader.stop);
     }
   }
 

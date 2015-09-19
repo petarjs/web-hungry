@@ -217,139 +217,6 @@
 })(); 
 (function () {
   angular
-    .module('Hungry.core.api-helpers')
-    .service('ApiHelpers', ApiHelpers);
-
-  function ApiHelpers() {
-    return {
-      extractData: extractData,
-      handleError: handleError
-    };
-
-    function extractData(response) {
-      return response.data;
-    }
-
-    function handleError(error) {
-      console.log(error);
-      return error;
-    }
-  }
-})(); 
-angular.module('Hungry.core.app-state').factory('AppState', function(StateService) {
-  var state = {
-    user: {},
-    users: [],
-    roles: [],
-    foods: [],
-    menus: [],
-    orders: [],
-    userOrders: [],
-    foodOrders: []
-  };
-
-  var listeners = [];
-
-  var get    = StateService.get(state);
-  var change = StateService.change(state, listeners);
-  var listen = StateService.listen(state, listeners);
-
-  return {
-    get: get,
-    change: change,
-    listen: listen
-  };
-});
-(function () {
-  angular
-    .module('Hungry.core.config')
-    .constant('appConfig', {
-      api: window.api,
-      date: {
-        format: 'DD.MM.YY.',
-        formatServer: 'YYYY-MM-DD 00:00:00'
-      }
-    });
-
-})(); 
-angular.module('Hungry.core.state').factory('StateService', function() {
-  var clone = R.clone;
-  var curry = R.curry;
-  var filter = R.filter;
-
-  function get(state) {
-    return function() {
-      return clone(state);
-    };
-  }
-
-  function getStateProp(state, prop) {
-    return clone(state[prop]);
-  }
-
-  var change = curry(function(state, listeners, prop, data) {
-    var sameProp = filter(function(l) { return l.prop === prop; });
-
-    state[prop] = data;
-
-    R.forEach(function(listener) {
-      listener.action(getStateProp(state, listener.prop));
-    }, sameProp(listeners));
-
-    return getStateProp(state, prop);
-  });
-
-  var listen = curry(function(state, listeners, prop, action) {
-    var listener = {prop: prop, action: action};
-    listeners.push(listener);
-
-    var unsubscribe = function() {
-      return listeners.splice(listeners.indexOf(listener), 1);
-    };
-
-    action(getStateProp(state, prop));
-
-    return unsubscribe;
-  });
-
-  return {
-    get: get,
-    change: change,
-    listen: listen
-  };
-});
-(function () {
-  angular
-    .module('Hungry.core.url-replacer')
-    .service('UrlReplacer', UrlReplacer);
-
-  function UrlReplacer() {
-    var placeholderSymbol = ':';
-
-    return {
-      setPlaceholderSymbol: setPlaceholderSymbol,
-      replaceParams: replaceParams
-    }
-
-    function setPlaceholderSymbol(symbol) {
-      placeholderSymbol = symbol;
-    };
-
-    function replaceParams(url, data){
-      var joinedKeys = _.map(_.keys(data), function(key) {
-        return placeholderSymbol + key;
-      }).join('|');
-      var re = new RegExp(joinedKeys, 'gi');
-
-      return url.replace(re, function(matched){
-          return data[matched.replace(placeholderSymbol, '')];
-      });
-    };
-
-  }
-})(); 
-(function () {
-  angular
     .module('Hungry.user.food')
     .controller('OrderFoodController', OrderFoodController);
 
@@ -491,349 +358,135 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
-    .module('Hungry.core.api.foods')
-    .factory('Foods', FoodsFactory);
+    .module('Hungry.core.api-helpers')
+    .service('ApiHelpers', ApiHelpers);
 
-  function FoodsFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+  function ApiHelpers() {
     return {
-      saveFood: saveFood,
-      getFoods: getFoods,
-      getFood: getFood,
-      deleteFood: deleteFood,
-      toggleDefault: toggleDefault
+      extractData: extractData,
+      handleError: handleError
     };
 
-    function saveFood(food) {
-      if(food.id) {
-        return updateFood(food);
-      } else {
-        return createFood(food);
+    function extractData(response) {
+      return response.data;
+    }
+
+    function handleError(error) {
+      console.log(error);
+      return error;
+    }
+  }
+})(); 
+angular.module('Hungry.core.app-state').factory('AppState', function(StateService) {
+  var state = {
+    user: {},
+    users: [],
+    roles: [],
+    foods: [],
+    menus: [],
+    orders: [],
+    userOrders: [],
+    foodOrders: []
+  };
+
+  var listeners = [];
+
+  var get    = StateService.get(state);
+  var change = StateService.change(state, listeners);
+  var listen = StateService.listen(state, listeners);
+
+  return {
+    get: get,
+    change: change,
+    listen: listen
+  };
+});
+(function () {
+  angular
+    .module('Hungry.core.config')
+    .constant('appConfig', {
+      api: window.api,
+      date: {
+        format: 'DD.MM.YY.',
+        formatServer: 'YYYY-MM-DD 00:00:00'
       }
-    }
+    });
 
-    function createFood(food) {
-      var url = appConfig.api.concat('/admin/food/create');
-
-      return $http.post(url, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function updateFood(food) {
-      var url = appConfig.api.concat('/admin/food/:id');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: food.id
-      });
-
-      return $http.put(realUrl, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function getFoods() {
-      var url = appConfig.api.concat('/admin/food');
-      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function getFood(id) {
-      var url = appConfig.api.concat('/admin/food/:id');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: id
-      });
-
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function deleteFood(food) {
-      var url = appConfig.api.concat('/admin/food/:id');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: food.id
-      });
-
-      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function toggleDefault(food) {
-      var url = appConfig.api.concat('/admin/food/:id/toggle-default');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: food.id
-      });
-
-      return $http
-        .put(realUrl)
-        .then(ApiHelpers.extractData, ApiHelpers.handleError)
-        .then(function(updatedFood) {
-          food.default = !food.default;
-        });
-    }
-  }
 })(); 
-(function () {
-  angular
-    .module('Hungry.core.api.menus')
-    .factory('Menus', MenusFactory);
+angular.module('Hungry.core.state').factory('StateService', function() {
+  var clone = R.clone;
+  var curry = R.curry;
+  var filter = R.filter;
 
-  function MenusFactory($http, appConfig, UrlReplacer, ApiHelpers) {
-    return {
-      getMenus: getMenus,
-      getMenusForUser: getMenusForUser,
-      addFoodToMenu: addFoodToMenu,
-      publishMenus: publishMenus,
-      removeMenuFood: removeMenuFood
+  function get(state) {
+    return function() {
+      return clone(state);
+    };
+  }
+
+  function getStateProp(state, prop) {
+    return clone(state[prop]);
+  }
+
+  var change = curry(function(state, listeners, prop, data) {
+    var sameProp = filter(function(l) { return l.prop === prop; });
+
+    state[prop] = data;
+
+    R.forEach(function(listener) {
+      listener.action(getStateProp(state, listener.prop));
+    }, sameProp(listeners));
+
+    return getStateProp(state, prop);
+  });
+
+  var listen = curry(function(state, listeners, prop, action) {
+    var listener = {prop: prop, action: action};
+    listeners.push(listener);
+
+    var unsubscribe = function() {
+      return listeners.splice(listeners.indexOf(listener), 1);
     };
 
-    /**
-     * Gets menus for a week specified by week
-     * @param  {string} week - timestamp of the monday for a week
-     */
-    function getMenus(week) {
-      var phpWeek = week/1000;
-      var url = appConfig.api.concat('/admin/menus?week=:week');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        week: phpWeek
-      });
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
+    action(getStateProp(state, prop));
 
-    /**
-     * Gets menus for a week for user
-     * @param  {string} week - timestamp of the monday for a week
-     */
-    function getMenusForUser(week) {
-      var phpWeek = week/1000;
-      var url = appConfig.api.concat('/admin/menus/user?week=:week');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        week: phpWeek
-      });
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
+    return unsubscribe;
+  });
 
-    function addFoodToMenu(menu, food) {
-      var url = appConfig.api.concat('/admin/menus/:id?food_id=:foodId');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: menu.id,
-        foodId: food.id
-      });
-      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function publishMenus(week) {
-      var phpWeek = week/1000;
-      var url = appConfig.api.concat('/admin/menus/publish?week=:week');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        week: phpWeek
-      });
-      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function removeMenuFood(menuFood) {
-      var url = appConfig.api.concat('/admin/menus/food/:id');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: menuFood.id
-      });
-      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-  }
-})(); 
+  return {
+    get: get,
+    change: change,
+    listen: listen
+  };
+});
 (function () {
   angular
-    .module('Hungry.core.api.orders')
-    .factory('Orders', OrdersFactory);
+    .module('Hungry.core.url-replacer')
+    .service('UrlReplacer', UrlReplacer);
 
-  function OrdersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
-    return {
-      getOrders: getOrders,
-      orderMenuFood: orderMenuFood,
-      getUserOrders: getUserOrders,
-      getFoodOrdersForDay: getFoodOrdersForDay
-    };
-
-    function getOrders(week, user) {
-      var phpWeek = week/1000;
-      var url = appConfig.api.concat('/admin/orders?week=:week&user_id=:userId');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        week: phpWeek,
-        userId: user.id
-      });
-
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function orderMenuFood(menuFood, user) {
-      var url = appConfig.api.concat('/admin/orders/create?menu_food_id=:menuFoodId&user_id=:userId');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        menuFoodId: menuFood.id,
-        userId: user.id
-      });
-
-      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function getUserOrders(week) {
-      var phpWeek = week/1000;
-
-      var url = appConfig.api.concat('/admin/orders/users?week=:week');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        week: phpWeek,
-      });
-
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function getFoodOrdersForDay(day) {
-      var url = appConfig.api.concat('/admin/orders/food?day=:day');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        day: day,
-      });
-
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.api.roles')
-    .factory('Roles', RolesFactory);
-
-  function RolesFactory($http, appConfig, UrlReplacer, ApiHelpers) {
-    return {
-      getRoles: getRoles
-    };
-
-    function getRoles() {
-      var url = appConfig.api.concat('/roles');
-      return $http.get(url, {
-        cache: true
-      }).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.api.users')
-    .factory('Users', UsersFactory);
-
-  function UsersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
-    return {
-      getUser: getUser,
-      getUsers: getUsers,
-      toggleRole: toggleRole
-    };
-
-    function getUser(id) {
-      var url = appConfig.api.concat('/users/:id');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: id
-      });
-
-      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function getUsers() {
-      var url = appConfig.api.concat('/users');
-      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-
-    function toggleRole(user, role) {
-      var url = appConfig.api.concat('/users/:id/toggle-role/:roleId');
-      var realUrl = UrlReplacer.replaceParams(url, {
-        id: user.id,
-        roleId: role.id
-      });
-
-      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
-
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
+  function UrlReplacer() {
+    var placeholderSymbol = ':';
 
     return {
-      hasRole: hasRole
+      setPlaceholderSymbol: setPlaceholderSymbol,
+      replaceParams: replaceParams
+    }
+
+    function setPlaceholderSymbol(symbol) {
+      placeholderSymbol = symbol;
     };
 
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.super-admin.users')
-    .controller('UsersController', UsersController);
+    function replaceParams(url, data){
+      var joinedKeys = _.map(_.keys(data), function(key) {
+        return placeholderSymbol + key;
+      }).join('|');
+      var re = new RegExp(joinedKeys, 'gi');
 
-  function UsersController(AppState, Users, user, $window) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-
-    vm.state = state;
-
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
-
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
-    }
-
-  }
-})(); 
-(function () {
-  'use strict';
-
-  angular
-    .module('Hungry.core.loader')
-    .service('Loader', LoaderService);
-
-  function LoaderService($mdToast) {
-    var toastConfig = {
-      position: 'top right',
-      parent: angular.element(document.body),
-      templateUrl: 'core/loader/loader',
-      hideDelay: false
+      return url.replace(re, function(matched){
+          return data[matched.replace(placeholderSymbol, '')];
+      });
     };
 
-    return {
-      start: start,
-      stop: stop
-    };
-
-    function start() {
-      $mdToast.show(toastConfig);
-    }
-
-    function stop() {
-      $mdToast.hide();
-    }
   }
 })(); 
 (function () {
@@ -856,7 +509,19 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     });
 
     vm.user = user;
-    vm.totalUsers = 50;
+
+    /**
+     * Number of orders for current week.
+     * @type {Number}
+     */
+    vm.numOrders = 0;
+
+    /**
+     * Total needed orders for a week.
+     * (number of users * 5 days in a week)
+     * @type {Number}
+     */
+    vm.numTotalOrders = 0;
 
     vm.days = [{
       title: 'Mon'
@@ -889,6 +554,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.getNoOrdersForDay = getNoOrdersForDay;
     vm.getFoodOrdersForDay = getFoodOrdersForDay;
     vm.getFoodOrderPercentage = getFoodOrderPercentage;
+    vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
 
     $scope.$watch(function() {
       return vm.week;
@@ -912,7 +578,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     });
 
     function activate() {
-      
+      vm.getOrderNumbersForWeek();
     }
 
     function setNextWeek() {
@@ -952,6 +618,18 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       return _.sum(vm.state.foodOrders, function(food) {
         return food.users.length;
       });
+    }
+
+    function getOrderNumbersForWeek(week) {
+      Loader.start();
+
+      Orders
+        .getOrderNumbersForWeek(vm.week.valueOf())
+        .then(function(orderNumbers) {
+          vm.numOrders = orderNumbers.num_orders;
+          vm.numTotalOrders = orderNumbers.num_total_orders;
+        })
+        .then(Loader.stop);
     }
   }
 
@@ -1351,3 +1029,362 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 
 })();
+(function () {
+  angular
+    .module('Hungry.core.api.foods')
+    .factory('Foods', FoodsFactory);
+
+  function FoodsFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      saveFood: saveFood,
+      getFoods: getFoods,
+      getFood: getFood,
+      deleteFood: deleteFood,
+      toggleDefault: toggleDefault
+    };
+
+    function saveFood(food) {
+      if(food.id) {
+        return updateFood(food);
+      } else {
+        return createFood(food);
+      }
+    }
+
+    function createFood(food) {
+      var url = appConfig.api.concat('/admin/food/create');
+
+      return $http.post(url, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function updateFood(food) {
+      var url = appConfig.api.concat('/admin/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: food.id
+      });
+
+      return $http.put(realUrl, food).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getFoods() {
+      var url = appConfig.api.concat('/admin/food');
+      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getFood(id) {
+      var url = appConfig.api.concat('/admin/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: id
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function deleteFood(food) {
+      var url = appConfig.api.concat('/admin/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: food.id
+      });
+
+      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function toggleDefault(food) {
+      var url = appConfig.api.concat('/admin/food/:id/toggle-default');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: food.id
+      });
+
+      return $http
+        .put(realUrl)
+        .then(ApiHelpers.extractData, ApiHelpers.handleError)
+        .then(function(updatedFood) {
+          food.default = !food.default;
+        });
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api.menus')
+    .factory('Menus', MenusFactory);
+
+  function MenusFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getMenus: getMenus,
+      getMenusForUser: getMenusForUser,
+      addFoodToMenu: addFoodToMenu,
+      publishMenus: publishMenus,
+      removeMenuFood: removeMenuFood
+    };
+
+    /**
+     * Gets menus for a week specified by week
+     * @param  {string} week - timestamp of the monday for a week
+     */
+    function getMenus(week) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/menus?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek
+      });
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    /**
+     * Gets menus for a week for user
+     * @param  {string} week - timestamp of the monday for a week
+     */
+    function getMenusForUser(week) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/menus/user?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek
+      });
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function addFoodToMenu(menu, food) {
+      var url = appConfig.api.concat('/admin/menus/:id?food_id=:foodId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: menu.id,
+        foodId: food.id
+      });
+      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function publishMenus(week) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/menus/publish?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek
+      });
+      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function removeMenuFood(menuFood) {
+      var url = appConfig.api.concat('/admin/menus/food/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: menuFood.id
+      });
+      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api.orders')
+    .factory('Orders', OrdersFactory);
+
+  function OrdersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getOrders: getOrders,
+      orderMenuFood: orderMenuFood,
+      getUserOrders: getUserOrders,
+      getFoodOrdersForDay: getFoodOrdersForDay,
+      getOrderNumbersForWeek: getOrderNumbersForWeek
+    };
+
+    function getOrders(week, user) {
+      var phpWeek = week/1000;
+      var url = appConfig.api.concat('/admin/orders?week=:week&user_id=:userId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
+        userId: user.id
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function orderMenuFood(menuFood, user) {
+      var url = appConfig.api.concat('/admin/orders/create?menu_food_id=:menuFoodId&user_id=:userId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        menuFoodId: menuFood.id,
+        userId: user.id
+      });
+
+      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getUserOrders(week) {
+      var phpWeek = week/1000;
+
+      var url = appConfig.api.concat('/admin/orders/users?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getFoodOrdersForDay(day) {
+      var url = appConfig.api.concat('/admin/orders/food?day=:day');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        day: day,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getOrderNumbersForWeek(week) {
+      var phpWeek = week/1000;
+
+      var url = appConfig.api.concat('/admin/orders/numbers?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api.roles')
+    .factory('Roles', RolesFactory);
+
+  function RolesFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getRoles: getRoles
+    };
+
+    function getRoles() {
+      var url = appConfig.api.concat('/roles');
+      return $http.get(url, {
+        cache: true
+      }).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api.users')
+    .factory('Users', UsersFactory);
+
+  function UsersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getUser: getUser,
+      getUsers: getUsers,
+      toggleRole: toggleRole
+    };
+
+    function getUser(id) {
+      var url = appConfig.api.concat('/users/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: id
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getUsers() {
+      var url = appConfig.api.concat('/users');
+      return $http.get(url).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function toggleRole(user, role) {
+      var url = appConfig.api.concat('/users/:id/toggle-role/:roleId');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: user.id,
+        roleId: role.id
+      });
+
+      return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
+    }
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.core.loader')
+    .service('Loader', LoaderService);
+
+  function LoaderService($mdToast) {
+    var toastConfig = {
+      position: 'top right',
+      parent: angular.element(document.body),
+      templateUrl: 'core/loader/loader',
+      hideDelay: false
+    };
+
+    return {
+      start: start,
+      stop: stop
+    };
+
+    function start() {
+      $mdToast.show(toastConfig);
+    }
+
+    function stop() {
+      $mdToast.hide();
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.super-admin.users')
+    .controller('UsersController', UsersController);
+
+  function UsersController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
+  }
+})(); 

@@ -8,6 +8,7 @@ use Hungry\Http\Requests;
 use Hungry\Http\Controllers\Controller;
 use Hungry\Models\MenuFood;
 use Hungry\Models\User;
+use Hungry\Models\Menu;
 use Hungry\Models\Food;
 
 /**
@@ -84,5 +85,20 @@ class OrderController extends Controller
     });
 
     return $orderedFood;
+  }
+
+  /**
+   * @Get("/numbers")
+   *
+   * Return the number of orders for a week and 
+   * the total needed number of orders (numUsers * 5)
+   */
+  public function getFoodOrdersNumber() {
+    $week = \Input::get('week');
+
+    return [
+      'num_orders' => Menu::getNumOrdersForWeek($week),
+      'num_total_orders' => User::count() * 5
+    ];
   }
 }

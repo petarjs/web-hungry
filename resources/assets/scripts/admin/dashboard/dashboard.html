@@ -2,11 +2,11 @@ Hello {{ vm.user.name }}!
 
 <br>
 
-Number of orders this week
+Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}
 <div
     round-progress
-    max="vm.totalUsers"
-    current="vm.getNoOrdersForDay(vm.week, vm.day)"
+    max="vm.numTotalOrders"
+    current="vm.numOrders"
     color="#45ccce"
     bgcolor="#eaeaea"
     radius="100"
@@ -27,8 +27,6 @@ Number of orders this week
 <div>
   <md-button ng-repeat="day in vm.days" ng-click="vm.day = $index" ng-class="{ 'md-raised md-primary': $index === vm.day }">{{ day.title }}</md-button>
 </div>
-
-Ordered: {{ vm.getNoOrdersForDay(vm.week, vm.day) }} / {{ vm.totalUsers }}
 
 <md-list>
   <md-subheader class="md-no-sticky">Food Orders</md-subheader>

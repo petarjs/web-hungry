@@ -68,4 +68,12 @@ class Menu extends Model
     $publishedMenus = self::where('week', $week)->where('published', true)->get();
     return !$publishedMenus->isEmpty();
   }
+
+  public static function getNumOrdersForWeek($week) {
+    return self::where('week', $week)->get()->sum(function($menu) {
+      return $menu->menuFoods->sum(function($menuFood) {
+        return $menuFood->eatenBy->count();
+      });
+    });
+  }
 }

@@ -12,7 +12,10 @@
     vm.state = state;
 
     var changeFoodOrders = AppState.change('foodOrders');
-    AppState.listen('foodOrders', function(foodOrders) { state.foodOrders = foodOrders; });
+    AppState.listen('foodOrders', function(foodOrders) { 
+      state.foodOrders = foodOrders;
+      vm.totalFoodOrders = getTotalOrdersNo(); 
+    });
 
     vm.user = user;
     vm.totalUsers = 50;
@@ -47,6 +50,7 @@
     vm.setPrevWeek = setPrevWeek;
     vm.getNoOrdersForDay = getNoOrdersForDay;
     vm.getFoodOrdersForDay = getFoodOrdersForDay;
+    vm.getFoodOrderPercentage = getFoodOrderPercentage;
 
     $scope.$watch(function() {
       return vm.week;
@@ -93,6 +97,23 @@
         .getFoodOrdersForDay(day)
         .then(changeFoodOrders)
         .then(Loader.stop);
+    }
+
+    /**
+     * Calculates percentage of orders of certain food
+     * for the current day
+     * @param  {Number} foodOrders number of orders of the specifed food
+     * @return {Number}            percentage of orders, 0 <= x <= 100
+     */
+    function getFoodOrderPercentage(foodOrders) {
+      console.log(foodOrders, vm.totalFoodOrders, foodOrders / vm.totalFoodOrders);
+      return (foodOrders / vm.totalFoodOrders) * 100;
+    }
+
+    function getTotalOrdersNo() {
+      return _.sum(vm.state.foodOrders, function(food) {
+        return food.users.length;
+      });
     }
   }
 

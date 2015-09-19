@@ -12,7 +12,7 @@ use Hungry\Models\MenuFood;
 use Hungry\Http\Requests\FoodRequest;
 
 /**
- * @Middleware("admin")
+ * @Middleware("auth")
  * @Controller(prefix="api/admin/menus")
  */
 class MenuController extends Controller

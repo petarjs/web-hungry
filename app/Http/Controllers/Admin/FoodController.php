@@ -10,7 +10,7 @@ use Hungry\Models\Food;
 use Hungry\Http\Requests\FoodRequest;
 
 /**
- * @Middleware("admin")
+ * @Middleware("auth")
  * @Controller(prefix="api/admin/food")
  */
 class FoodController extends Controller

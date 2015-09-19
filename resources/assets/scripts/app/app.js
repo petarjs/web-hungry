@@ -3,7 +3,7 @@
     .module('Hungry.app')
     .controller('AppController', AppController);
 
-  function AppController(AppState, user, roles, foods, $state) {
+  function AppController(AppState, Auth, user, roles, foods, $state) {
     var vm = this;
 
     if(!user.roles || !user.roles.length) {
@@ -11,9 +11,9 @@
     }
 
     if($state.is('app.home')) {
-      if(user.roles.indexOf('admin') !== 0) {
+      if(Auth.hasRole('admin')) {
         $state.go('app.admin-dashboard');
-      } else if(user.roles.indexOf('user') !== 0) {
+      } else if(Auth.hasRole('user')) {
         $state.go('app.order-food');
       }
     }

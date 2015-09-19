@@ -8,9 +8,10 @@ use Hungry\Http\Requests;
 use Hungry\Http\Controllers\Controller;
 use Hungry\Models\MenuFood;
 use Hungry\Models\User;
+use Hungry\Models\Food;
 
 /**
- * @Middleware("admin")
+ * @Middleware("auth")
  * @Controller(prefix="api/admin/orders")
  */
 class OrderController extends Controller
@@ -57,5 +58,31 @@ class OrderController extends Controller
     });
 
     return $users;
+  }
+
+  /**
+   * @Get("/food")
+   *
+   * Returns list of foods ordered for the specified day
+   * and list of users that ordered it
+   */
+  public function getFoodOrdersForDay() {
+    $day = \Input::get('day');
+
+    $orderedFood = [];
+
+    Food::all()->each(function ($food) use($day, &$orderedFood) {
+      $arrayFood = $food->toArray();
+      $arrayFood['users'] = User::all()->filter(function($user) use($day, $food) {
+        $usersMenuFoods = $user->eatenFoodForDay($day);
+        return $usersMenuFoods->contains(function($key, $menuFood) use($food) {
+          return $menuFood->food_id == $food->id;
+        });
+      })->values();
+
+      $orderedFood[] = $arrayFood;
+    });
+
+    return $orderedFood;
   }
 }

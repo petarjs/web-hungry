@@ -30,7 +30,7 @@ Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}
 
 <md-list>
   <md-subheader class="md-no-sticky">Food Orders</md-subheader>
-  <md-list-item ng-repeat="food in vm.state.foodOrders" class="food-order">
+  <md-list-item ng-repeat="food in vm.state.foodOrders | orderBy: 'users.length': true" class="food-order">
     <img ng-if="food.image" ng-src="{{ food.image }}" class="md-avatar" />
     <div flex class="md-list-item-text" layout="column">
       <h3 class="user__name">{{ food.description }} - {{ food.users.length }} orders</h3>

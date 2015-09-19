@@ -28,6 +28,11 @@
     vm.week = moment().startOf('isoWeek');
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
+    if(vm.selectedTabIndex > 4) {
+      vm.week = vm.week.add(1, 'week');
+      vm.selectedTabIndex = 0;
+    }
+
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
     vm.getMenuFoodsForDay = getMenuFoodsForDay;

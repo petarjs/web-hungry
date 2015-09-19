@@ -22,6 +22,13 @@
      */
     vm.week = moment().startOf('isoWeek');
 
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+    }
+
     vm.showFoodDialog = showFoodDialog;
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;

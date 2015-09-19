@@ -86,6 +86,11 @@
 .menu-days {
   height: 600px;
 }
+.menu-header {
+  background-color: #ffa20f;
+  color: #ffffff;
+  font-weight: bold;
+}
 .user .user__name {
   margin-bottom: 0;
 }

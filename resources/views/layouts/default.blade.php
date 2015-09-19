@@ -47,6 +47,10 @@
             </md-button>
 
             <md-menu-content width="4" ng-cloak>
+
+              <md-menu-item ng-if="$root.helpers.hasRole('super-admin')" class="menu-header">
+                <p flex>Super Admin</p>
+              </md-menu-item>
               
               <md-menu-item ng-if="$root.helpers.hasRole('super-admin')">
                 <md-button ui-sref="app.users">
@@ -55,6 +59,10 @@
                       <i class="material-icons">people</i>
                     </div>
                 </md-button>
+              </md-menu-item>
+
+              <md-menu-item ng-if="$root.helpers.hasRole('admin')" class="menu-header">
+                <p flex>Admin</p>
               </md-menu-item>
 
               <md-menu-item ng-if="$root.helpers.hasRole('admin')">
@@ -73,6 +81,19 @@
                       <i class="material-icons">receipt</i>
                     </div>
                 </md-button>
+              </md-menu-item>
+
+              <md-menu-item ng-if="$root.helpers.hasRole('admin')">
+                <md-button ui-sref="app.orders">
+                    <div layout="row" class="h100">
+                      <p flex>Orders</p>
+                      <i class="material-icons">reorder</i>
+                    </div>
+                </md-button>
+              </md-menu-item>
+              
+              <md-menu-item ng-if="$root.helpers.hasRole('user')" class="menu-header">
+                <p flex>User</p>
               </md-menu-item>
 
               <md-menu-item ng-if="$root.helpers.hasRole('user')">

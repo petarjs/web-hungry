@@ -8,6 +8,12 @@
   function DashboardController($scope, user, Loader, Orders, appConfig, AppState) {
     var vm = this;
 
+    var state = {};
+    vm.state = state;
+
+    var changeFoodOrders = AppState.change('foodOrders');
+    AppState.listen('foodOrders', function(foodOrders) { state.foodOrders = foodOrders; });
+
     vm.user = user;
     vm.totalUsers = 50;
 
@@ -40,6 +46,7 @@
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
     vm.getNoOrdersForDay = getNoOrdersForDay;
+    vm.getFoodOrdersForDay = getFoodOrdersForDay;
 
     $scope.$watch(function() {
       return vm.week;
@@ -56,9 +63,14 @@
       activate();
     });
 
-    function activate() {
-      // Loader.start();
+    $scope.$watch(function() {
+      return vm.day;
+    }, function() {
+      vm.getFoodOrdersForDay();
+    });
 
+    function activate() {
+      
     }
 
     function setNextWeek() {
@@ -71,6 +83,16 @@
 
     function getNoOrdersForDay(week, day) {
       return day * 3 + 10;
+    }
+
+    function getFoodOrdersForDay() {
+      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
+
+      Loader.start();
+      Orders
+        .getFoodOrdersForDay(day)
+        .then(changeFoodOrders)
+        .then(Loader.stop);
     }
   }
 

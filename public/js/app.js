@@ -178,177 +178,6 @@
 })(); 
 (function () {
   angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, user, roles, foods, $state) {
-    var vm = this;
-
-    if(!user.roles || !user.roles.length) {
-      window.location.href = '/auth/login';
-    }
-
-    if($state.is('app.home')) {
-      if(user.roles.indexOf('admin') !== 0) {
-        $state.go('app.admin-dashboard');
-      } else if(user.roles.indexOf('user') !== 0) {
-        $state.go('app.order-food');
-      }
-    }
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-    var changeFoods = AppState.change('foods');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-    AppState.listen('foods', function(foods) { state.foods = foods; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-      changeFoods(foods);
-    }
-
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.api-helpers')
-    .service('ApiHelpers', ApiHelpers);
-
-  function ApiHelpers() {
-    return {
-      extractData: extractData,
-      handleError: handleError
-    };
-
-    function extractData(response) {
-      return response.data;
-    }
-
-    function handleError(error) {
-      console.log(error);
-      return error;
-    }
-  }
-})(); 
-angular.module('Hungry.core.app-state').factory('AppState', function(StateService) {
-  var state = {
-    user: {},
-    users: [],
-    roles: [],
-    foods: [],
-    menus: [],
-    orders: [],
-    userOrders: []
-  };
-
-  var listeners = [];
-
-  var get    = StateService.get(state);
-  var change = StateService.change(state, listeners);
-  var listen = StateService.listen(state, listeners);
-
-  return {
-    get: get,
-    change: change,
-    listen: listen
-  };
-});
-(function () {
-  angular
-    .module('Hungry.core.config')
-    .constant('appConfig', {
-      api: window.api,
-      date: {
-        format: 'DD.MM.YY.',
-        formatServer: 'YYYY-MM-DD 00:00:00'
-      }
-    });
-
-})(); 
-angular.module('Hungry.core.state').factory('StateService', function() {
-  var clone = R.clone;
-  var curry = R.curry;
-  var filter = R.filter;
-
-  function get(state) {
-    return function() {
-      return clone(state);
-    };
-  }
-
-  function getStateProp(state, prop) {
-    return clone(state[prop]);
-  }
-
-  var change = curry(function(state, listeners, prop, data) {
-    var sameProp = filter(function(l) { return l.prop === prop; });
-
-    state[prop] = data;
-
-    R.forEach(function(listener) {
-      listener.action(getStateProp(state, listener.prop));
-    }, sameProp(listeners));
-
-    return getStateProp(state, prop);
-  });
-
-  var listen = curry(function(state, listeners, prop, action) {
-    var listener = {prop: prop, action: action};
-    listeners.push(listener);
-
-    var unsubscribe = function() {
-      return listeners.splice(listeners.indexOf(listener), 1);
-    };
-
-    action(getStateProp(state, prop));
-
-    return unsubscribe;
-  });
-
-  return {
-    get: get,
-    change: change,
-    listen: listen
-  };
-});
-(function () {
-  angular
-    .module('Hungry.core.url-replacer')
-    .service('UrlReplacer', UrlReplacer);
-
-  function UrlReplacer() {
-    var placeholderSymbol = ':';
-
-    return {
-      setPlaceholderSymbol: setPlaceholderSymbol,
-      replaceParams: replaceParams
-    }
-
-    function setPlaceholderSymbol(symbol) {
-      placeholderSymbol = symbol;
-    };
-
-    function replaceParams(url, data){
-      var joinedKeys = _.map(_.keys(data), function(key) {
-        return placeholderSymbol + key;
-      }).join('|');
-      var re = new RegExp(joinedKeys, 'gi');
-
-      return url.replace(re, function(matched){
-          return data[matched.replace(placeholderSymbol, '')];
-      });
-    };
-
-  }
-})(); 
-(function () {
-  angular
     .module('Hungry.user.food')
     .controller('OrderFoodController', OrderFoodController);
 
@@ -485,6 +314,277 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         tab.orderedForDay = getOrderedForDay(index);
       });
     }
+
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.dashboard')
+    .controller('DashboardController', DashboardController);
+
+  function DashboardController($scope, user, Loader, Orders, appConfig, AppState) {
+    var vm = this;
+
+    var state = {};
+    vm.state = state;
+
+    var changeFoodOrders = AppState.change('foodOrders');
+    AppState.listen('foodOrders', function(foodOrders) { state.foodOrders = foodOrders; });
+
+    vm.user = user;
+    vm.totalUsers = 50;
+
+    vm.days = [{
+      title: 'Mon'
+    }, {
+      title: 'Tue'
+    }, {
+      title: 'Wed'
+    }, {
+      title: 'Thu'
+    }, {
+      title: 'Fri'
+    }];
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().startOf('isoWeek');
+
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+      vm.day = 0;
+    }
+
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.getNoOrdersForDay = getNoOrdersForDay;
+    vm.getFoodOrdersForDay = getFoodOrdersForDay;
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+
+      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
+        vm.day = moment().isoWeekday() - 1;
+      } else {
+        vm.day = 0;
+      }
+
+      activate();
+    });
+
+    $scope.$watch(function() {
+      return vm.day;
+    }, function() {
+      vm.getFoodOrdersForDay();
+    });
+
+    function activate() {
+      
+    }
+
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getNoOrdersForDay(week, day) {
+      return day * 3 + 10;
+    }
+
+    function getFoodOrdersForDay() {
+      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
+
+      Loader.start();
+      Orders
+        .getFoodOrdersForDay(day)
+        .then(changeFoodOrders)
+        .then(Loader.stop);
+    }
+  }
+
+})(); 
+(function () {
+  angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, user, roles, foods, $state) {
+    var vm = this;
+
+    if(!user.roles || !user.roles.length) {
+      window.location.href = '/auth/login';
+    }
+
+    if($state.is('app.home')) {
+      if(user.roles.indexOf('admin') !== 0) {
+        $state.go('app.admin-dashboard');
+      } else if(user.roles.indexOf('user') !== 0) {
+        $state.go('app.order-food');
+      }
+    }
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+    var changeFoods = AppState.change('foods');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+      changeFoods(foods);
+    }
+
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.core.api-helpers')
+    .service('ApiHelpers', ApiHelpers);
+
+  function ApiHelpers() {
+    return {
+      extractData: extractData,
+      handleError: handleError
+    };
+
+    function extractData(response) {
+      return response.data;
+    }
+
+    function handleError(error) {
+      console.log(error);
+      return error;
+    }
+  }
+})(); 
+angular.module('Hungry.core.app-state').factory('AppState', function(StateService) {
+  var state = {
+    user: {},
+    users: [],
+    roles: [],
+    foods: [],
+    menus: [],
+    orders: [],
+    userOrders: [],
+    foodOrders: []
+  };
+
+  var listeners = [];
+
+  var get    = StateService.get(state);
+  var change = StateService.change(state, listeners);
+  var listen = StateService.listen(state, listeners);
+
+  return {
+    get: get,
+    change: change,
+    listen: listen
+  };
+});
+(function () {
+  angular
+    .module('Hungry.core.config')
+    .constant('appConfig', {
+      api: window.api,
+      date: {
+        format: 'DD.MM.YY.',
+        formatServer: 'YYYY-MM-DD 00:00:00'
+      }
+    });
+
+})(); 
+angular.module('Hungry.core.state').factory('StateService', function() {
+  var clone = R.clone;
+  var curry = R.curry;
+  var filter = R.filter;
+
+  function get(state) {
+    return function() {
+      return clone(state);
+    };
+  }
+
+  function getStateProp(state, prop) {
+    return clone(state[prop]);
+  }
+
+  var change = curry(function(state, listeners, prop, data) {
+    var sameProp = filter(function(l) { return l.prop === prop; });
+
+    state[prop] = data;
+
+    R.forEach(function(listener) {
+      listener.action(getStateProp(state, listener.prop));
+    }, sameProp(listeners));
+
+    return getStateProp(state, prop);
+  });
+
+  var listen = curry(function(state, listeners, prop, action) {
+    var listener = {prop: prop, action: action};
+    listeners.push(listener);
+
+    var unsubscribe = function() {
+      return listeners.splice(listeners.indexOf(listener), 1);
+    };
+
+    action(getStateProp(state, prop));
+
+    return unsubscribe;
+  });
+
+  return {
+    get: get,
+    change: change,
+    listen: listen
+  };
+});
+(function () {
+  angular
+    .module('Hungry.core.url-replacer')
+    .service('UrlReplacer', UrlReplacer);
+
+  function UrlReplacer() {
+    var placeholderSymbol = ':';
+
+    return {
+      setPlaceholderSymbol: setPlaceholderSymbol,
+      replaceParams: replaceParams
+    }
+
+    function setPlaceholderSymbol(symbol) {
+      placeholderSymbol = symbol;
+    };
+
+    function replaceParams(url, data){
+      var joinedKeys = _.map(_.keys(data), function(key) {
+        return placeholderSymbol + key;
+      }).join('|');
+      var re = new RegExp(joinedKeys, 'gi');
+
+      return url.replace(re, function(matched){
+          return data[matched.replace(placeholderSymbol, '')];
+      });
+    };
 
   }
 })(); 
@@ -649,83 +749,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
-  'use strict';
-
-  angular
-    .module('Hungry.admin.dashboard')
-    .controller('DashboardController', DashboardController);
-
-  function DashboardController($scope, user, Loader, Orders, appConfig, AppState) {
-    var vm = this;
-
-    vm.user = user;
-    vm.totalUsers = 50;
-
-    vm.days = [{
-      title: 'Mon'
-    }, {
-      title: 'Tue'
-    }, {
-      title: 'Wed'
-    }, {
-      title: 'Thu'
-    }, {
-      title: 'Fri'
-    }];
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().startOf('isoWeek');
-
-    vm.day = moment().isoWeekday() - 1;
-
-    // if it's weekend, default to monday next week.
-    if(vm.day > 4) {
-      vm.week = vm.week.add(1, 'week');
-      vm.day = 0;
-    }
-
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.getNoOrdersForDay = getNoOrdersForDay;
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-
-      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
-        vm.day = moment().isoWeekday() - 1;
-      } else {
-        vm.day = 0;
-      }
-
-      activate();
-    });
-
-    function activate() {
-      // Loader.start();
-
-    }
-
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
-
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
-
-    function getNoOrdersForDay(week, day) {
-      return day * 3 + 10;
-    }
-  }
-
-})(); 
-(function () {
   angular
     .module('Hungry.admin.menus')
     .controller('MenuController', MenuController);
@@ -865,101 +888,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
   }
 })(); 
-(function () {
-  'use strict';
-
-  angular
-    .module('Hungry.admin.orders')
-    .controller('AdminOrdersController', AdminOrdersController);
-
-  function AdminOrdersController($scope, Loader, Orders, appConfig, AppState) {
-    var vm = this;
-
-    var state = {};
-    var changeUserOrders = AppState.change('userOrders');
-    
-    AppState.listen('userOrders', function(userOrders) { state.userOrders = userOrders; });
-
-    vm.state = state;
-
-    vm.days = [{
-      title: 'Mon'
-    }, {
-      title: 'Tue'
-    }, {
-      title: 'Wed'
-    }, {
-      title: 'Thu'
-    }, {
-      title: 'Fri'
-    }];
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().startOf('isoWeek');
-
-    vm.day = moment().isoWeekday() - 1;
-
-    // if it's weekend, default to monday next week.
-    if(vm.day > 4) {
-      vm.week = vm.week.add(1, 'week');
-      vm.day = 0;
-    }
-
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.getOrderedFoodForDay = getOrderedFoodForDay;
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-
-      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
-        vm.day = moment().isoWeekday() - 1;
-      } else {
-        vm.day = 0;
-      }
-
-      activate();
-    });
-
-    function activate() {
-      Loader.start();
-
-      Orders
-        .getUserOrders(vm.week.valueOf())
-        .then(changeUserOrders)
-        .then(Loader.stop);
-    }
-
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
-
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
-
-    function getOrderedFoodForDay(user) {
-      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
-
-      var orderedMenuFood = _.find(user.menu_foods, function(menuFood) {
-        return menuFood.menu && (menuFood.menu.date === day);
-      });
-
-      if(orderedMenuFood) {
-        return orderedMenuFood;
-      } else {
-        return null;
-      }
-    }
-  }
-
-})();
 (function () {
   angular
     .module('Hungry.core.api.foods')
@@ -1111,7 +1039,8 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     return {
       getOrders: getOrders,
       orderMenuFood: orderMenuFood,
-      getUserOrders: getUserOrders
+      getUserOrders: getUserOrders,
+      getFoodOrdersForDay: getFoodOrdersForDay
     };
 
     function getOrders(week, user) {
@@ -1141,6 +1070,15 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       var url = appConfig.api.concat('/admin/orders/users?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
         week: phpWeek,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getFoodOrdersForDay(day) {
+      var url = appConfig.api.concat('/admin/orders/food?day=:day');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        day: day,
       });
 
       return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
@@ -1226,35 +1164,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
-  'use strict';
-
-  angular
-    .module('Hungry.core.loader')
-    .service('Loader', LoaderService);
-
-  function LoaderService($mdToast) {
-    var toastConfig = {
-      position: 'top right',
-      parent: angular.element(document.body),
-      templateUrl: 'core/loader/loader',
-      hideDelay: false
-    };
-
-    return {
-      start: start,
-      stop: stop
-    };
-
-    function start() {
-      $mdToast.show(toastConfig);
-    }
-
-    function stop() {
-      $mdToast.hide();
-    }
-  }
-})(); 
-(function () {
   angular
     .module('Hungry.super-admin.users')
     .controller('UsersController', UsersController);
@@ -1297,3 +1206,127 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 
   }
 })(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.core.loader')
+    .service('Loader', LoaderService);
+
+  function LoaderService($mdToast) {
+    var toastConfig = {
+      position: 'top right',
+      parent: angular.element(document.body),
+      templateUrl: 'core/loader/loader',
+      hideDelay: false
+    };
+
+    return {
+      start: start,
+      stop: stop
+    };
+
+    function start() {
+      $mdToast.show(toastConfig);
+    }
+
+    function stop() {
+      $mdToast.hide();
+    }
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.orders')
+    .controller('AdminOrdersController', AdminOrdersController);
+
+  function AdminOrdersController($scope, Loader, Orders, appConfig, AppState) {
+    var vm = this;
+
+    var state = {};
+    var changeUserOrders = AppState.change('userOrders');
+    
+    AppState.listen('userOrders', function(userOrders) { state.userOrders = userOrders; });
+
+    vm.state = state;
+
+    vm.days = [{
+      title: 'Mon'
+    }, {
+      title: 'Tue'
+    }, {
+      title: 'Wed'
+    }, {
+      title: 'Thu'
+    }, {
+      title: 'Fri'
+    }];
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().startOf('isoWeek');
+
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+      vm.day = 0;
+    }
+
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.getOrderedFoodForDay = getOrderedFoodForDay;
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+
+      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
+        vm.day = moment().isoWeekday() - 1;
+      } else {
+        vm.day = 0;
+      }
+
+      activate();
+    });
+
+    function activate() {
+      Loader.start();
+
+      Orders
+        .getUserOrders(vm.week.valueOf())
+        .then(changeUserOrders)
+        .then(Loader.stop);
+    }
+
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getOrderedFoodForDay(user) {
+      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
+
+      var orderedMenuFood = _.find(user.menu_foods, function(menuFood) {
+        return menuFood.menu && (menuFood.menu.date === day);
+      });
+
+      if(orderedMenuFood) {
+        return orderedMenuFood;
+      } else {
+        return null;
+      }
+    }
+  }
+
+})();

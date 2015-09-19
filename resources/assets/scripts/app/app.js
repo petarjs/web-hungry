@@ -10,6 +10,14 @@
       window.location.href = '/auth/login';
     }
 
+    if($state.is('app.home')) {
+      if(user.roles.indexOf('admin') !== 0) {
+        $state.go('app.admin-dashboard');
+      } else if(user.roles.indexOf('user') !== 0) {
+        $state.go('app.order-food');
+      }
+    }
+
     var state = {};
     var changeUser = AppState.change('user');
     var changeRoles = AppState.change('roles');

@@ -17,6 +17,7 @@
   angular.module('Hungry.admin.food', []);
   angular.module('Hungry.admin.menus', []);
   angular.module('Hungry.admin.orders', []);
+  angular.module('Hungry.admin.dashboard', []);
   angular.module('Hungry.user.food', []);
   
   angular
@@ -47,7 +48,8 @@
       'Hungry.admin.food',
       'Hungry.admin.menus',
       'Hungry.user.food',
-      'Hungry.admin.orders'
+      'Hungry.admin.orders',
+      'Hungry.admin.dashboard'
 
     ])
     .config(configureRoutes)
@@ -63,6 +65,7 @@
         templateUrl: 'login/login',
         role: ''
       })
+
       .state('app', {
         url: '/',
         abstract: true,
@@ -85,6 +88,13 @@
         url: '',
         templateUrl: 'home/home',
         role: '',
+      })
+      
+      .state('app.admin-dashboard', {
+        url: 'admin/dashboard',
+        controller: 'DashboardController as vm',
+        templateUrl: 'admin/dashboard/dashboard',
+        role: 'admin',
       })
       
       .state('app.users', {

@@ -64,23 +64,17 @@ class OrderController extends Controller
   /**
    * @Get("/food")
    *
-   * Returns list of foods ordered for the specified day
-   * and list of users that ordered it
+   * Returns number of orders for each food for the specified week
+   * 
    */
-  public function getFoodOrdersForDay() {
-    $day = \Input::get('day');
+  public function getFoodOrdersForWeek() {
+    $week = \Input::get('week');
 
     $orderedFood = [];
 
-    Food::all()->each(function ($food) use($day, &$orderedFood) {
+    Food::all()->each(function ($food) use($week, &$orderedFood) {
       $arrayFood = $food->toArray();
-      $arrayFood['users'] = User::all()->filter(function($user) use($day, $food) {
-        $usersMenuFoods = $user->eatenFoodForDay($day);
-        return $usersMenuFoods->contains(function($key, $menuFood) use($food) {
-          return $menuFood->food_id == $food->id;
-        });
-      })->values();
-
+      $arrayFood['num_orders'] = Menu::getNumOrdersForWeekAndFood($week, $food);
       $orderedFood[] = $arrayFood;
     });
 

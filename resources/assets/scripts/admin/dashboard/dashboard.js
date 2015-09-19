@@ -61,7 +61,7 @@
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
     vm.getNoOrdersForDay = getNoOrdersForDay;
-    vm.getFoodOrdersForDay = getFoodOrdersForDay;
+    vm.getFoodOrdersForWeek = getFoodOrdersForWeek;
     vm.getFoodOrderPercentage = getFoodOrderPercentage;
     vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
 
@@ -80,14 +80,9 @@
       activate();
     });
 
-    $scope.$watch(function() {
-      return vm.day;
-    }, function() {
-      vm.getFoodOrdersForDay();
-    });
-
     function activate() {
       vm.getOrderNumbersForWeek();
+      vm.getFoodOrdersForWeek();
     }
 
     function setNextWeek() {
@@ -102,31 +97,26 @@
       return day * 3 + 10;
     }
 
-    function getFoodOrdersForDay() {
-      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
-
+    function getFoodOrdersForWeek() {
       Loader.start();
       Orders
-        .getFoodOrdersForDay(day)
+        .getFoodOrdersForWeek(vm.week.valueOf())
         .then(changeFoodOrders)
         .then(Loader.stop);
     }
 
     /**
      * Calculates percentage of orders of certain food
-     * for the current day
+     * for the current week
      * @param  {Number} foodOrders number of orders of the specifed food
      * @return {Number}            percentage of orders, 0 <= x <= 100
      */
-    function getFoodOrderPercentage(foodOrders) {
-      console.log(foodOrders, vm.totalFoodOrders, foodOrders / vm.totalFoodOrders);
-      return (foodOrders / vm.totalFoodOrders) * 100;
+    function getFoodOrderPercentage(food) {
+      return (food.num_orders / vm.totalFoodOrders) * 100;
     }
 
     function getTotalOrdersNo() {
-      return _.sum(vm.state.foodOrders, function(food) {
-        return food.users.length;
-      });
+      return _.sum(vm.state.foodOrders, 'num_orders');
     }
 
     function getOrderNumbersForWeek(week) {

@@ -76,4 +76,12 @@ class Menu extends Model
       });
     });
   }
+
+  public static function getNumOrdersForWeekAndFood($week, $food) {
+    return self::where('week', $week)->get()->sum(function($menu) use($food) {
+      return $menu->menuFoods->where('food_id', $food->id)->sum(function($menuFood) {
+        return $menuFood->eatenBy->count();
+      });
+    });
+  }
 }

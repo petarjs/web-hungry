@@ -69,7 +69,7 @@ class MenuController extends Controller
       $week = \Input::get('week');
       Menu::where('week', $week)->update(['published' => true]);
 
-      return Menu::where('week', $week)->get();
+      return Menu::with(['menuFoods', 'menuFoods.menu', 'menuFoods.food'])->where('week', $week)->get();
     }
 
     /**

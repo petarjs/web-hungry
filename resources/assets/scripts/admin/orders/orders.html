@@ -20,15 +20,8 @@
     </div>
 
     <div flex class="md-list-item-text" layout="column">
-      <p>{{ vm.getOrderedFoodForDay(user).food.description }}</p>
-    </div>
-    
-    <div flex>
-      <md-button class="md-primary" ng-repeat="role in vm.state.roles" ng-click="vm.toggleRole(user, role)" href="#" ng-disabled="vm.isCurrentUser(user)">
-          <i ng-if="$root.helpers.hasRole(role.name, user)" class="material-icons">remove</i>
-          <i ng-if="!$root.helpers.hasRole(role.name, user)" class="material-icons">add</i>
-        {{ role.display_name }}
-      </md-button>
+      <p class="user__text">Ordered:</p>
+      <p class="user__text"><b>{{ vm.getOrderedFoodForDay(user).food.description }}</b></p>
     </div>
   </md-list-item>
 </md-list>

@@ -97,6 +97,10 @@
 .user .user__email {
   margin-top: 0;
 }
+.user .user__text {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 body {
   font-family: 'Roboto';
   font-weight: 400;

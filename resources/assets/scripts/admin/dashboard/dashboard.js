@@ -9,6 +9,7 @@
     var vm = this;
 
     vm.user = user;
+    vm.totalUsers = 50;
 
     vm.days = [{
       title: 'Mon'
@@ -38,6 +39,7 @@
 
     vm.setNextWeek = setNextWeek;
     vm.setPrevWeek = setPrevWeek;
+    vm.getNoOrdersForDay = getNoOrdersForDay;
 
     $scope.$watch(function() {
       return vm.week;
@@ -65,6 +67,10 @@
 
     function setPrevWeek() {
       vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getNoOrdersForDay(week, day) {
+      return day * 3 + 10;
     }
   }
 

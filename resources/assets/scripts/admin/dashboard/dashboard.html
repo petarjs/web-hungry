@@ -12,8 +12,8 @@ Hello {{ vm.user.name }}!
 
 <div
     round-progress
-    max="100"
-    current="40"
+    max="vm.totalUsers"
+    current="vm.getNoOrdersForDay(vm.week, vm.day)"
     color="#45ccce"
     bgcolor="#eaeaea"
     radius="100"
@@ -24,3 +24,5 @@ Hello {{ vm.user.name }}!
     responsive="false"
     duration="800"
     animation="easeInOutQuart"></div>
+
+Ordered: {{ vm.getNoOrdersForDay(vm.week, vm.day) }} / {{ vm.totalUsers }}

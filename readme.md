@@ -15,6 +15,7 @@ Hungry is a web app for ordering food. Intended use - Cosmic Development Belgrad
 - [x] User orders food for each day of the week
 - [ ] User likes foods
 - [ ] User sees the most popular foods
+- [ ] User gets email reminders to ordered food
 
 ### Admin
 

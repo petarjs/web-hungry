@@ -10,9 +10,16 @@
   <md-button ng-repeat="day in vm.days" ng-click="vm.day = $index" ng-class="{ 'md-raised md-primary': $index === vm.day }">{{ day.title }}</md-button>
 </div>
 
+<div>
+  <md-input-container>
+    <label>Search (Name, Email, Food)</label>
+    <input ng-model="vm.userFilter">
+  </md-input-container>
+</div>
+
 <md-list>
   <md-subheader class="md-no-sticky">Who ordered what</md-subheader>
-  <md-list-item ng-repeat="user in vm.state.userOrders" class="user">
+  <md-list-item ng-repeat="user in vm.state.userOrders | filter: vm.userFilter" class="user">
     <img ng-src="{{ user.avatar }}" class="md-avatar" />
     <div flex class="md-list-item-text" layout="column">
       <h3 class="user__name">{{ user.name }}</h3>

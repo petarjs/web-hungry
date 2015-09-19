@@ -5,7 +5,7 @@
     .module('Hungry.admin.dashboard')
     .controller('DashboardController', DashboardController);
 
-  function DashboardController($scope, user, Loader, Orders, appConfig, AppState) {
+  function DashboardController($scope, user, Orders, appConfig, AppState, Loader) {
     var vm = this;
 
     var state = {};
@@ -15,6 +15,11 @@
     AppState.listen('foodOrders', function(foodOrders) { 
       state.foodOrders = foodOrders;
       vm.totalFoodOrders = getTotalOrdersNo(); 
+    });
+
+    var changeUsersIncompleteOrders = AppState.change('usersIncompleteOrders');
+    AppState.listen('usersIncompleteOrders', function(usersIncompleteOrders) { 
+      state.usersIncompleteOrders = usersIncompleteOrders; 
     });
 
     vm.user = user;
@@ -64,6 +69,7 @@
     vm.getFoodOrdersForWeek = getFoodOrdersForWeek;
     vm.getFoodOrderPercentage = getFoodOrderPercentage;
     vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
+    vm.getUsersWithIncompleteOrders = getUsersWithIncompleteOrders;
 
     $scope.$watch(function() {
       return vm.week;
@@ -83,6 +89,7 @@
     function activate() {
       vm.getOrderNumbersForWeek();
       vm.getFoodOrdersForWeek();
+      vm.getUsersWithIncompleteOrders();
     }
 
     function setNextWeek() {
@@ -133,6 +140,16 @@
         })
         .then(Loader.stop);
     }
+    
+    function getUsersWithIncompleteOrders() {
+      Loader.start();
+
+      Orders
+        .getUsersWithIncompleteOrders(vm.week.valueOf())
+        .then(changeUsersIncompleteOrders)
+        .then(Loader.stop);
+    }
   }
+
 
 })(); 

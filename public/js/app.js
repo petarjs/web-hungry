@@ -245,7 +245,8 @@ angular.module('Hungry.core.app-state').factory('AppState', function(StateServic
     menus: [],
     orders: [],
     userOrders: [],
-    foodOrders: []
+    foodOrders: [],
+    usersIncompleteOrders: []
   };
 
   var listeners = [];
@@ -496,7 +497,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.admin.dashboard')
     .controller('DashboardController', DashboardController);
 
-  function DashboardController($scope, user, Loader, Orders, appConfig, AppState) {
+  function DashboardController($scope, user, Orders, appConfig, AppState, Loader) {
     var vm = this;
 
     var state = {};
@@ -506,6 +507,11 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     AppState.listen('foodOrders', function(foodOrders) { 
       state.foodOrders = foodOrders;
       vm.totalFoodOrders = getTotalOrdersNo(); 
+    });
+
+    var changeUsersIncompleteOrders = AppState.change('usersIncompleteOrders');
+    AppState.listen('usersIncompleteOrders', function(usersIncompleteOrders) { 
+      state.usersIncompleteOrders = usersIncompleteOrders; 
     });
 
     vm.user = user;
@@ -555,6 +561,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.getFoodOrdersForWeek = getFoodOrdersForWeek;
     vm.getFoodOrderPercentage = getFoodOrderPercentage;
     vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
+    vm.getUsersWithIncompleteOrders = getUsersWithIncompleteOrders;
 
     $scope.$watch(function() {
       return vm.week;
@@ -574,6 +581,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function activate() {
       vm.getOrderNumbersForWeek();
       vm.getFoodOrdersForWeek();
+      vm.getUsersWithIncompleteOrders();
     }
 
     function setNextWeek() {
@@ -624,7 +632,17 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         })
         .then(Loader.stop);
     }
+    
+    function getUsersWithIncompleteOrders() {
+      Loader.start();
+
+      Orders
+        .getUsersWithIncompleteOrders(vm.week.valueOf())
+        .then(changeUsersIncompleteOrders)
+        .then(Loader.stop);
+    }
   }
+
 
 })(); 
 (function () {
@@ -1175,7 +1193,8 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       orderMenuFood: orderMenuFood,
       getUserOrders: getUserOrders,
       getFoodOrdersForWeek: getFoodOrdersForWeek,
-      getOrderNumbersForWeek: getOrderNumbersForWeek
+      getOrderNumbersForWeek: getOrderNumbersForWeek,
+      getUsersWithIncompleteOrders: getUsersWithIncompleteOrders
     };
 
     function getOrders(week, user) {
@@ -1225,6 +1244,17 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       var phpWeek = week/1000;
 
       var url = appConfig.api.concat('/admin/orders/numbers?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getUsersWithIncompleteOrders(week) {
+      var phpWeek = week/1000;
+
+      var url = appConfig.api.concat('/admin/orders/incomplete?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
         week: phpWeek,
       });

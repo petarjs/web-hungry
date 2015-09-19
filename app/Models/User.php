@@ -53,4 +53,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $menuFood->menu->date == $day;
       });
     }
+
+    public static function withIncompleteOrders($week) {
+      return self::all()->filter(function($user) use($week) {
+        $orderedFood = $user->eatenFood->filter(function($menuFood) use($week) {
+          return $menuFood->menu->week == $week;
+        });
+
+        // if 5 ordered meals for week, count the user as incomplete
+        return $orderedFood->count() != 5;
+      });
+    }
 }

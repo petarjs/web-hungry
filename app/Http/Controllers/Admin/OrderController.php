@@ -95,4 +95,15 @@ class OrderController extends Controller
       'num_total_orders' => User::count() * 5
     ];
   }
+
+  /**
+   * @Get("/incomplete")
+   *
+   * Return the users who didn't complete the orders
+   * for the specified week
+   */
+  public function getUsersWithIncompleteOrdersForWeek() {
+    $week = \Input::get('week');
+    return User::withIncompleteOrders($week);
+  }
 }

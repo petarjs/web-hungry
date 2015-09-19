@@ -1,28 +1,44 @@
-Hello {{ vm.user.name }}!
 
-<br>
+<div layout="row">
+  <div flex="65">
+    Hello {{ vm.user.name }}!
 
-Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}
-<div
-    round-progress
-    max="vm.numTotalOrders"
-    current="vm.numOrders"
-    color="#45ccce"
-    bgcolor="#eaeaea"
-    radius="100"
-    stroke="20"
-    semi="true"
-    rounded="true"
-    clockwise="true"
-    responsive="false"
-    duration="800"
-    animation="easeInOutQuart"></div>
+    <br>
 
-<h3>
-  <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
-  Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
-  <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
-</h3>
+    Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}
+    <div
+        round-progress
+        max="vm.numTotalOrders"
+        current="vm.numOrders"
+        color="#45ccce"
+        bgcolor="#eaeaea"
+        radius="100"
+        stroke="20"
+        semi="true"
+        rounded="true"
+        clockwise="true"
+        responsive="false"
+        duration="800"
+        animation="easeInOutQuart"></div>
+
+    <h3>
+      <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
+      Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
+      <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
+    </h3>
+  </div>
+  <div flex="35">
+    <md-list>
+      <md-subheader class="md-no-sticky">Users with incomplete orders</md-subheader>
+      <md-list-item ng-repeat="user in vm.state.usersIncompleteOrders" class="users-incomplete">
+        <img ng-if="user.avatar" ng-src="{{ user.avatar }}" class="md-avatar" />
+        <div flex class="md-list-item-text" layout="column">
+          <h3 class="user__name">{{ user.name }}</h3>
+        </div>
+      </md-list-item>
+    </md-list>
+  </div>
+</div>
 
 <md-list>
   <md-subheader class="md-no-sticky">Food Orders</md-subheader>

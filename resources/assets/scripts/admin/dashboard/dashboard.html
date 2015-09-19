@@ -1,1 +1,26 @@
-Hello {{ vm.user.name }}
+Hello {{ vm.user.name }}!
+
+<h3>
+  <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
+  Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
+  <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
+</h3>
+
+<div>
+  <md-button ng-repeat="day in vm.days" ng-click="vm.day = $index" ng-class="{ 'md-raised md-primary': $index === vm.day }">{{ day.title }}</md-button>
+</div>
+
+<div
+    round-progress
+    max="100"
+    current="40"
+    color="#45ccce"
+    bgcolor="#eaeaea"
+    radius="100"
+    stroke="20"
+    semi="true"
+    rounded="true"
+    clockwise="true"
+    responsive="false"
+    duration="800"
+    animation="easeInOutQuart"></div>

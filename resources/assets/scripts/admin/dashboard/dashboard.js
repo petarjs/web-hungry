@@ -112,6 +112,9 @@
      * @return {Number}            percentage of orders, 0 <= x <= 100
      */
     function getFoodOrderPercentage(food) {
+      if(!vm.totalFoodOrders || vm.totalFoodOrders === 0) {
+        return 0;
+      }
       return (food.num_orders / vm.totalFoodOrders) * 100;
     }
 

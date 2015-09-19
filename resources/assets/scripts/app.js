@@ -26,6 +26,7 @@
       'oitozero.ngSweetAlert',
       'hungry.templates',
       'ngMaterial',
+      'angular-svg-round-progress',
 
       'Hungry.core.auth',
       'Hungry.core.state',

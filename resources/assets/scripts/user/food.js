@@ -28,6 +28,12 @@
     vm.week = moment().startOf('isoWeek');
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
+    vm.orderingAllowed = true;
+    vm.orderDeadline = vm.orderDeadline = moment(vm.week).add(4, 'days').endOf('day');
+    if(moment().isAfter(vm.orderDeadline)) {
+      vm.orderDeadline.add(1, 'week');
+    }
+
     if(vm.selectedTabIndex > 4) {
       vm.week = vm.week.add(1, 'week');
       vm.selectedTabIndex = 0;
@@ -59,10 +65,23 @@
       vm.weekStart = vm.week.format(appConfig.date.format);
       vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
 
-      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
+      var isCurrentWeek = moment().isBetween(vm.week, moment(vm.week).add(4, 'days'));
+
+      if(isCurrentWeek) {
         vm.selectedTabIndex = moment().isoWeekday() - 1;
       } else {
         vm.selectedTabIndex = 0;
+      }
+
+      if(isCurrentWeek || vm.week.isAfter(moment(), 'day')) {
+        vm.orderingAllowed = true;
+      } else {
+        vm.orderingAllowed = false;
+      }
+
+      vm.orderDeadline = moment(vm.week).add(4, 'days').endOf('day');
+      if(moment().isAfter(vm.orderDeadline)) {
+        vm.orderDeadline.add(1, 'week');
       }
 
       activate();

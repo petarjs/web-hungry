@@ -9,7 +9,9 @@
     "/bower_components/angular-animate/angular-animate.js",
     "/bower_components/angular-aria/angular-aria.js",
     "/bower_components/angular-material/angular-material.js",
-    "/bower_components/angular-svg-round-progressbar/build/roundProgress.js"
+    "/bower_components/angular-svg-round-progressbar/build/roundProgress.js",
+    "/bower_components/angular-timer/dist/angular-timer.js",
+    "/bower_components/humanize-duration/humanize-duration.js"
 
   ],
   "stylesheets": [

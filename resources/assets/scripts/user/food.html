@@ -2,6 +2,18 @@
   Order Food
 </h3>
 
+<p>
+  <b>Important: You can order food for the next week until Friday this week.</b>
+</p>
+
+<p ng-show="vm.orderingAllowed">
+  Time left to {{ vm.orderDeadline.format($root.helpers.appConfig.date.format) }} (order deadline):
+  <br>
+  <timer end-time="vm.orderDeadline.valueOf()">{{days}} days, {{hours}} hours.</timer>
+</p>
+
+<h4 ng-if="!vm.orderingAllowed">Orders for this week are closed.</h4>
+
 <div layout="row" layout-wrap>
   <div flex flex-md="100" flex-sm="100">Hello</div>
   <div flex flex-md="100" flex-sm="100" layout="column">
@@ -41,7 +53,7 @@
                     <md-card-content>
                       <h2 class="md-title">{{ menuFood.food.description }}</h2>
                     </md-card-content>
-                    <div class="md-actions" layout="row" layout-align="end center">
+                    <div class="md-actions" layout="row" layout-align="end center" ng-if="vm.orderingAllowed">
                       <md-button ng-show="!vm.isOldMenu(menuFood.menu)" flex ng-click="vm.orderMenuFood(menuFood)">Order</md-button>
                     </div>
                   </md-card>

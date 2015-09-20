@@ -28,6 +28,7 @@
       'hungry.templates',
       'ngMaterial',
       'angular-svg-round-progress',
+      'timer',
 
       'Hungry.core.auth',
       'Hungry.core.state',
@@ -170,7 +171,8 @@
       getDayName: getDayName,
       size: _.size,
       loader: Loader,
-      getPhpWeek: getPhpWeek
+      getPhpWeek: getPhpWeek,
+      appConfig: appConfig
     };
 
     function getDayName(day) {

@@ -108,6 +108,9 @@ body {
   font-family: 'Roboto';
   font-weight: 400;
 }
+[ng-cloak] {
+  display: none !important;
+}
 .left {
   float: left;
 }

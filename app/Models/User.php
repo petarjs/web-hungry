@@ -64,4 +64,22 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $orderedFood->count() != 5;
       });
     }
+
+    public static function getPrintData($date) {
+      $users = self::all();
+      $usersArray = [];
+      $users->each(function($user) use ($date, &$usersArray) {
+        $userArray = $user->toArray();
+
+        $userArray['ordered_food'] = $user->eatenFood->filter(function($menuFood) use ($date) {
+          return $menuFood->menu->date == $date;
+        })->map(function($menuFood) {
+          return $menuFood->food->description;
+        })->first();
+
+        $usersArray[] = $userArray;
+      });
+
+      return $usersArray;
+    }
 }

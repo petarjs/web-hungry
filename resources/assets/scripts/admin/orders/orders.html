@@ -27,8 +27,9 @@
     </div>
 
     <div flex class="md-list-item-text" layout="column">
-      <p class="user__text">Ordered:</p>
-      <p class="user__text"><b>{{ vm.getOrderedFoodForDay(user).food.description }}</b></p>
+      <p ng-if="!!vm.getOrderedFoodForDay(user)" class="user__text">Ordered:</p>
+      <p ng-if="!!vm.getOrderedFoodForDay(user)" class="user__text"><b>{{ vm.getOrderedFoodForDay(user).food.description }}</b></p>
+      <p ng-if="!vm.getOrderedFoodForDay(user)" class="user__text--warning">Hasn't ordered yet.</p>
     </div>
   </md-list-item>
 </md-list>

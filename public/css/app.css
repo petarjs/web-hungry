@@ -101,6 +101,9 @@
   margin-top: 0;
   margin-bottom: 0;
 }
+.user .user__text--warning {
+  color: #f44336;
+}
 body {
   font-family: 'Roboto';
   font-weight: 400;

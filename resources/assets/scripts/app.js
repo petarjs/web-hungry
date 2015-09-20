@@ -169,11 +169,16 @@
       hasRole: Auth.hasRole,
       getDayName: getDayName,
       size: _.size,
-      loader: Loader
+      loader: Loader,
+      getPhpWeek: getPhpWeek
     };
 
     function getDayName(day) {
       return moment(day).format('ddd');
+    }
+
+    function getPhpWeek(week) {
+      return week / 1000;
     }
   }
 

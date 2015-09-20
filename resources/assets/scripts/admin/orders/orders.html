@@ -1,5 +1,7 @@
 <h3>Orders</h3>
 
+<md-button class="md-primary" ng-href="/orders/print?week={{ $root.helpers.getPhpWeek(vm.week) }}">Print Orders</md-button>
+
 <h3>
   <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
   Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}

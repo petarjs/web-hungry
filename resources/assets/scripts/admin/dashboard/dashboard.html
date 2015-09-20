@@ -4,6 +4,10 @@
     Hello {{ vm.user.name }}!
 
     <br>
+    
+    <md-button class="md-primary" ng-href="/orders/print?week={{ $root.helpers.getPhpWeek(vm.week) }}">Print Orders</md-button>
+
+    <br>
 
     Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}
     <div

@@ -13,17 +13,31 @@
       hideDelay: false
     };
 
+    var loaderCount = 0;
+
     return {
       start: start,
       stop: stop
     };
 
     function start() {
-      $mdToast.show(toastConfig);
+      if(loaderCount === 0) {
+        $mdToast.show(toastConfig);
+      }
+
+      loaderCount++;
     }
 
     function stop() {
-      $mdToast.hide();
+      if(loaderCount === 0) {
+        return;
+      }
+      
+      loaderCount--;
+
+      if(loaderCount === 0) {
+        $mdToast.hide();
+      }
     }
   }
 })(); 

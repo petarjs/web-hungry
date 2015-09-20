@@ -17,7 +17,8 @@
 
     return {
       start: start,
-      stop: stop
+      stop: stop,
+      isLoading: isLoading
     };
 
     function start() {
@@ -32,12 +33,16 @@
       if(loaderCount === 0) {
         return;
       }
-      
+
       loaderCount--;
 
       if(loaderCount === 0) {
         $mdToast.hide();
       }
+    }
+
+    function isLoading() {
+      return loaderCount > 0;
     }
   }
 })(); 

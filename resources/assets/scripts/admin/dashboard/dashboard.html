@@ -36,6 +36,7 @@
           <h3 class="user__name">{{ user.name }}</h3>
         </div>
       </md-list-item>
+      <div ng-if="!$root.helpers.size(vm.state.usersIncompleteOrders) && !$root.helpers.loader.isLoading()">Everone completed their orders for this week!</div>
     </md-list>
   </div>
 </div>

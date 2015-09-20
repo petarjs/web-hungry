@@ -147,7 +147,7 @@
       });
   }
 
-  function appRun ($rootScope, $state, Auth, $http, $window, appConfig) {
+  function appRun ($rootScope, $state, Auth, $http, $window, appConfig, Loader) {
     $http.defaults.headers.common['X-CSRF-TOKEN'] = $window.csrfToken;
     
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
@@ -167,7 +167,9 @@
 
     $rootScope.helpers = {
       hasRole: Auth.hasRole,
-      getDayName: getDayName
+      getDayName: getDayName,
+      size: _.size,
+      loader: Loader
     };
 
     function getDayName(day) {

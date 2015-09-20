@@ -147,7 +147,7 @@
       });
   }
 
-  function appRun ($rootScope, $state, Auth, $http, $window, appConfig) {
+  function appRun ($rootScope, $state, Auth, $http, $window, appConfig, Loader) {
     $http.defaults.headers.common['X-CSRF-TOKEN'] = $window.csrfToken;
     
     $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
@@ -167,7 +167,9 @@
 
     $rootScope.helpers = {
       hasRole: Auth.hasRole,
-      getDayName: getDayName
+      getDayName: getDayName,
+      size: _.size,
+      loader: Loader
     };
 
     function getDayName(day) {
@@ -175,6 +177,45 @@
     }
   }
 
+})(); 
+(function () {
+  angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, Auth, user, roles, foods, $state) {
+    var vm = this;
+
+    if(!user.roles || !user.roles.length) {
+      window.location.href = '/auth/login';
+    }
+
+    if($state.is('app.home')) {
+      if(Auth.hasRole('admin')) {
+        $state.go('app.admin-dashboard');
+      } else if(Auth.hasRole('user')) {
+        $state.go('app.order-food');
+      }
+    }
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+    var changeFoods = AppState.change('foods');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+      changeFoods(foods);
+    }
+
+  }
 })(); 
 (function () {
   angular
@@ -307,45 +348,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
           return data[matched.replace(placeholderSymbol, '')];
       });
     };
-
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, Auth, user, roles, foods, $state) {
-    var vm = this;
-
-    if(!user.roles || !user.roles.length) {
-      window.location.href = '/auth/login';
-    }
-
-    if($state.is('app.home')) {
-      if(Auth.hasRole('admin')) {
-        $state.go('app.admin-dashboard');
-      } else if(Auth.hasRole('user')) {
-        $state.go('app.order-food');
-      }
-    }
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-    var changeFoods = AppState.change('foods');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-    AppState.listen('foods', function(foods) { state.foods = foods; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-      changeFoods(foods);
-    }
 
   }
 })(); 
@@ -488,72 +490,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       });
     }
 
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
-
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
-
-    return {
-      hasRole: hasRole
-    };
-
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
-    }
-  }
-})(); 
-(function () {
-  'use strict';
-
-  angular
-    .module('Hungry.core.loader')
-    .service('Loader', LoaderService);
-
-  function LoaderService($mdToast) {
-    var toastConfig = {
-      position: 'top right',
-      parent: angular.element(document.body),
-      templateUrl: 'core/loader/loader',
-      hideDelay: false
-    };
-
-    var loaderCount = 0;
-
-    return {
-      start: start,
-      stop: stop
-    };
-
-    function start() {
-      if(loaderCount === 0) {
-        $mdToast.show(toastConfig);
-      }
-
-      loaderCount++;
-    }
-
-    function stop() {
-      if(loaderCount === 0) {
-        return;
-      }
-      
-      loaderCount--;
-
-      if(loaderCount === 0) {
-        $mdToast.hide();
-      }
-    }
   }
 })(); 
 (function () {
@@ -1386,6 +1322,29 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
+
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
+
+    return {
+      hasRole: hasRole
+    };
+
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
+    }
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.super-admin.users')
     .controller('UsersController', UsersController);
 
@@ -1425,5 +1384,53 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         });
     }
 
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.core.loader')
+    .service('Loader', LoaderService);
+
+  function LoaderService($mdToast) {
+    var toastConfig = {
+      position: 'top right',
+      parent: angular.element(document.body),
+      templateUrl: 'core/loader/loader',
+      hideDelay: false
+    };
+
+    var loaderCount = 0;
+
+    return {
+      start: start,
+      stop: stop,
+      isLoading: isLoading
+    };
+
+    function start() {
+      if(loaderCount === 0) {
+        $mdToast.show(toastConfig);
+      }
+
+      loaderCount++;
+    }
+
+    function stop() {
+      if(loaderCount === 0) {
+        return;
+      }
+
+      loaderCount--;
+
+      if(loaderCount === 0) {
+        $mdToast.hide();
+      }
+    }
+
+    function isLoading() {
+      return loaderCount > 0;
+    }
   }
 })(); 

@@ -92,6 +92,9 @@
   color: #ffffff;
   font-weight: bold;
 }
+.user.user--unapproved {
+  border: 1px solid red;
+}
 .user .user__name {
   margin-bottom: 0;
 }

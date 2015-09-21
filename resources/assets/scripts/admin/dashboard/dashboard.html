@@ -6,23 +6,27 @@
 
 <div layout="row">
   <div flex>
-    <md-button target="blank" class="md-primary" ng-href="/orders/print/today }}">Print Today's Orders</md-button>
+  
+    <div ng-if="vm.numOrders === 0">No orders yet</div>
 
-    <div
-        round-progress
-        max="vm.numTotalOrders"
-        current="vm.numOrders"
-        color="#45ccce"
-        bgcolor="#eaeaea"
-        radius="100"
-        stroke="20"
-        semi="true"
-        rounded="true"
-        clockwise="true"
-        responsive="false"
-        duration="800"
-        animation="easeInOutQuart"></div>
-    <b>Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}</b>
+    <div ng-if="vm.numOrders !== 0">
+      <md-button target="blank" class="md-primary" ng-href="/orders/print/today }}">Print Today's Orders</md-button>
+      <div
+          round-progress
+          max="vm.numTotalOrders"
+          current="vm.numOrders"
+          color="#45ccce"
+          bgcolor="#eaeaea"
+          radius="100"
+          stroke="20"
+          semi="true"
+          rounded="true"
+          clockwise="true"
+          responsive="false"
+          duration="800"
+          animation="easeInOutQuart"></div>
+      <b>Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}</b>
+    </div>
 
   </div>
 

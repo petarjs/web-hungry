@@ -108,6 +108,9 @@
 .user .user__text--warning {
   color: #f44336;
 }
+.footer {
+  margin-top: 100px;
+}
 body {
   font-family: 'Roboto';
   font-weight: 400;

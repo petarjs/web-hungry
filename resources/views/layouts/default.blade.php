@@ -134,7 +134,7 @@
       <div flex="70" flex-sm="100" flex-md="80" ui-view></div>
     </div>
 
-    <div layout="row" layout-align="center center">
+    <div layout="row" layout-align="center center" class="footer">
       <div flex="70" flex-sm="100" flex-md="80" layout="row">
         <div flex>
           <h3>

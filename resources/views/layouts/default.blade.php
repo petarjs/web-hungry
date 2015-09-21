@@ -133,6 +133,27 @@
     <div layout="row" layout-align="center center">
       <div flex="70" flex-sm="100" flex-md="80" ui-view></div>
     </div>
+
+    <div layout="row" layout-align="center center">
+      <div flex="70" flex-sm="100" flex-md="80" layout="row">
+        <div flex>
+          <h3>
+            Made with lots of <i class="material-icons">favorite</i> and lots of <i class="material-icons">local_cafe</i> 
+            <br>
+            @ Cosmic Development!
+          </h3>
+        </div>
+        <div flex>
+          <h3>Please contribute!</h3>
+          <p>
+            Request features, report bugs and develop your own code! <i class="material-icons">bug_report</i>
+          </p>
+          <a href="https://github.com/petarslovic/web-hungry">https://github.com/petarslovic/web-hungry</a>
+          <br><br>
+          <b>We're open source and open to pull requests!</b>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Scripts -->

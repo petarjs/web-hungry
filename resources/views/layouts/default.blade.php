@@ -36,8 +36,8 @@
 </head>
 <body>
   <div class="container">
-    <header class="header">
-      <div class="__logo">
+    <header class="header" layout="row" layout-align="center center">
+      <div class="__logo" flex="70" flex-sm="100" flex-md="80">
         HUNGRY
         <span class="__subtitle">Cosmic</span>
         <span class="right __menu">
@@ -129,8 +129,10 @@
         </span>
       </div>
     </header>
-
-    <div ui-view></div>
+    
+    <div layout="row" layout-align="center center">
+      <div flex="70" flex-sm="100" flex-md="80" ui-view></div>
+    </div>
   </div>
 
   <!-- Scripts -->

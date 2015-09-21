@@ -1,4 +1,4 @@
-<h3>Manage Meals</h3>
+<h3>Manage Food</h3>
 
 
 <md-button ui-sref="app.food-create" class="md-raised md-primary">Create</md-button>
@@ -11,10 +11,10 @@
       <md-card-content>
         <h2 class="md-title">{{ food.description }}</h2>
       </md-card-content>
-      <div class="md-actions" layout="row" layout-align="end center">
-        <md-button flex class="md-raised md-primary" ng-click="vm.toggleDefault(food)">{{ food.default ? 'Remove Default' : 'Make Default'}}</md-button>
+      <div class="md-actions" layout="row" layout-align="center center">
+        <md-button class="md-raised" ng-class="{'md-primary': !food.default, 'md-warn': food.default}" ng-click="vm.toggleDefault(food)">{{ food.default ? 'Remove Default' : 'Make Default'}}</md-button>
 
-        <md-menu md-position-mode="target-right target">
+        <md-menu flex="15" md-position-mode="target-right target">
           <md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
             <i class="material-icons">more_vert</i>
           </md-button>

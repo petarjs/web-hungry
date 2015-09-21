@@ -121,6 +121,9 @@ body {
 .va-m {
   vertical-align: middle;
 }
+.ta-c {
+  text-align: center;
+}
 .h100 {
   height: 100%;
 }

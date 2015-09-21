@@ -1,15 +1,13 @@
+<div layout="row">
+  <div flex>
+    <h3>Hello {{ vm.user.name }}!</h3>
+  </div>
+</div>
 
 <div layout="row">
-  <div flex="65">
-    Hello {{ vm.user.name }}!
-
-    <br>
-    
+  <div flex>
     <md-button target="blank" class="md-primary" ng-href="/orders/print/today }}">Print Today's Orders</md-button>
 
-    <br>
-
-    Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}
     <div
         round-progress
         max="vm.numTotalOrders"
@@ -24,12 +22,43 @@
         responsive="false"
         duration="800"
         animation="easeInOutQuart"></div>
+    <b>Number of orders this week: {{ vm.numOrders }} / {{ vm.numTotalOrders }}</b>
 
-    <h3>
+  </div>
+
+  <div flex class="ta-c">
+    <h3>Number of users</h3>
+    <h3>Number of food</h3>
+  </div>
+
+  <div flex>
+    <h3>Graph with all time order stats</h3>
+  </div>
+  
+</div>
+
+<div layout="row">
+  <div flex>
+    <h3 class="ta-c">
       <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
       Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
       <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
     </h3>
+  </div>
+</div>
+
+<div layout="row">
+  <div flex>
+    <md-list>
+      <md-subheader class="md-no-sticky">Food Orders</md-subheader>
+      <md-list-item ng-repeat="food in vm.state.foodOrders | orderBy: 'num_orders': true" class="food-order">
+        <img ng-if="food.image" ng-src="{{ food.image }}" class="md-avatar" />
+        <div flex class="md-list-item-text" layout="column">
+          <h3 class="user__name">{{ food.description }} - {{ food.num_orders }} orders</h3>
+          <md-progress-linear md-mode="determinate" value="{{ vm.getFoodOrderPercentage(food) }}"></md-progress-linear>
+        </div>
+      </md-list-item>
+    </md-list>
   </div>
   <div flex="35">
     <md-list>
@@ -44,14 +73,3 @@
     </md-list>
   </div>
 </div>
-
-<md-list>
-  <md-subheader class="md-no-sticky">Food Orders</md-subheader>
-  <md-list-item ng-repeat="food in vm.state.foodOrders | orderBy: 'num_orders': true" class="food-order">
-    <img ng-if="food.image" ng-src="{{ food.image }}" class="md-avatar" />
-    <div flex class="md-list-item-text" layout="column">
-      <h3 class="user__name">{{ food.description }} - {{ food.num_orders }} orders</h3>
-      <md-progress-linear md-mode="determinate" value="{{ vm.getFoodOrderPercentage(food) }}"></md-progress-linear>
-    </div>
-  </md-list-item>
-</md-list>

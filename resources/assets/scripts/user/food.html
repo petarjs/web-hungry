@@ -1,18 +1,22 @@
-<h3>
-  Order Food
-</h3>
+<div layout="row">
+  <div flex>
+    <h3>
+      Order Food
+    </h3>
 
-<p>
-  <b>Important: You can order food for the next week until Friday this week.</b>
-</p>
+    <p>
+      <b>Important: You can order food for the next week until Friday this week.</b>
+    </p>
 
-<p ng-show="vm.orderingAllowed">
-  Time left to {{ vm.orderDeadline.format($root.helpers.appConfig.date.format) }} (order deadline):
-  <br>
-  <timer end-time="vm.orderDeadline.valueOf()">{{days}} days, {{hours}} hours.</timer>
-</p>
+    <p ng-show="vm.orderingAllowed">
+      Time left to {{ vm.orderDeadline.format($root.helpers.appConfig.date.format) }} (order deadline):
+      <br>
+      <timer end-time="vm.orderDeadline.valueOf()">{{days}} days, {{hours}} hours.</timer>
+    </p>
 
-<h4 ng-if="!vm.orderingAllowed">Orders for this week are closed.</h4>
+    <h4 ng-if="!vm.orderingAllowed">Orders for this week are closed.</h4>
+  </div>
+</div>
 
 <div layout="row" layout-wrap>
   <div flex flex-md="100" flex-sm="100">Hello</div>

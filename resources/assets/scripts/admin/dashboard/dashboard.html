@@ -4,8 +4,8 @@
   </div>
 </div>
 
-<div layout="row">
-  <div flex>
+<div layout="row" layout-wrap>
+  <div flex flex-sm="100">
   
     <div ng-if="vm.numOrders === 0">No orders yet</div>
 
@@ -30,18 +30,18 @@
 
   </div>
 
-  <div flex class="ta-c">
+  <div flex class="ta-c" flex-sm="100">
     <h3>Number of users</h3>
     <h3>Number of foods</h3>
   </div>
 
-  <div flex>
+  <div flex flex-sm="100">
     <h3>Graph with all time order stats</h3>
   </div>
   
 </div>
 
-<div layout="row">
+<div layout="row" layout-wrap>
   <div flex>
     <h3 class="ta-c">
       <md-button ng-click="vm.setPrevWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_left</i></md-button>
@@ -51,8 +51,8 @@
   </div>
 </div>
 
-<div layout="row">
-  <div flex>
+<div layout="row" layout-wrap>
+  <div flex flex-sm="100">
     <md-list>
       <md-subheader class="md-no-sticky">Food Orders</md-subheader>
       <md-list-item ng-repeat="food in vm.state.foodOrders | orderBy: 'num_orders': true" class="food-order">
@@ -64,7 +64,7 @@
       </md-list-item>
     </md-list>
   </div>
-  <div flex="35">
+  <div flex="35" flex-sm="100">
     <md-list>
       <md-subheader class="md-no-sticky">Users with incomplete orders</md-subheader>
       <md-list-item ng-repeat="user in vm.state.usersIncompleteOrders" class="users-incomplete">

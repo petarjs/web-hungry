@@ -135,15 +135,15 @@
     </div>
 
     <div layout="row" layout-align="center center" class="footer">
-      <div flex="70" flex-sm="100" flex-md="80" layout="row">
-        <div flex>
+      <div flex="70" flex-sm="100" flex-md="80" layout="row" layout-wrap>
+        <div flex flex-sm="100">
           <h3>
             Made with lots of <i class="material-icons">favorite</i> and lots of <i class="material-icons">local_cafe</i> 
             <br>
             @ Cosmic Development!
           </h3>
         </div>
-        <div flex>
+        <div flex flex-sm="100">
           <h3>Please contribute!</h3>
           <p>
             Request features, report bugs and develop your own code! <i class="material-icons">bug_report</i>

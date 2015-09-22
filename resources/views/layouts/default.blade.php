@@ -36,7 +36,7 @@
 </head>
 <body>
   <div class="container">
-    <header class="header" layout="row" layout-align="center center">
+    <header class="header" layout="row" layout-align="center center" layout-padding>
       <div class="__logo" flex="70" flex-sm="100" flex-md="80">
         HUNGRY
         <span class="__subtitle">Cosmic</span>
@@ -130,11 +130,11 @@
       </div>
     </header>
     
-    <div layout="row" layout-align="center center">
+    <div layout="row" layout-align="center center" layout-padding>
       <div flex="70" flex-sm="100" flex-md="80" ui-view></div>
     </div>
 
-    <div layout="row" layout-align="center center" class="footer">
+    <div layout="row" layout-align="center center" class="footer" layout-padding>
       <div flex="70" flex-sm="100" flex-md="80" layout="row" layout-wrap>
         <div flex flex-sm="100">
           <h3>

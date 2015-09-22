@@ -11,6 +11,7 @@ class HomeController extends Controller
 {
   /**
    * @Get("/")
+   * @Middleware("auth")
    * @return \Illuminate\View\View
    */
   public function getHome() {

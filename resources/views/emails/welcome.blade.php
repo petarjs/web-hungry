@@ -950,12 +950,12 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
               <tbody><tr>
                 <td style="padding: 0;vertical-align: top">&nbsp;</td>
                 <td class="logo emb-logo-padding-box" style="padding: 0;vertical-align: top;mso-line-height-rule: at-least;width: 600px;padding-top: 32px;padding-bottom: 20px">
-                  <div class="logo-center" style="font-weight: 400;font-family: Merriweather,Georgia,serif;color: #202020;text-align: center;font-size: 0px !important;line-height: 0 !important" align="center" id="emb-email-header"><img style="border: 0;-ms-interpolation-mode: bicubic;display: block;Margin-left: auto;Margin-right: auto;max-width: 450px" src="https://i1.createsend1.com/ei/i/32/46D/F71/085554/csfinal/hungry-logo.png" alt="" width="300" height="47"></div>
+                  <div class="logo-center" style="font-weight: 400;font-family: Merriweather,Georgia,serif;color: #202020;text-align: center;font-size: 0px !important;line-height: 0 !important" align="center" id="emb-email-header"><img style="border: 0;-ms-interpolation-mode: bicubic;display: block;Margin-left: auto;Margin-right: auto;max-width: 450px" src="{{ asset('images/hungry-logo.png') }}" alt="" width="300" height="47"></div>
                 </td>
                 <td style="padding: 0;vertical-align: top">&nbsp;</td>
               </tr>
             </tbody></table>
-            
+
           <table class="one-col-bg" style="border-collapse: collapse;border-spacing: 0;width: 100%">
             <tbody><tr>
               <td style="padding: 0;vertical-align: top" align="center">

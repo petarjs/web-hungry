@@ -20,5 +20,5 @@ Route::controllers([
 ]);
 
 Route::get('m', function() {
-  return view('emails.welcome', compact(Hungry\Models\User::first()));
+  return view('emails.user-was-approved', compact(Hungry\Models\User::first()));
 });

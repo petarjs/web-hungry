@@ -966,7 +966,7 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 36px;line-height: 44px;font-family: &quot;PT Serif&quot;,Georgia,serif;color: #2f353e;text-align: center">Welcome to Hungry!</h1><h3 style="font-style: normal;font-weight: 700;Margin-bottom: 10px;Margin-top: 18px;font-size: 14px;line-height: 22px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #929292;text-align: center">We wish you a delicious time!</h3>
+                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 36px;line-height: 44px;font-family: &quot;PT Serif&quot;,Georgia,serif;color: #2f353e;text-align: center">Order your food!</h1><h3 style="font-style: normal;font-weight: 700;Margin-bottom: 10px;Margin-top: 18px;font-size: 14px;line-height: 22px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #929292;text-align: center">Don't stay Hungry</h3>
                             </td>
                           </tr>
                         </tbody></table>
@@ -984,7 +984,12 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">Dear hungry friend, you have just been approved by one of our admins! <br><br> Now you can start ordering food! Omnomomom.</p>
+                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">Hello, hungry friend. It seems that you didn't fill all food orders for the next week.
+                              <br> <br>
+                              Please go to the Hungry web app now and finish your order.
+                              <br>
+                              Don't stay Hungry!</p>
+                              
                               <br>
                               <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 16px;line-height: 25px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e"></p>
                             </td>
@@ -996,7 +1001,7 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                                                     <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
                                                       
                                     <div class="btn" style="Margin-bottom: 0;Margin-top: 0;text-align: center">
-                                      <!--[if !mso]--><a style="border-radius: 3px;display: inline-block;font-size: 14px;font-weight: 700;line-height: 24px;padding: 13px 35px 12px 35px;text-align: center;text-decoration: none !important;transition: opacity 0.2s ease-in;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;background-color: #b31b1b;color: #fff" href="{{ url('/') }}" target="_blank">Open Hungry</a><!--[endif]-->
+                                      <!--[if !mso]--><a style="border-radius: 3px;display: inline-block;font-size: 14px;font-weight: 700;line-height: 24px;padding: 13px 35px 12px 35px;text-align: center;text-decoration: none !important;transition: opacity 0.2s ease-in;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;background-color: #b31b1b;color: #fff" href="{{ url('/') }}" target="_blank">Finish Order</a><!--[endif]-->
                                     <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="http://adsf.com" style="width:111px" arcsize="7%" fillcolor="#B31B1B" stroke="f"><v:textbox style="mso-fit-shape-to-text:t" inset="0px,12px,0px,11px"><center style="font-size:14px;line-height:24px;color:#FFFFFF;font-family:sans-serif;font-weight:700;mso-line-height-rule:exactly;mso-text-raise:4px">Button</center></v:textbox></v:roundrect><![endif]--></div>
                                   
                                                     </td>

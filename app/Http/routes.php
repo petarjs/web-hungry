@@ -19,8 +19,6 @@ Route::controllers([
   'password' => 'Auth\PasswordController',
 ]);
 
-Route::get('a', function() {
-  $timestamp = (int) '1441576800';
-
-  return \Carbon\Carbon::createFromTimeStamp($timestamp);
+Route::get('m', function() {
+  return view('emails.welcome', compact(Hungry\Models\User::first()));
 });

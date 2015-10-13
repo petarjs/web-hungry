@@ -31,7 +31,7 @@
      * Current week start date (monday)
      * @type Moment
      */
-    vm.week = moment().startOf('isoWeek');
+    vm.week = moment().add(1, 'week').startOf('isoWeek');
 
     vm.day = moment().isoWeekday() - 1;
 

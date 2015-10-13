@@ -85,7 +85,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     public static function getWeekPrintData($carbonDate) {
-      $week = $carbonDate->addWeek(1)->startOfWeek();
+      $week = $carbonDate->startOfWeek();
       $days = collect([
         $week,
         $week->copy()->addDays(1),

@@ -21,6 +21,12 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 
+  <style>
+    .table-condensed.table td,
+    .table-condensed.table th {
+      padding: .4rem !important;
+    }
+  </style>
 </head>
 <body>
   <div class="container">

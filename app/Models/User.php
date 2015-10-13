@@ -60,12 +60,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
           return $menuFood->menu->week == $week;
         });
 
-        // if 5 ordered meals for week, count the user as incomplete
+        // if not 5 ordered meals for week, count the user as incomplete
         return $orderedFood->count() != 5;
       });
     }
 
-    public static function getPrintData($date) {
+    public static function getPrintData($carbonDate) {
+      $date = $carbonDate->toDateTimeString();
       $users = self::all();
       $usersArray = [];
       $users->each(function($user) use ($date, &$usersArray) {
@@ -76,6 +77,43 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         })->map(function($menuFood) {
           return $menuFood->food->description;
         })->first();
+
+        $usersArray[] = $userArray;
+      });
+
+      return $usersArray;
+    }
+
+    public static function getWeekPrintData($carbonDate) {
+      $week = $carbonDate->addWeek(1)->startOfWeek();
+      $days = collect([
+        $week,
+        $week->copy()->addDays(1),
+        $week->copy()->addDays(2),
+        $week->copy()->addDays(3),
+        $week->copy()->addDays(4)
+      ]);
+
+      $users = self::all();
+      $usersArray = [];
+      $users->each(function($user) use ($week, $days, &$usersArray) {
+        $userArray = $user->toArray();
+
+
+        $userArray['ordered_food'] = $days->map(function($day) use($user) {
+          return collect(\DB::table('eats')
+                            ->join('users', 'users.id', '=', 'eats.user_id')
+                            ->join('menu_foods', 'menu_foods.id', '=', 'eats.menu_food_id')
+                            ->join('menus', 'menus.id', '=', 'menu_foods.menu_id')
+                            ->join('foods', 'foods.id', '=', 'menu_foods.food_id')
+                            ->where('users.id', $user->id)
+                            ->where('menus.date', $day)
+                            ->select('foods.description')
+                            ->get())
+                  ->map(function($food) {
+                    return $food->description;
+                  })->first();
+        });
 
         $usersArray[] = $userArray;
       });

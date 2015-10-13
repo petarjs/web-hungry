@@ -25,7 +25,7 @@
      * Current week start date (monday)
      * @type Moment
      */
-    vm.week = moment().add('week', 1).startOf('isoWeek');
+    vm.week = moment().add(1, 'week').startOf('isoWeek');
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
     vm.orderingAllowed = true;

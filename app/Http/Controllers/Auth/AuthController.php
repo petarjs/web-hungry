@@ -10,6 +10,9 @@ use Hungry\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
+use Event;
+use Hungry\Handlers\Events\EmailUserConfirmation;
+
 class AuthController extends Controller
 {
     /*
@@ -126,12 +129,16 @@ class AuthController extends Controller
             return $authUser;
         }
 
-        return User::create([
+        $newUser = User::create([
           'name' => $user->name ? $user->name : $userData->user['name']['givenName'] . ' ' . $userData->user['name']['familyName'],
           'email' => $user->email,
           'google_id' => $user->id,
           'avatar' => $user->avatar
         ]);
+
+        Event::fire(new EmailUserConfirmation($newUser));
+
+        return $newUser;
     }
 
     public function logout() {

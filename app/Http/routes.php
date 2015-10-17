@@ -20,5 +20,5 @@ Route::controllers([
 ]);
 
 Route::get('m', function() {
-  return \Event::fire(new Hungry\Events\UserWasRegistered(Hungry\Models\User::first()));
+  \Event::fire(new Hungry\Events\UserWasRegistered(Hungry\Models\User::first()));
 });

@@ -53,10 +53,10 @@
       'Hungry.admin.dashboard'
 
     ])
-    .config(configureRoutes)
+    .config(configure)
     .run(appRun);
 
-  function configureRoutes ($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) {
+  function configure ($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, $mdThemingProvider) {
     $urlRouterProvider.otherwise('/');
     $urlMatcherFactoryProvider.strictMode(false);
 
@@ -146,6 +146,10 @@
         templateUrl: 'admin/orders/orders',
         role: 'admin',
       });
+
+      $mdThemingProvider.theme('default')
+          .primaryPalette('orange')
+          .accentPalette('lime');
   }
 
   function appRun ($rootScope, $state, Auth, $http, $window, appConfig, Loader) {

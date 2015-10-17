@@ -5,6 +5,9 @@ namespace Hungry\Providers;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
+use Hungry\Events\UserWasRegistered;
+use Hungry\Handlers\Events\EmailUserConfirmation;
+
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -13,8 +16,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Hungry\Events\SomeEvent' => [
-            'Hungry\Listeners\EventListener',
+        UserWasRegistered::class => [
+            EmailUserConfirmation::class,
         ],
     ];
 

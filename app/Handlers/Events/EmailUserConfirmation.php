@@ -6,6 +6,8 @@ use Hungry\Events;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+use Hungry\Events\UserWasRegistered;
+
 class EmailUserConfirmation
 {
     /**
@@ -23,12 +25,12 @@ class EmailUserConfirmation
      *
      * @param  Events  $event
      * @return void
-     *
-     * @Hears("UserWasRegistered")
      */
-    public function handle(Events $event)
+    public function handle(UserWasRegistered $event)
     {
-      Mail::send('emails.welcome', ['user' => $event->user], function ($m) use ($user) {
+      // dd($event);
+      $user = $event->user;
+      \Mail::send('emails.welcome', ['user' => $user], function ($m) use ($user) {
         $m->to($user->email, $user->name)->subject('Welcome to Hungry!');
       });
     }

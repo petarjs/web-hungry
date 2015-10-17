@@ -10,7 +10,8 @@
         "laravelcollective/annotations": "5.1.*",
         "laravel/socialite": "^2.0",
         "zizaco/entrust": "dev-laravel-5",
-        "barryvdh/laravel-debugbar": "^2.0"
+        "barryvdh/laravel-debugbar": "^2.0",
+        "bogardo/mailgun": "4.0.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

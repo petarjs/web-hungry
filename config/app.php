@@ -148,6 +148,7 @@ return [
         Laravel\Socialite\SocialiteServiceProvider::class,
         Zizaco\Entrust\EntrustServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
+        Bogardo\Mailgun\MailgunServiceProvider::class,
 
     ],
 

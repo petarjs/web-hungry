@@ -20,5 +20,5 @@ Route::controllers([
 ]);
 
 Route::get('m', function() {
-  return view('emails.menu-was-published', compact(Hungry\Models\User::first()));
+  return \Event::fire(new Hungry\Events\UserWasRegistered(Hungry\Models\User::first()));
 });

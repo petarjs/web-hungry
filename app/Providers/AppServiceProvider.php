@@ -3,6 +3,7 @@
 namespace Hungry\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Hungry\Models\Settings;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Settings::init();
     }
 
     /**

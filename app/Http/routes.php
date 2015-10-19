@@ -21,5 +21,6 @@ Route::controllers([
 
 Route::get('m', function() {
   // \Event::fire(new Hungry\Events\UserWasRegistered(Hungry\Models\User::first()));
-  \Event::fire(new Hungry\Events\MenuWasPublished(Hungry\Models\Menu::first()));
+  // \Event::fire(new Hungry\Events\MenuWasPublished(Hungry\Models\Menu::first()));
+  \Event::fire(new Hungry\Events\UserWasApproved(Hungry\Models\User::first()));
 });

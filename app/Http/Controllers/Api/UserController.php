@@ -40,6 +40,10 @@ class UserController extends Controller
       $role = Role::findOrFail($role_id);
       $user = User::findOrFail($id);
 
+      if(!$user->is_approved) {
+        $user->approve();
+      }
+
       if($user->roles->where('id', $role->id)->isEmpty()) {
         $user->attachRole($role);
       } else {

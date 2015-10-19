@@ -11,6 +11,9 @@ use Hungry\Handlers\Events\EmailUserConfirmation;
 use Hungry\Events\MenuWasPublished;
 use Hungry\Handlers\Events\EmailNewMenu;
 
+use Hungry\Events\UserWasApproved;
+use Hungry\Handlers\Events\EmailUserApproval;
+
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -24,7 +27,11 @@ class EventServiceProvider extends ServiceProvider
         ],
         MenuWasPublished::class => [
             EmailNewMenu::class
+        ],
+        UserWasApproved::class => [
+            EmailUserApproval::class
         ]
+
     ];
 
     /**

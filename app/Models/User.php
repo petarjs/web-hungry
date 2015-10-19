@@ -8,6 +8,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
+use Hungry\Events\UserWasApproved;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
@@ -52,6 +53,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
       return $this->eatenFood()->with(['menu', 'food'])->get()->filter(function($menuFood) use($day) {
         return $menuFood->menu->date == $day;
       });
+    }
+
+    public function approve() {
+      $this->is_approved = true;
+      $this->save();
+      Event::fire(new UserWasApproved($this));
     }
 
     public static function withIncompleteOrders($week) {

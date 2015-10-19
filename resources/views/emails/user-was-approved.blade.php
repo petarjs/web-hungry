@@ -984,7 +984,7 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">Dear hungry friend, you have just been approved by one of our admins! <br><br> Now you can start ordering food! Omnomomom.</p>
+                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">Dear {{ $user->name }}, hungry friend, you have just been approved by one of our admins! <br><br> Now you can start ordering food! Omnomomom.</p>
                               <br>
                               <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 16px;line-height: 25px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e"></p>
                             </td>

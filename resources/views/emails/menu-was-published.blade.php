@@ -984,7 +984,8 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">Hello there, hungry friend. A new menu has been published! Go to Hungry web app now, and order yourself some food!
+                              <h3>New Menu for {{ $menu->date->format('d.m.Y') }}</h3>
+                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">Hello %recipient.name%, my hungry friend. A new menu has been published! Go to Hungry web app now, and order yourself some food!
                               <br><br>
                               Remember, the deadline for completing next week's orders is Friday current week.
                               <br><br>

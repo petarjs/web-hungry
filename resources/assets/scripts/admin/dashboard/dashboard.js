@@ -70,6 +70,7 @@
     vm.getFoodOrderPercentage = getFoodOrderPercentage;
     vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
     vm.getUsersWithIncompleteOrders = getUsersWithIncompleteOrders;
+    vm.sendMenuToCatering = sendMenuToCatering;
 
     $scope.$watch(function() {
       return vm.week;
@@ -151,5 +152,7 @@
     }
   }
 
-
+  function sendMenuToCatering(week) {
+    // TODO
+  }
 })(); 

@@ -1,7 +1,7 @@
 <md-content layout="column" layout-fill>
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <md-button class="md-icon-button" aria-label="Back">
+      <md-button class="md-icon-button" aria-label="Back" ui-sref="app.admin-dashboard">
         <md-tooltip>Go back</md-tooltip>
         <i class="material-icons">keyboard_backspace</i>
       </md-button>
@@ -9,7 +9,7 @@
         <span>Send Orders to Catering</span>
       </h2>
       <span flex></span>
-      <md-button class="md-icon-button" aria-label="Send">
+      <md-button class="md-icon-button" aria-label="Send" ng-click="vm.sendEmail(vm.week)">
         <md-tooltip>Send the email order to catering</md-tooltip>
         <i class="material-icons">send</i>
       </md-button>

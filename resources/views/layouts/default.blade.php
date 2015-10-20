@@ -75,6 +75,15 @@
               </md-menu-item>
 
               <md-menu-item ng-if="$root.helpers.hasRole('admin')">
+                <md-button ui-sref="app.settings">
+                    <div layout="row" class="h100">
+                      <p flex>Settings</p>
+                      <i class="material-icons">settings</i>
+                    </div>
+                </md-button>
+              </md-menu-item>
+
+              <md-menu-item ng-if="$root.helpers.hasRole('admin')">
                 <md-button ui-sref="app.food">
                     <div layout="row" class="h100">
                       <p flex>Food</p>

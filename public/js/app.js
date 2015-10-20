@@ -18,6 +18,7 @@
   angular.module('Hungry.admin.menus', []);
   angular.module('Hungry.admin.orders', []);
   angular.module('Hungry.admin.dashboard', []);
+  angular.module('Hungry.admin.settings', []);
   angular.module('Hungry.user.food', []);
   
   angular
@@ -50,7 +51,8 @@
       'Hungry.admin.menus',
       'Hungry.user.food',
       'Hungry.admin.orders',
-      'Hungry.admin.dashboard'
+      'Hungry.admin.dashboard',
+      'Hungry.admin.settings'
 
     ])
     .config(configure)
@@ -95,6 +97,13 @@
         url: 'admin/dashboard',
         controller: 'DashboardController as vm',
         templateUrl: 'admin/dashboard/dashboard',
+        role: 'admin',
+      })
+      
+      .state('app.settings', {
+        url: 'admin/settings',
+        controller: 'SettingsController as vm',
+        templateUrl: 'admin/settings/settings',
         role: 'admin',
       })
       
@@ -1070,6 +1079,23 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 
 })();
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.settings')
+    .controller('SettingsController', SettingsController);
+
+  function SettingsController() {
+    var vm = this;
+
+    vm.saveCateringEmail = saveCateringEmail;
+
+    function saveCateringEmail(email) {
+      
+    }
+  }
+})(); 
 (function () {
   angular
     .module('Hungry.core.api.foods')

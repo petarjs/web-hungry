@@ -20,6 +20,7 @@
   angular.module('Hungry.admin.orders', []);
   angular.module('Hungry.admin.dashboard', []);
   angular.module('Hungry.admin.settings', []);
+  angular.module('Hungry.admin.catering', []);
   angular.module('Hungry.user.food', []);
   
   angular
@@ -54,7 +55,8 @@
       'Hungry.user.food',
       'Hungry.admin.orders',
       'Hungry.admin.dashboard',
-      'Hungry.admin.settings'
+      'Hungry.admin.settings',
+      'Hungry.admin.catering'
 
     ])
     .config(configure)
@@ -158,6 +160,13 @@
         url: 'admin/orders',
         controller: 'AdminOrdersController as vm',
         templateUrl: 'admin/orders/orders',
+        role: 'admin',
+      })
+
+      .state('app.catering', {
+        url: 'admin/catering',
+        controller: 'AdminCateringController as vm',
+        templateUrl: 'admin/catering/catering',
         role: 'admin',
       });
 

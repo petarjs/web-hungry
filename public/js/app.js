@@ -77,14 +77,17 @@
         template: '<div ui-view></div>',
         controller: 'AppController',
         resolve: {
-          user: function(Users) {
-            return Users.getUser(window.userId);
+          user: function(Users, Loader) {
+            Loader.start();
+            return Users.getUser(window.userId).then(function(r) { Loader.stop(); return r; });
           },
-          roles: function(Roles) {
-            return Roles.getRoles();
+          roles: function(Roles, Loader) {
+            Loader.start();
+            return Roles.getRoles().then(function(r) { Loader.stop(); return r; });
           },
-          foods: function(Foods) {
-            return Foods.getFoods();
+          foods: function(Foods, Loader) {
+            Loader.start();
+            return Foods.getFoods().then(function(r) { Loader.stop(); return r; });
           }
         }
       })
@@ -199,45 +202,6 @@
     }
   }
 
-})(); 
-(function () {
-  angular
-    .module('Hungry.app')
-    .controller('AppController', AppController);
-
-  function AppController(AppState, Auth, user, roles, foods, $state) {
-    var vm = this;
-
-    if(!user.roles || !user.roles.length) {
-      window.location.href = '/auth/login';
-    }
-
-    if($state.is('app.home')) {
-      if(Auth.hasRole('admin')) {
-        $state.go('app.admin-dashboard');
-      } else if(Auth.hasRole('user')) {
-        $state.go('app.order-food');
-      }
-    }
-
-    var state = {};
-    var changeUser = AppState.change('user');
-    var changeRoles = AppState.change('roles');
-    var changeFoods = AppState.change('foods');
-
-    AppState.listen('user', function(user) { state.user = user; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-    AppState.listen('foods', function(foods) { state.foods = foods; });
-
-    activate();
-
-    function activate() {
-      changeUser(user);
-      changeRoles(roles);
-      changeFoods(foods);
-    }
-
-  }
 })(); 
 (function () {
   angular
@@ -371,6 +335,45 @@ angular.module('Hungry.core.state').factory('StateService', function() {
           return data[matched.replace(placeholderSymbol, '')];
       });
     };
+
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.app')
+    .controller('AppController', AppController);
+
+  function AppController(AppState, Auth, user, roles, foods, $state) {
+    var vm = this;
+
+    if(!user.roles || !user.roles.length) {
+      window.location.href = '/auth/login';
+    }
+
+    if($state.is('app.home')) {
+      if(Auth.hasRole('admin')) {
+        $state.go('app.admin-dashboard');
+      } else if(Auth.hasRole('user')) {
+        $state.go('app.order-food');
+      }
+    }
+
+    var state = {};
+    var changeUser = AppState.change('user');
+    var changeRoles = AppState.change('roles');
+    var changeFoods = AppState.change('foods');
+
+    AppState.listen('user', function(user) { state.user = user; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+
+    activate();
+
+    function activate() {
+      changeUser(user);
+      changeRoles(roles);
+      changeFoods(foods);
+    }
 
   }
 })(); 
@@ -530,637 +533,74 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
-  'use strict';
-
   angular
-    .module('Hungry.admin.dashboard')
-    .controller('DashboardController', DashboardController);
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
 
-  function DashboardController($scope, user, Orders, appConfig, AppState, Loader) {
-    var vm = this;
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
 
-    var state = {};
-    vm.state = state;
-
-    var changeFoodOrders = AppState.change('foodOrders');
-    AppState.listen('foodOrders', function(foodOrders) { 
-      state.foodOrders = foodOrders;
-      vm.totalFoodOrders = getTotalOrdersNo(); 
-    });
-
-    var changeUsersIncompleteOrders = AppState.change('usersIncompleteOrders');
-    AppState.listen('usersIncompleteOrders', function(usersIncompleteOrders) { 
-      state.usersIncompleteOrders = usersIncompleteOrders; 
-    });
-
-    vm.user = user;
-
-    /**
-     * Number of orders for current week.
-     * @type {Number}
-     */
-    vm.numOrders = 0;
-
-    /**
-     * Total needed orders for a week.
-     * (number of users * 5 days in a week)
-     * @type {Number}
-     */
-    vm.numTotalOrders = 0;
-
-    vm.days = [{
-      title: 'Mon'
-    }, {
-      title: 'Tue'
-    }, {
-      title: 'Wed'
-    }, {
-      title: 'Thu'
-    }, {
-      title: 'Fri'
-    }];
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().startOf('isoWeek');
-
-    vm.day = moment().isoWeekday() - 1;
-
-    // if it's weekend, default to monday next week.
-    if(vm.day > 4) {
-      vm.week = vm.week.add(1, 'week');
-      vm.day = 0;
-    }
-
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.getNoOrdersForDay = getNoOrdersForDay;
-    vm.getFoodOrdersForWeek = getFoodOrdersForWeek;
-    vm.getFoodOrderPercentage = getFoodOrderPercentage;
-    vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
-    vm.getUsersWithIncompleteOrders = getUsersWithIncompleteOrders;
-    vm.sendMenuToCatering = sendMenuToCatering;
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-
-      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
-        vm.day = moment().isoWeekday() - 1;
-      } else {
-        vm.day = 0;
-      }
-
-      activate();
-    });
-
-    function activate() {
-      vm.getOrderNumbersForWeek();
-      vm.getFoodOrdersForWeek();
-      vm.getUsersWithIncompleteOrders();
-    }
-
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
-
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
-
-    function getNoOrdersForDay(week, day) {
-      return day * 3 + 10;
-    }
-
-    function getFoodOrdersForWeek() {
-      Loader.start();
-      Orders
-        .getFoodOrdersForWeek(vm.week.valueOf())
-        .then(changeFoodOrders)
-        .then(Loader.stop);
-    }
-
-    /**
-     * Calculates percentage of orders of certain food
-     * for the current week
-     * @param  {Number} foodOrders number of orders of the specifed food
-     * @return {Number}            percentage of orders, 0 <= x <= 100
-     */
-    function getFoodOrderPercentage(food) {
-      if(!vm.totalFoodOrders || vm.totalFoodOrders === 0) {
-        return 0;
-      }
-      return (food.num_orders / vm.totalFoodOrders) * 100;
-    }
-
-    function getTotalOrdersNo() {
-      return _.sum(vm.state.foodOrders, 'num_orders');
-    }
-
-    function getOrderNumbersForWeek(week) {
-      Loader.start();
-
-      Orders
-        .getOrderNumbersForWeek(vm.week.valueOf())
-        .then(function(orderNumbers) {
-          vm.numOrders = orderNumbers.num_orders;
-          vm.numTotalOrders = orderNumbers.num_total_orders;
-        })
-        .then(Loader.stop);
-    }
-    
-    function getUsersWithIncompleteOrders() {
-      Loader.start();
-
-      Orders
-        .getUsersWithIncompleteOrders(vm.week.valueOf())
-        .then(changeUsersIncompleteOrders)
-        .then(Loader.stop);
-    }
-  }
-
-  function sendMenuToCatering(week) {
-    // TODO
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.admin.food')
-    .controller('ChooseFoodController', ChooseFoodController);
-
-  function ChooseFoodController($scope, AppState, Users, $window, Foods, SweetAlert, $mdDialog, appConfig, menu) {
-    var vm = this;
-
-    var state = {};
-    var changeFoods = AppState.change('foods');
-
-    vm.state = state;
-    vm.menu = menu;
-    vm.menuDate = moment(menu.date).format(appConfig.date.format)
-
-    vm.hide = hide;
-    vm.cancel = cancel;
-    vm.selectFood = selectFood;
-    vm.isAlreadySelected = isAlreadySelected;
-
-    AppState.listen('foods', function(foods) { 
-      vm.state.foods = foods; 
-    });
-
-    activate();
-
-    function activate() {}
-
-    function hide() {
-      $mdDialog.hide();
-    }
-
-    function cancel() {
-      $mdDialog.cancel();
-    }
-
-    function selectFood(food) {
-      $mdDialog.hide(food);
-    }
-
-    function isAlreadySelected(food) {
-      return _.some(menu.menu_foods, function(menuFood) {
-        return menuFood.food.id === food.id;
-      });
-    }
-
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.admin.food')
-    .controller('FoodCreateController', FoodCreateController);
-
-  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state, Loader) {
-    var vm = this;
-
-    var state = {};
-    var changeFoods = AppState.change('foods');
-    var isEdit = $stateParams.id;
-
-    vm.state = state;
-    vm.food = {
-      description: '',
-      image: ''
+    return {
+      hasRole: hasRole
     };
 
-    if(isEdit) {
-      Foods
-        .getFood($stateParams.id)
-        .then(function(food) {
-          vm.food = food;
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
         });
+      }
     }
-
-    vm.isEdit = isEdit;
-
-    vm.saveFood = saveFood;
-
-    activate();
-
-    function activate() {}
-
-    function saveFood(food) {
-      Loader.start();
-      Foods.saveFood(food)
-        .then(function() {
-          Foods
-            .getFoods()
-            .then(changeFoods)
-            .then(function() {
-              Loader.stop();
-              $state.go('app.food');
-            });
-        })
-    }
-
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.admin.food')
-    .controller('FoodController', FoodController);
-
-  function FoodController($scope, AppState, Users, user, $window, Foods, SweetAlert, Loader, $mdBottomSheet) {
-    var vm = this;
-
-    var state = {};
-    var changeFoods = AppState.change('foods');
-
-    vm.state = state;
-
-    vm.deleteFood = deleteFood;
-    vm.toggleDefault = toggleDefault;
-
-    AppState.listen('foods', function(foods) { state.foods = foods; });
-
-    activate();
-
-    function activate() {
-      Foods
-        .getFoods()
-        .then(changeFoods);
-    }
-
-    function deleteFood(food) {
-      SweetAlert.swal({
-         title: "Delete this food?",
-         text: "Your will not be able to recover this!",
-         type: "warning",
-         showCancelButton: true,
-         confirmButtonColor: "#DD6B55",
-         confirmButtonText: "Yes, delete it!",
-         closeOnConfirm: false,
-         showLoaderOnConfirm: true
-      }, function(shouldDelete) {
-        if(shouldDelete) {
-          Foods
-            .deleteFood(food)
-            .then(function() {
-              Foods
-                .getFoods()
-                .then(changeFoods)
-                .then(function() {
-                  SweetAlert.swal('Delete successful!');
-                });
-            });
-        }
-      });
-    }
-
-    function toggleDefault(food) {
-      Loader.start();
-
-      Foods
-        .toggleDefault(food)
-        .then(Loader.stop);
-    }
-
   }
 })(); 
 (function () {
   'use strict';
 
   angular
-    .module('Hungry.admin.orders')
-    .controller('AdminOrdersController', AdminOrdersController);
+    .module('Hungry.core.loader')
+    .service('Loader', LoaderService);
 
-  function AdminOrdersController($scope, Loader, Orders, appConfig, AppState) {
-    var vm = this;
+  function LoaderService($mdToast) {
+    var toastConfig = {
+      position: 'top right',
+      parent: angular.element(document.body),
+      templateUrl: 'core/loader/loader',
+      hideDelay: false
+    };
 
-    var state = {};
-    var changeUserOrders = AppState.change('userOrders');
-    
-    AppState.listen('userOrders', function(userOrders) { state.userOrders = userOrders; });
+    var loaderCount = 0;
 
-    vm.state = state;
+    return {
+      start: start,
+      stop: stop,
+      isLoading: isLoading
+    };
 
-    vm.days = [{
-      title: 'Mon'
-    }, {
-      title: 'Tue'
-    }, {
-      title: 'Wed'
-    }, {
-      title: 'Thu'
-    }, {
-      title: 'Fri'
-    }];
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().add(1, 'week').startOf('isoWeek');
-
-    vm.day = moment().isoWeekday() - 1;
-
-    // if it's weekend, default to monday next week.
-    if(vm.day > 4) {
-      vm.week = vm.week.add(1, 'week');
-      vm.day = 0;
-    }
-
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.getOrderedFoodForDay = getOrderedFoodForDay;
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-
-      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
-        vm.day = moment().isoWeekday() - 1;
-      } else {
-        vm.day = 0;
+    function start() {
+      if(loaderCount === 0) {
+        $mdToast.show(toastConfig);
       }
 
-      activate();
-    });
-
-    function activate() {
-      Loader.start();
-
-      Orders
-        .getUserOrders(vm.week.valueOf())
-        .then(changeUserOrders)
-        .then(Loader.stop);
+      loaderCount++;
     }
 
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
+    function stop() {
+      if(loaderCount === 0) {
+        return;
+      }
 
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
+      loaderCount--;
 
-    function getOrderedFoodForDay(user) {
-      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
-
-      var orderedMenuFood = _.find(user.menu_foods, function(menuFood) {
-        return menuFood.menu && (menuFood.menu.date === day);
-      });
-
-      if(orderedMenuFood) {
-        return orderedMenuFood;
-      } else {
-        return null;
+      if(loaderCount === 0) {
+        $mdToast.hide();
       }
     }
-  }
 
-})();
-(function () {
-  angular
-    .module('Hungry.admin.menus')
-    .controller('MenuController', MenuController);
-
-  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog, Loader) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-    var changeFoods = AppState.change('foods');
-    var changeMenus = AppState.change('menus');
-    vm.changeMenus = changeMenus;
-
-    vm.state = state;
-    vm.loading = false;
-    vm.menusPublished = false;
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().add(1, 'week').startOf('isoWeek');
-
-    vm.day = moment().isoWeekday() - 1;
-
-    // if it's weekend, default to monday next week.
-    if(vm.day > 4) {
-      vm.week = vm.week.add(1, 'week');
+    function isLoading() {
+      return loaderCount > 0;
     }
-
-    vm.showFoodDialog = showFoodDialog;
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.publishMenus = publishMenus;
-    vm.removeMenuFood = removeMenuFood;
-    vm.isOldMenu = isOldMenu;
-
-    AppState.listen('foods', function(foods) { state.foods = foods; });
-    AppState.listen('menus', function(menus) { state.menus = menus; checkMenusPublished(); });
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-      activate();
-    });
-
-    function activate() {
-      vm.loading = true;
-      Loader.start();
-
-      Menus
-        .getMenus(vm.week.valueOf())
-        .then(changeMenus)
-        .then(function() { vm.loading = false; Loader.stop(); });
-    }
-
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
-
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
-
-    function showFoodDialog(menu, ev) {
-      $mdDialog.show({
-        controller: 'ChooseFoodController as vm',
-        templateUrl: 'admin/food/choose',
-        parent: angular.element(document.body),
-        targetEvent: ev,
-        clickOutsideToClose:true,
-        locals: {
-          menu: menu
-        }
-      })
-      .then(function(food) {
-        vm.loading = true;
-        Loader.start();
-
-        Menus
-          .addFoodToMenu(menu, food)
-          .then(changeMenus)
-          .then(function() {
-            vm.loading = false;
-            Loader.stop();
-          });
-      }, function onUserCanceled() {
-        
-      });
-    }
-
-    function publishMenus(week) {
-      SweetAlert.swal({
-         title: "Publish menus for this week?",
-         text: "When you publish the menus, users will be able to see them and order food.",
-         type: "info",
-         showCancelButton: true,
-         confirmButtonText: "Publish",
-         closeOnConfirm: false,
-         showLoaderOnConfirm: true
-      }, function(shouldPublish) {
-        if(shouldPublish) {
-          Menus
-            .publishMenus(week)
-            .then(vm.changeMenus)
-            .then(function() {
-              SweetAlert.swal('Menus published!');
-            });
-        }
-      });
-    }
-
-    function checkMenusPublished() {
-      vm.menusPublished = _.all(vm.state.menus, function(menu) {
-        return menu.published;
-      });
-    }
-
-    function removeMenuFood(menuFood) {
-      vm.loading = true;
-      Loader.start();
-
-      Menus
-        .removeMenuFood(menuFood)
-        .then(vm.changeMenus)
-        .then(function() {
-          vm.loading = false;
-          Loader.stop();
-        });
-    }
-
-    function isOldMenu(menu) {
-      return (parseInt(menu.week, 10) * 1000) < moment().startOf('isoWeek').valueOf();
-    }
-
-  }
-})(); 
-(function () {
-  'use strict';
-
-  angular
-    .module('Hungry.admin.settings')
-    .controller('SettingsController', SettingsController);
-
-  function SettingsController(Settings, AppState) {
-    var vm = this;
-
-    vm.state = {};
-
-    var changeSettings = AppState.change('settings');
-    AppState.listen('settings', function(settings) { vm.state.settings = settings; });
-
-    vm.saveCateringEmail = saveCateringEmail;
-
-    activate();
-
-    function activate() {
-      getSettings();
-    }
-
-    function saveCateringEmail(email) {
-      Settings
-        .setSettings({
-          catering_email: email
-        })
-        .then(changeSettings);
-    }
-
-    function getSettings() {
-      Settings
-        .getSettings()
-        .then(changeSettings);
-    }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.super-admin.users')
-    .controller('UsersController', UsersController);
-
-  function UsersController(AppState, Users, user, $window) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-
-    vm.state = state;
-
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
-
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
-    }
-
   }
 })(); 
 (function () {
@@ -1469,72 +909,639 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
+    .module('Hungry.admin.food')
+    .controller('ChooseFoodController', ChooseFoodController);
 
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
+  function ChooseFoodController($scope, AppState, Users, $window, Foods, SweetAlert, $mdDialog, appConfig, menu) {
+    var vm = this;
 
-    return {
-      hasRole: hasRole
+    var state = {};
+    var changeFoods = AppState.change('foods');
+
+    vm.state = state;
+    vm.menu = menu;
+    vm.menuDate = moment(menu.date).format(appConfig.date.format)
+
+    vm.hide = hide;
+    vm.cancel = cancel;
+    vm.selectFood = selectFood;
+    vm.isAlreadySelected = isAlreadySelected;
+
+    AppState.listen('foods', function(foods) { 
+      vm.state.foods = foods; 
+    });
+
+    activate();
+
+    function activate() {}
+
+    function hide() {
+      $mdDialog.hide();
+    }
+
+    function cancel() {
+      $mdDialog.cancel();
+    }
+
+    function selectFood(food) {
+      $mdDialog.hide(food);
+    }
+
+    function isAlreadySelected(food) {
+      return _.some(menu.menu_foods, function(menuFood) {
+        return menuFood.food.id === food.id;
+      });
+    }
+
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.admin.food')
+    .controller('FoodCreateController', FoodCreateController);
+
+  function FoodCreateController($rootScope, $stateParams, AppState, Users, user, $window, Foods, $state, Loader) {
+    var vm = this;
+
+    var state = {};
+    var changeFoods = AppState.change('foods');
+    var isEdit = $stateParams.id;
+
+    vm.state = state;
+    vm.food = {
+      description: '',
+      image: ''
     };
 
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
+    if(isEdit) {
+      Foods
+        .getFood($stateParams.id)
+        .then(function(food) {
+          vm.food = food;
         });
-      }
     }
+
+    vm.isEdit = isEdit;
+
+    vm.saveFood = saveFood;
+
+    activate();
+
+    function activate() {}
+
+    function saveFood(food) {
+      Loader.start();
+      Foods.saveFood(food)
+        .then(function() {
+          Foods
+            .getFoods()
+            .then(changeFoods)
+            .then(function() {
+              Loader.stop();
+              $state.go('app.food');
+            });
+        })
+    }
+
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.admin.food')
+    .controller('FoodController', FoodController);
+
+  function FoodController($scope, AppState, Users, user, $window, Foods, SweetAlert, Loader, $mdBottomSheet) {
+    var vm = this;
+
+    var state = {};
+    var changeFoods = AppState.change('foods');
+
+    vm.state = state;
+
+    vm.deleteFood = deleteFood;
+    vm.toggleDefault = toggleDefault;
+
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+
+    activate();
+
+    function activate() {
+      Foods
+        .getFoods()
+        .then(changeFoods);
+    }
+
+    function deleteFood(food) {
+      SweetAlert.swal({
+         title: "Delete this food?",
+         text: "Your will not be able to recover this!",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonColor: "#DD6B55",
+         confirmButtonText: "Yes, delete it!",
+         closeOnConfirm: false,
+         showLoaderOnConfirm: true
+      }, function(shouldDelete) {
+        if(shouldDelete) {
+          Foods
+            .deleteFood(food)
+            .then(function() {
+              Foods
+                .getFoods()
+                .then(changeFoods)
+                .then(function() {
+                  SweetAlert.swal('Delete successful!');
+                });
+            });
+        }
+      });
+    }
+
+    function toggleDefault(food) {
+      Loader.start();
+
+      Foods
+        .toggleDefault(food)
+        .then(Loader.stop);
+    }
+
   }
 })(); 
 (function () {
   'use strict';
 
   angular
-    .module('Hungry.core.loader')
-    .service('Loader', LoaderService);
+    .module('Hungry.admin.dashboard')
+    .controller('DashboardController', DashboardController);
 
-  function LoaderService($mdToast) {
-    var toastConfig = {
-      position: 'top right',
-      parent: angular.element(document.body),
-      templateUrl: 'core/loader/loader',
-      hideDelay: false
-    };
+  function DashboardController($scope, user, Orders, appConfig, AppState, Loader) {
+    var vm = this;
 
-    var loaderCount = 0;
+    var state = {};
+    vm.state = state;
 
-    return {
-      start: start,
-      stop: stop,
-      isLoading: isLoading
-    };
+    var changeFoodOrders = AppState.change('foodOrders');
+    AppState.listen('foodOrders', function(foodOrders) { 
+      state.foodOrders = foodOrders;
+      vm.totalFoodOrders = getTotalOrdersNo(); 
+    });
 
-    function start() {
-      if(loaderCount === 0) {
-        $mdToast.show(toastConfig);
-      }
+    var changeUsersIncompleteOrders = AppState.change('usersIncompleteOrders');
+    AppState.listen('usersIncompleteOrders', function(usersIncompleteOrders) { 
+      state.usersIncompleteOrders = usersIncompleteOrders; 
+    });
 
-      loaderCount++;
+    vm.user = user;
+
+    /**
+     * Number of orders for current week.
+     * @type {Number}
+     */
+    vm.numOrders = 0;
+
+    /**
+     * Total needed orders for a week.
+     * (number of users * 5 days in a week)
+     * @type {Number}
+     */
+    vm.numTotalOrders = 0;
+
+    vm.days = [{
+      title: 'Mon'
+    }, {
+      title: 'Tue'
+    }, {
+      title: 'Wed'
+    }, {
+      title: 'Thu'
+    }, {
+      title: 'Fri'
+    }];
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().startOf('isoWeek');
+
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+      vm.day = 0;
     }
 
-    function stop() {
-      if(loaderCount === 0) {
-        return;
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.getNoOrdersForDay = getNoOrdersForDay;
+    vm.getFoodOrdersForWeek = getFoodOrdersForWeek;
+    vm.getFoodOrderPercentage = getFoodOrderPercentage;
+    vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
+    vm.getUsersWithIncompleteOrders = getUsersWithIncompleteOrders;
+    vm.sendMenuToCatering = sendMenuToCatering;
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+
+      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
+        vm.day = moment().isoWeekday() - 1;
+      } else {
+        vm.day = 0;
       }
 
-      loaderCount--;
+      activate();
+    });
 
-      if(loaderCount === 0) {
-        $mdToast.hide();
-      }
+    function activate() {
+      vm.getOrderNumbersForWeek();
+      vm.getFoodOrdersForWeek();
+      vm.getUsersWithIncompleteOrders();
     }
 
-    function isLoading() {
-      return loaderCount > 0;
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getNoOrdersForDay(week, day) {
+      return day * 3 + 10;
+    }
+
+    function getFoodOrdersForWeek() {
+      Loader.start();
+      Orders
+        .getFoodOrdersForWeek(vm.week.valueOf())
+        .then(changeFoodOrders)
+        .then(Loader.stop);
+    }
+
+    /**
+     * Calculates percentage of orders of certain food
+     * for the current week
+     * @param  {Number} foodOrders number of orders of the specifed food
+     * @return {Number}            percentage of orders, 0 <= x <= 100
+     */
+    function getFoodOrderPercentage(food) {
+      if(!vm.totalFoodOrders || vm.totalFoodOrders === 0) {
+        return 0;
+      }
+      return (food.num_orders / vm.totalFoodOrders) * 100;
+    }
+
+    function getTotalOrdersNo() {
+      return _.sum(vm.state.foodOrders, 'num_orders');
+    }
+
+    function getOrderNumbersForWeek(week) {
+      Loader.start();
+
+      Orders
+        .getOrderNumbersForWeek(vm.week.valueOf())
+        .then(function(orderNumbers) {
+          vm.numOrders = orderNumbers.num_orders;
+          vm.numTotalOrders = orderNumbers.num_total_orders;
+        })
+        .then(Loader.stop);
+    }
+    
+    function getUsersWithIncompleteOrders() {
+      Loader.start();
+
+      Orders
+        .getUsersWithIncompleteOrders(vm.week.valueOf())
+        .then(changeUsersIncompleteOrders)
+        .then(Loader.stop);
+    }
+  }
+
+  function sendMenuToCatering(week) {
+    // TODO
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.admin.menus')
+    .controller('MenuController', MenuController);
+
+  function MenuController($scope, AppState, appConfig, user, $window, Foods, Menus, SweetAlert, $mdDialog, Loader) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+    var changeFoods = AppState.change('foods');
+    var changeMenus = AppState.change('menus');
+    vm.changeMenus = changeMenus;
+
+    vm.state = state;
+    vm.loading = false;
+    vm.menusPublished = false;
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().add(1, 'week').startOf('isoWeek');
+
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+    }
+
+    vm.showFoodDialog = showFoodDialog;
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.publishMenus = publishMenus;
+    vm.removeMenuFood = removeMenuFood;
+    vm.isOldMenu = isOldMenu;
+
+    AppState.listen('foods', function(foods) { state.foods = foods; });
+    AppState.listen('menus', function(menus) { state.menus = menus; checkMenusPublished(); });
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+      activate();
+    });
+
+    function activate() {
+      vm.loading = true;
+      Loader.start();
+
+      Menus
+        .getMenus(vm.week.valueOf())
+        .then(changeMenus)
+        .then(function() { vm.loading = false; Loader.stop(); });
+    }
+
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function showFoodDialog(menu, ev) {
+      $mdDialog.show({
+        controller: 'ChooseFoodController as vm',
+        templateUrl: 'admin/food/choose',
+        parent: angular.element(document.body),
+        targetEvent: ev,
+        clickOutsideToClose:true,
+        locals: {
+          menu: menu
+        }
+      })
+      .then(function(food) {
+        vm.loading = true;
+        Loader.start();
+
+        Menus
+          .addFoodToMenu(menu, food)
+          .then(changeMenus)
+          .then(function() {
+            vm.loading = false;
+            Loader.stop();
+          });
+      }, function onUserCanceled() {
+        
+      });
+    }
+
+    function publishMenus(week) {
+      SweetAlert.swal({
+         title: "Publish menus for this week?",
+         text: "When you publish the menus, users will be able to see them and order food.",
+         type: "info",
+         showCancelButton: true,
+         confirmButtonText: "Publish",
+         closeOnConfirm: false,
+         showLoaderOnConfirm: true
+      }, function(shouldPublish) {
+        if(shouldPublish) {
+          Menus
+            .publishMenus(week)
+            .then(vm.changeMenus)
+            .then(function() {
+              SweetAlert.swal('Menus published!');
+            });
+        }
+      });
+    }
+
+    function checkMenusPublished() {
+      vm.menusPublished = _.all(vm.state.menus, function(menu) {
+        return menu.published;
+      });
+    }
+
+    function removeMenuFood(menuFood) {
+      vm.loading = true;
+      Loader.start();
+
+      Menus
+        .removeMenuFood(menuFood)
+        .then(vm.changeMenus)
+        .then(function() {
+          vm.loading = false;
+          Loader.stop();
+        });
+    }
+
+    function isOldMenu(menu) {
+      return (parseInt(menu.week, 10) * 1000) < moment().startOf('isoWeek').valueOf();
+    }
+
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.settings')
+    .controller('SettingsController', SettingsController);
+
+  function SettingsController(Settings, AppState, Loader) {
+    var vm = this;
+
+    vm.state = {};
+
+    var changeSettings = AppState.change('settings');
+    AppState.listen('settings', function(settings) { vm.state.settings = settings; });
+
+    vm.saveCateringEmail = saveCateringEmail;
+
+    activate();
+
+    function activate() {
+      getSettings();
+    }
+
+    function saveCateringEmail(email) {
+      Loader.start();
+      Settings
+        .setSettings({
+          catering_email: email
+        })
+        .then(changeSettings)
+        .then(Loader.stop);
+    }
+
+    function getSettings() {
+      Loader.start();
+      Settings
+        .getSettings()
+        .then(changeSettings)
+        .then(Loader.stop);
     }
   }
 })(); 
+(function () {
+  angular
+    .module('Hungry.super-admin.users')
+    .controller('UsersController', UsersController);
+
+  function UsersController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.orders')
+    .controller('AdminOrdersController', AdminOrdersController);
+
+  function AdminOrdersController($scope, Loader, Orders, appConfig, AppState) {
+    var vm = this;
+
+    var state = {};
+    var changeUserOrders = AppState.change('userOrders');
+    
+    AppState.listen('userOrders', function(userOrders) { state.userOrders = userOrders; });
+
+    vm.state = state;
+
+    vm.days = [{
+      title: 'Mon'
+    }, {
+      title: 'Tue'
+    }, {
+      title: 'Wed'
+    }, {
+      title: 'Thu'
+    }, {
+      title: 'Fri'
+    }];
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().add(1, 'week').startOf('isoWeek');
+
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+      vm.day = 0;
+    }
+
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.getOrderedFoodForDay = getOrderedFoodForDay;
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+
+      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
+        vm.day = moment().isoWeekday() - 1;
+      } else {
+        vm.day = 0;
+      }
+
+      activate();
+    });
+
+    function activate() {
+      Loader.start();
+
+      Orders
+        .getUserOrders(vm.week.valueOf())
+        .then(changeUserOrders)
+        .then(Loader.stop);
+    }
+
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getOrderedFoodForDay(user) {
+      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
+
+      var orderedMenuFood = _.find(user.menu_foods, function(menuFood) {
+        return menuFood.menu && (menuFood.menu.date === day);
+      });
+
+      if(orderedMenuFood) {
+        return orderedMenuFood;
+      } else {
+        return null;
+      }
+    }
+  }
+
+})();

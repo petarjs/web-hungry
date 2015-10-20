@@ -5,7 +5,7 @@
     .module('Hungry.admin.settings')
     .controller('SettingsController', SettingsController);
 
-  function SettingsController(Settings, AppState) {
+  function SettingsController(Settings, AppState, Loader) {
     var vm = this;
 
     vm.state = {};
@@ -22,17 +22,21 @@
     }
 
     function saveCateringEmail(email) {
+      Loader.start();
       Settings
         .setSettings({
           catering_email: email
         })
-        .then(changeSettings);
+        .then(changeSettings)
+        .then(Loader.stop);
     }
 
     function getSettings() {
+      Loader.start();
       Settings
         .getSettings()
-        .then(changeSettings);
+        .then(changeSettings)
+        .then(Loader.stop);
     }
   }
 })(); 

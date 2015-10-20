@@ -77,14 +77,17 @@
         template: '<div ui-view></div>',
         controller: 'AppController',
         resolve: {
-          user: function(Users) {
-            return Users.getUser(window.userId);
+          user: function(Users, Loader) {
+            Loader.start();
+            return Users.getUser(window.userId).then(function(r) { Loader.stop(); return r; });
           },
-          roles: function(Roles) {
-            return Roles.getRoles();
+          roles: function(Roles, Loader) {
+            Loader.start();
+            return Roles.getRoles().then(function(r) { Loader.stop(); return r; });
           },
-          foods: function(Foods) {
-            return Foods.getFoods();
+          foods: function(Foods, Loader) {
+            Loader.start();
+            return Foods.getFoods().then(function(r) { Loader.stop(); return r; });
           }
         }
       })

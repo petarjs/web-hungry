@@ -3,8 +3,7 @@
 Catering's email address:
 
 <md-input-container>
-  <label>Catering's email address</label>
-  <input ng-model="vm.cateringEmail">
+  <input ng-model="vm.state.settings.catering_email">
 </md-input-container>
 
-<md-button class="md-raised" ng-click="vm.saveCateringEmail(vm.cateringEmail)">Save</md-button>
+<md-button class="md-raised" ng-click="vm.saveCateringEmail(vm.state.settings.catering_email)">Save</md-button>

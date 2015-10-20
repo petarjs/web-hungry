@@ -12,6 +12,7 @@
   angular.module('Hungry.core.api.foods', []);
   angular.module('Hungry.core.api.menus', []);
   angular.module('Hungry.core.api.orders', []);
+  angular.module('Hungry.core.api.settings', []);
   angular.module('Hungry.app', []);
   angular.module('Hungry.super-admin.users', []);
   angular.module('Hungry.admin.food', []);
@@ -44,6 +45,7 @@
       'Hungry.core.api.foods',
       'Hungry.core.api.menus',
       'Hungry.core.api.orders',
+      'Hungry.core.api.settings',
 
       'Hungry.app',
       'Hungry.super-admin.users',

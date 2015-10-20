@@ -12,6 +12,7 @@
   angular.module('Hungry.core.api.foods', []);
   angular.module('Hungry.core.api.menus', []);
   angular.module('Hungry.core.api.orders', []);
+  angular.module('Hungry.core.api.settings', []);
   angular.module('Hungry.app', []);
   angular.module('Hungry.super-admin.users', []);
   angular.module('Hungry.admin.food', []);
@@ -44,6 +45,7 @@
       'Hungry.core.api.foods',
       'Hungry.core.api.menus',
       'Hungry.core.api.orders',
+      'Hungry.core.api.settings',
 
       'Hungry.app',
       'Hungry.super-admin.users',
@@ -268,7 +270,8 @@ angular.module('Hungry.core.app-state').factory('AppState', function(StateServic
     orders: [],
     userOrders: [],
     foodOrders: [],
-    usersIncompleteOrders: []
+    usersIncompleteOrders: [],
+    settings: {}
   };
 
   var listeners = [];
@@ -845,6 +848,101 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.orders')
+    .controller('AdminOrdersController', AdminOrdersController);
+
+  function AdminOrdersController($scope, Loader, Orders, appConfig, AppState) {
+    var vm = this;
+
+    var state = {};
+    var changeUserOrders = AppState.change('userOrders');
+    
+    AppState.listen('userOrders', function(userOrders) { state.userOrders = userOrders; });
+
+    vm.state = state;
+
+    vm.days = [{
+      title: 'Mon'
+    }, {
+      title: 'Tue'
+    }, {
+      title: 'Wed'
+    }, {
+      title: 'Thu'
+    }, {
+      title: 'Fri'
+    }];
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().add(1, 'week').startOf('isoWeek');
+
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+      vm.day = 0;
+    }
+
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.getOrderedFoodForDay = getOrderedFoodForDay;
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+
+      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
+        vm.day = moment().isoWeekday() - 1;
+      } else {
+        vm.day = 0;
+      }
+
+      activate();
+    });
+
+    function activate() {
+      Loader.start();
+
+      Orders
+        .getUserOrders(vm.week.valueOf())
+        .then(changeUserOrders)
+        .then(Loader.stop);
+    }
+
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getOrderedFoodForDay(user) {
+      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
+
+      var orderedMenuFood = _.find(user.menu_foods, function(menuFood) {
+        return menuFood.menu && (menuFood.menu.date === day);
+      });
+
+      if(orderedMenuFood) {
+        return orderedMenuFood;
+      } else {
+        return null;
+      }
+    }
+  }
+
+})();
+(function () {
   angular
     .module('Hungry.admin.menus')
     .controller('MenuController', MenuController);
@@ -988,112 +1086,81 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   'use strict';
 
   angular
-    .module('Hungry.admin.orders')
-    .controller('AdminOrdersController', AdminOrdersController);
-
-  function AdminOrdersController($scope, Loader, Orders, appConfig, AppState) {
-    var vm = this;
-
-    var state = {};
-    var changeUserOrders = AppState.change('userOrders');
-    
-    AppState.listen('userOrders', function(userOrders) { state.userOrders = userOrders; });
-
-    vm.state = state;
-
-    vm.days = [{
-      title: 'Mon'
-    }, {
-      title: 'Tue'
-    }, {
-      title: 'Wed'
-    }, {
-      title: 'Thu'
-    }, {
-      title: 'Fri'
-    }];
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().add(1, 'week').startOf('isoWeek');
-
-    vm.day = moment().isoWeekday() - 1;
-
-    // if it's weekend, default to monday next week.
-    if(vm.day > 4) {
-      vm.week = vm.week.add(1, 'week');
-      vm.day = 0;
-    }
-
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.getOrderedFoodForDay = getOrderedFoodForDay;
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-
-      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
-        vm.day = moment().isoWeekday() - 1;
-      } else {
-        vm.day = 0;
-      }
-
-      activate();
-    });
-
-    function activate() {
-      Loader.start();
-
-      Orders
-        .getUserOrders(vm.week.valueOf())
-        .then(changeUserOrders)
-        .then(Loader.stop);
-    }
-
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
-
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
-
-    function getOrderedFoodForDay(user) {
-      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
-
-      var orderedMenuFood = _.find(user.menu_foods, function(menuFood) {
-        return menuFood.menu && (menuFood.menu.date === day);
-      });
-
-      if(orderedMenuFood) {
-        return orderedMenuFood;
-      } else {
-        return null;
-      }
-    }
-  }
-
-})();
-(function () {
-  'use strict';
-
-  angular
     .module('Hungry.admin.settings')
     .controller('SettingsController', SettingsController);
 
-  function SettingsController() {
+  function SettingsController(Settings, AppState) {
     var vm = this;
+
+    vm.state = {};
+
+    var changeSettings = AppState.change('settings');
+    AppState.listen('settings', function(settings) { vm.state.settings = settings; });
 
     vm.saveCateringEmail = saveCateringEmail;
 
-    function saveCateringEmail(email) {
-      
+    activate();
+
+    function activate() {
+      getSettings();
     }
+
+    function saveCateringEmail(email) {
+      Settings
+        .setSettings({
+          catering_email: email
+        })
+        .then(changeSettings);
+    }
+
+    function getSettings() {
+      Settings
+        .getSettings()
+        .then(changeSettings);
+    }
+  }
+})(); 
+(function () {
+  angular
+    .module('Hungry.super-admin.users')
+    .controller('UsersController', UsersController);
+
+  function UsersController(AppState, Users, user, $window) {
+    var vm = this;
+
+    var state = {};
+    var changeUsers = AppState.change('users');
+
+    vm.state = state;
+
+    vm.isCurrentUser = isCurrentUser;
+    vm.toggleRole = toggleRole;
+
+    AppState.listen('users', function(users) { state.users = users; });
+    AppState.listen('roles', function(roles) { state.roles = roles; });
+
+    activate();
+
+    function activate() {
+      Users
+        .getUsers()
+        .then(changeUsers);
+    }
+
+    function isCurrentUser(user) {
+      return user.id.toString() === $window.userId;
+    }
+
+    function toggleRole(user, role) {
+      Users
+        .toggleRole(user, role)
+        .then(function(user) {
+          var oldUser = _.findWhere(state.users, { id: user.id });
+          oldUser.roles = user.roles;
+          changeUsers(state.users);
+        });
+    }
+
   }
 })(); 
 (function () {
@@ -1339,6 +1406,32 @@ angular.module('Hungry.core.state').factory('StateService', function() {
 })(); 
 (function () {
   angular
+    .module('Hungry.core.api.settings')
+    .factory('Settings', SettingsFactory);
+
+  function SettingsFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+    return {
+      getSettings: getSettings,
+      setSettings: setSettings
+    };
+
+    function getSettings() {
+      var url = appConfig.api.concat('/admin/settings');
+      return $http.get(url, {
+        cache: true
+      }).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function setSettings(settings) {
+      var url = appConfig.api.concat('/admin/settings');
+      return $http
+        .post(url, settings)
+        .then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+  }
+})(); 
+(function () {
+  angular
     .module('Hungry.core.api.users')
     .factory('Users', UsersFactory);
 
@@ -1443,48 +1536,5 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function isLoading() {
       return loaderCount > 0;
     }
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.super-admin.users')
-    .controller('UsersController', UsersController);
-
-  function UsersController(AppState, Users, user, $window) {
-    var vm = this;
-
-    var state = {};
-    var changeUsers = AppState.change('users');
-
-    vm.state = state;
-
-    vm.isCurrentUser = isCurrentUser;
-    vm.toggleRole = toggleRole;
-
-    AppState.listen('users', function(users) { state.users = users; });
-    AppState.listen('roles', function(roles) { state.roles = roles; });
-
-    activate();
-
-    function activate() {
-      Users
-        .getUsers()
-        .then(changeUsers);
-    }
-
-    function isCurrentUser(user) {
-      return user.id.toString() === $window.userId;
-    }
-
-    function toggleRole(user, role) {
-      Users
-        .toggleRole(user, role)
-        .then(function(user) {
-          var oldUser = _.findWhere(state.users, { id: user.id });
-          oldUser.roles = user.roles;
-          changeUsers(state.users);
-        });
-    }
-
   }
 })(); 

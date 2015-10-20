@@ -12,6 +12,10 @@ class Settings extends Model
       self::createIfNotExists();
     }
 
+    public static function getAllSettings() {
+      return self::first();
+    }
+
     public static function getCateringEmail() {
       return self::first()->catering_email;
     }

@@ -10,7 +10,8 @@
       getUserOrders: getUserOrders,
       getFoodOrdersForWeek: getFoodOrdersForWeek,
       getOrderNumbersForWeek: getOrderNumbersForWeek,
-      getUsersWithIncompleteOrders: getUsersWithIncompleteOrders
+      getUsersWithIncompleteOrders: getUsersWithIncompleteOrders,
+      getCateringEmail: getCateringEmail
     };
 
     function getOrders(week, user) {
@@ -71,6 +72,17 @@
       var phpWeek = week/1000;
 
       var url = appConfig.api.concat('/admin/orders/incomplete?week=:week');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        week: phpWeek,
+      });
+
+      return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function getCateringEmail(week) {
+      var phpWeek = week/1000;
+
+      var url = appConfig.api.concat('/admin/catering-email?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
         week: phpWeek,
       });

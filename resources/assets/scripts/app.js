@@ -164,7 +164,7 @@
       })
 
       .state('app.catering', {
-        url: 'admin/catering',
+        url: 'admin/catering/:week',
         controller: 'AdminCateringController as vm',
         templateUrl: 'admin/catering/catering',
         role: 'admin',

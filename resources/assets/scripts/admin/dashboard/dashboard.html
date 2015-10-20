@@ -1,8 +1,8 @@
 <div layout="row">
   <div flex>
     <h3>Hello {{ vm.user.name }}!</h3>
-    <md-button target="blank" class="md-primary va-m" ng-href="/orders/print/week">Print this Week's Orders</md-button>
-    <md-button class="md-primary" ng-click="vm.sendMenuToCatering(vm.week)">
+    <md-button target="blank" class="md-primary" ng-href="/orders/print/week">Print this Week's Orders</md-button>
+    <md-button class="md-primary" ui-sref="app.catering({ week: vm.week.valueOf() })">
       <md-tooltip>Send the menu order to catering</md-tooltip>
       Send to Catering
     </md-button>

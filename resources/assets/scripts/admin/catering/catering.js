@@ -5,12 +5,13 @@
     .module('Hungry.admin.catering')
     .controller('AdminCateringController', AdminCateringController);
 
-  function AdminCateringController($sce, Orders, $stateParams, Loader, SweetAlert) {
+  function AdminCateringController($sce, Orders, $state, $stateParams, Loader, SweetAlert) {
     var vm = this;
 
     vm.trustedHtmlEmail = '';
 
     vm.sendEmail = sendEmail;
+    vm.goToDashboard = goToDashboard;
 
     activate();
 
@@ -30,6 +31,10 @@
     }
 
     function sendEmail(week) {
+
+      if(Loader.isLoading()) {
+        return;
+      }
 
       SweetAlert.swal({
          title: "Send email to catering?",
@@ -51,6 +56,10 @@
             });
         }
       });
+    }
+
+    function goToDashboard() {
+      $state.go('app.admin-dashboard');
     }
   }
 })(); 

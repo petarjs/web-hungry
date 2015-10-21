@@ -950,7 +950,7 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
               <tbody><tr>
                 <td style="padding: 0;vertical-align: top">&nbsp;</td>
                 <td class="logo emb-logo-padding-box" style="padding: 0;vertical-align: top;mso-line-height-rule: at-least;width: 600px;padding-top: 32px;padding-bottom: 20px">
-                  <div class="logo-center" style="font-weight: 400;font-family: Merriweather,Georgia,serif;color: #202020;text-align: center;font-size: 0px !important;line-height: 0 !important" align="center" id="emb-email-header"><img style="border: 0;-ms-interpolation-mode: bicubic;display: block;Margin-left: auto;Margin-right: auto;max-width: 450px" src="{{ isset($pretend) ? asset('images/hungry-logo.png') : $message->embed(asset('images/hungry-logo.png')) }}" alt="" width="300" height="47"></div>
+                  <div class="logo-center" style="font-weight: 400;font-family: Merriweather,Georgia,serif;color: #202020;text-align: center;font-size: 0px !important;line-height: 0 !important" align="center" id="emb-email-header"><img style="border: 0;-ms-interpolation-mode: bicubic;display: block;Margin-left: auto;Margin-right: auto;max-width: 450px" src="{{ isset($pretend) ? asset('images/cosmicdevelopment.png') : $message->embed(asset('images/cosmicdevelopment.png')) }}" alt="" width="357" height="138"></div>
                 </td>
                 <td style="padding: 0;vertical-align: top">&nbsp;</td>
               </tr>

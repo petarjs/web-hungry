@@ -14,6 +14,9 @@ use Hungry\Handlers\Events\EmailNewMenu;
 use Hungry\Events\UserWasApproved;
 use Hungry\Handlers\Events\EmailUserApproval;
 
+use Hungry\Events\AdminSentCateringEmail;
+use Hungry\Handlers\Events\EmailCatering;
+
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -30,6 +33,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserWasApproved::class => [
             EmailUserApproval::class
+        ],
+        AdminSentCateringEmail::class => [
+            EmailCatering::class
         ]
 
     ];

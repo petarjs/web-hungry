@@ -10,6 +10,8 @@ use Hungry\Models\MenuFood;
 use Hungry\Models\User;
 use Hungry\Models\Menu;
 use Hungry\Models\Food;
+use Hungry\Models\Settings;
+use Hungry\Events\AdminSentCateringEmail;
 
 /**
  * @Middleware("auth")
@@ -119,5 +121,18 @@ class OrderController extends Controller
     $html = \View::make('emails.catering-order', ['data' => $data, 'pretend' => true])->render();
 
     return $html;
+  }
+
+  /**
+   * @Get("/send-catering-email")
+   * 
+   * Sends the catering email to catering's email
+   * address from the settings
+   */
+  public function sendCateringEmail() {
+    $week = \Input::get('week');
+    $cateringEmail = Settings::getCateringEmail();
+
+    \Event::fire(new AdminSentCateringEmail($week, $cateringEmail));
   }
 }

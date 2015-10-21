@@ -966,7 +966,7 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 36px;line-height: 44px;font-family: &quot;PT Serif&quot;,Georgia,serif;color: #2f353e;text-align: center">Zdravo!</h1><h3 style="font-style: normal;font-weight: 700;Margin-bottom: 10px;Margin-top: 18px;font-size: 14px;line-height: 22px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #929292;text-align: center">Saljemo vam narudzbinu!</h3>
+                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 36px;line-height: 44px;font-family: &quot;PT Serif&quot;,Georgia,serif;color: #2f353e;text-align: center">Narudžbina za xxx</h1>
                             </td>
                           </tr>
                         </tbody></table>
@@ -984,10 +984,38 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">Ovo hocemo da jedemo sledece nedelje: <br>
-                              Batak - 23 <br>
-                              Karadjordjeva - 12 <br>
-                              Cezar - 4
+                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">
+
+                              Poštovani Jakša, <br><br>
+
+                              Za ovu nedelju smo se opredelili za: <br><br>
+                              
+                              <div>
+                                <b>Ponedeljak</b>
+                                  Batak - 23 <br>
+                                  Karadjordjeva - 12 <br>
+                                  Cezar - 4
+                              </div>
+
+                              <div>
+                                <b>Utorak</b>
+                              </div>
+
+                              <div>
+                                <b>Sreda</b>
+                              </div>
+
+                              <div>
+                                <b>Četvrtak</b>
+                              </div>
+
+                              <div>
+                                <b>Petak</b>
+                              </div>
+
+                              <br><br>
+                              
+                              Srdačan pozdrav
                               </p>
                               <br>
                               <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 16px;line-height: 25px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e"></p>

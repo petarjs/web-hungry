@@ -106,4 +106,18 @@ class OrderController extends Controller
     $week = \Input::get('week');
     return User::withIncompleteOrders($week);
   }
+
+  /**
+   * @Get("/get-catering-email")
+   * 
+   * Returns the html email to be sent to catering 
+   * for the specified week
+   */
+  public function getCateringEmail() {
+    $week = \Input::get('week');
+    $data = Menu::getCateringEmailData($week);
+    $html = \View::make('emails.catering-order', ['data' => $data, 'pretend' => true])->render();
+
+    return $html;
+  }
 }

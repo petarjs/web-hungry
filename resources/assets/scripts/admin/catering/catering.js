@@ -15,7 +15,8 @@
     activate();
 
     function activate() {
-      getHtmlEmail($stateParams.week);
+      vm.week = $stateParams.week;
+      getHtmlEmail(vm.week);
     }
 
     function getHtmlEmail(week) {
@@ -45,6 +46,8 @@
             .sendCateringEmail(week)
             .then(function() {
               SweetAlert.swal('Email sent!');
+            }, function() {
+              SweetAlert.swal('Error!');
             });
         }
       });

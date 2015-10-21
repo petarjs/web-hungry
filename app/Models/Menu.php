@@ -84,4 +84,8 @@ class Menu extends Model
       });
     });
   }
+
+  public static function getCateringEmailData($week) {
+    return [];
+  }
 }

@@ -83,7 +83,7 @@
     function getCateringEmail(week) {
       var phpWeek = week/1000;
 
-      var url = appConfig.api.concat('/admin/get-catering-email?week=:week');
+      var url = appConfig.api.concat('/admin/orders/get-catering-email?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
         week: phpWeek,
       });
@@ -94,7 +94,7 @@
     function sendCateringEmail(week) {
       var phpWeek = week/1000;
 
-      var url = appConfig.api.concat('/admin/send-catering-email?week=:week');
+      var url = appConfig.api.concat('/admin/orders/send-catering-email?week=:week');
       var realUrl = UrlReplacer.replaceParams(url, {
         week: phpWeek,
       });

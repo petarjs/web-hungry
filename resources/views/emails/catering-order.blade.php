@@ -966,7 +966,7 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 36px;line-height: 44px;font-family: &quot;PT Serif&quot;,Georgia,serif;color: #2f353e;text-align: center">Narudžbina za xxx</h1>
+                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 26px;line-height: 44px;font-family: &quot;PT Serif&quot;,Georgia,serif;color: #2f353e;text-align: center">Narudžbina za {{ $data->keys()->first() }} - {{ $data->keys()->last() }}</h1>
                             </td>
                           </tr>
                         </tbody></table>
@@ -984,38 +984,34 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e">
+                              <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 18px;line-height: 28px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #333333">
 
-                              Poštovani Jakša, <br><br>
+                              Poštovani Jakša, <br>
 
-                              Za ovu nedelju smo se opredelili za: <br><br>
+                              Za ovu nedelju smo se opredelili za: <br>
                               
+                              <?php 
+                                $day = 0; 
+                                $days = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak'];
+                              ?>
+                              @foreach($data as $date => $items)
                               <div>
-                                <b>Ponedeljak</b>
-                                  Batak - 23 <br>
-                                  Karadjordjeva - 12 <br>
-                                  Cezar - 4
-                              </div>
+                                <b style="font-family: &quot;Verdana&quot;,Georgia,serif;font-size:20px;">{{ $date }} - {{ $days[$day++] }}</b> <br><br>
 
-                              <div>
-                                <b>Utorak</b>
+                                <table style="font-family: &quot;Verdana&quot;,Georgia,serif;font-size:16px;">
+                                  @foreach($items as $item => $count)
+                                  <tr style="border:1px solid #555;">
+                                    <td style="padding: 5px;padding-right:25px;border:1px solid #555;">{{ $item }}</td>
+                                    <td style="padding: 5px;padding-left:25px;text-align:right"><b>{{ $count }}</b></td>
+                                  </tr>
+                                  @endforeach
+                                </table>
                               </div>
-
-                              <div>
-                                <b>Sreda</b>
-                              </div>
-
-                              <div>
-                                <b>Četvrtak</b>
-                              </div>
-
-                              <div>
-                                <b>Petak</b>
-                              </div>
-
                               <br><br>
-                              
-                              Srdačan pozdrav
+                              @endforeach
+
+                              Srdačan pozdrav,<br>
+                              Cosmic Development
                               </p>
                               <br>
                               <p style="font-style: normal;font-weight: 400;Margin-bottom: 0;Margin-top: 0;font-size: 16px;line-height: 25px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #8e8e8e"></p>

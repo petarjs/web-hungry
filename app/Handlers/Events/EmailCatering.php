@@ -7,6 +7,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 use Hungry\Events\AdminSentCateringEmail;
+use Hungry\Models\Menu;
 
 class EmailCatering
 {
@@ -30,7 +31,9 @@ class EmailCatering
     {
       // dd($event);
       $email = $event->email;
-      \Mail::send('emails.catering-order', [], function ($m) use ($email) {
+
+      $data = Menu::getCateringEmailData($event->week);
+      \Mail::send('emails.catering-order', ['data' => $data], function ($m) use ($email) {
         $m->to($email, 'Ketering')->subject('Narudzbina za ...');
       });
     }

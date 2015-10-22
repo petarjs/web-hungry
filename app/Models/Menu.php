@@ -86,6 +86,29 @@ class Menu extends Model
   }
 
   public static function getCateringEmailData($week) {
-    return [];
+    $users = \Hungry\Models\User::get();
+    $allEatenFoodWeek = $users->map(function($user) use($week) {
+      return $user->eatenFoodForWeek($week);
+    })->collapse();
+
+    $menuFoodsByDate = $allEatenFoodWeek->groupBy(function($menuFood) {
+      return $menuFood->menu->date->format('d.m.Y');
+    });
+
+    // Group by food name
+    $menuFoodsByDate = $menuFoodsByDate->map(function($menuFoods) {
+      return $menuFoods->groupBy(function($mf) {
+        return $mf->food->description;
+      });
+    });
+
+    // Calculate counts for each food
+    $menuFoodsByDate = $menuFoodsByDate->map(function($differentMenuFoods) {
+      return $differentMenuFoods->map(function($menuFoods) {
+        return $menuFoods->count();
+      });
+    });
+
+    return $menuFoodsByDate;
   }
 }

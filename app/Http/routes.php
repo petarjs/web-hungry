@@ -24,3 +24,7 @@ Route::get('m', function() {
   // \Event::fire(new Hungry\Events\MenuWasPublished(Hungry\Models\Menu::first()));
   \Event::fire(new Hungry\Events\UserWasApproved(Hungry\Models\User::first()));
 });
+
+Route::get('t', function() {
+  return \Hungry\Models\Menu::getCateringEmailData(1445814000);
+});

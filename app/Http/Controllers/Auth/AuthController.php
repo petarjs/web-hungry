@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 use Event;
-use Hungry\Handlers\Events\EmailUserConfirmation;
+use Hungry\Events\UserWasRegistered;
 
 class AuthController extends Controller
 {
@@ -136,7 +136,7 @@ class AuthController extends Controller
           'avatar' => $user->avatar
         ]);
 
-        Event::fire(new EmailUserConfirmation($newUser));
+        Event::fire(new UserWasRegistered($newUser));
 
         return $newUser;
     }

@@ -18,7 +18,7 @@
     </div>
     
     <div flex="50">
-      <md-button class="md-primary" ng-repeat="role in vm.state.roles" ng-click="vm.toggleRole(user, role)" href="#" ng-disabled="vm.isCurrentUser(user)">
+      <md-button class="md-primary" ng-repeat="role in vm.state.roles" ng-click="vm.toggleRole(user, role)" ng-disabled="vm.isCurrentUser(user)">
           <i ng-if="$root.helpers.hasRole(role.name, user)" class="material-icons">remove</i>
           <i ng-if="!$root.helpers.hasRole(role.name, user)" class="material-icons">add</i>
         {{ role.display_name }}

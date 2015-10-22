@@ -966,7 +966,7 @@ a:hover{color:#871414 !important}.wrapper h1{color:#2f353e}.wrapper h2{color:#33
                         <table class="contents" style="border-collapse: collapse;border-spacing: 0;table-layout: fixed;width: 100%">
                           <tbody><tr>
                             <td class="padded" style="padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word">
-                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 26px;line-height: 44px;font-family: &quot;PT Serif&quot;,Georgia,serif;color: #2f353e;text-align: center">Narudžbina za {{ $data->keys()->first() }} - {{ $data->keys()->last() }}</h1>
+                              <h1 style="font-style: normal;font-weight: 500;Margin-bottom: 0;Margin-top: 0;font-size: 26px;line-height: 44px;font-family: &quot;PT Sans&quot;,&quot;Trebuchet MS&quot;,sans-serif;color: #2f353e;text-align: center">Narudžbina za {{ $data->keys()->first() }} - {{ $data->keys()->last() }}</h1>
                             </td>
                           </tr>
                         </tbody></table>

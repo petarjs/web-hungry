@@ -33,8 +33,8 @@ class EmailCatering
       $email = $event->email;
 
       $data = Menu::getCateringEmailData($event->week);
-      \Mail::send('emails.catering-order', ['data' => $data], function ($m) use ($email) {
-        $m->to($email, 'Ketering')->subject('Narudzbina za ...');
+      \Mail::send('emails.catering-order', ['data' => $data], function ($m) use ($email, $data) {
+        $m->to($email)->subject('Narudzbina za ' . $data->keys()->first() .' - ' . $data->keys()->last());
       });
     }
 }

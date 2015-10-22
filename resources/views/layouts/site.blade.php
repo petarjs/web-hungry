@@ -23,8 +23,10 @@
   <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
 </head>
 <body>
-  <div class="container">
-    @yield('content')
+  <div class="container layout layout-row layout-align-center-center">
+    <div class="flex flex-70 flex-md flex-md-80 flex-sm flex-sm-100 ta-c">
+      @yield('content')
+    </div>
   </div>
 
   <!-- Scripts -->

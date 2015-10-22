@@ -19,6 +19,7 @@ function appCssTask() {
 }
 
 function vendorCssTask() {
+  var cssMinify = plugins.gutil.env.production ? plugins.minifyCss() : plugins.gutil.noop();
   //We use our vendor.json file to include specific files in a specific order.
   var vendorCssList = JSON.parse(plugins.fs.readFileSync(config.vendorFilename, 'utf8'));
   var vendorCssArray = [];
@@ -29,6 +30,7 @@ function vendorCssTask() {
   }
   return gulp.src(vendorCssArray)
                     .pipe(plugins.concat('vendors.css'))
+                    .pipe(cssMinify)
                     .pipe(gulp.dest(config.buildPath + '/css'));
 }
 

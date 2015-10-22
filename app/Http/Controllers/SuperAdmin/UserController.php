@@ -40,4 +40,6 @@ class UserController extends Controller
 
       return redirect(action('SuperAdmin\UserController@getIndex'));
     }
+
+    
 }

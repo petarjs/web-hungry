@@ -7,7 +7,8 @@
     return {
       getUser: getUser,
       getUsers: getUsers,
-      toggleRole: toggleRole
+      toggleRole: toggleRole,
+      deleteUser: deleteUser
     };
 
     function getUser(id) {
@@ -32,6 +33,15 @@
       });
 
       return $http.put(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function deleteUser(id) {
+      var url = appConfig.api.concat('/users/:id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        id: id
+      });
+
+      return $http.delete(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
   }
 })(); 

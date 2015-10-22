@@ -35,6 +35,7 @@ class UserController extends Controller
 
     /**
      * @Put("/{id}/toggle-role/{role_id}")
+     * @Middleware("super-admin")
      */
     public function getToggleRole($id, $role_id) {
       $role = Role::findOrFail($role_id);
@@ -51,5 +52,17 @@ class UserController extends Controller
       }
 
       return User::with('roles')->find($id);
+    }
+
+    /**
+     * Delete a User
+     *
+     * @Delete("/{id}")
+     * @Middleware("super-admin")
+     */
+    public function deleteUser($id) {
+      \DB::table('eats')->where('user_id', '=', $id)->delete();
+      User::destroy($id);
+      return User::with('roles');
     }
 }

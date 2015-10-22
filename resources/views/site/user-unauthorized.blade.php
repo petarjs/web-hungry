@@ -4,7 +4,7 @@
 
   <h1>Account not approved</h1>
 
-  <h3>Please wait for admin to approve your account.</h3>
+  <h3>Please wait for our admin to approve your account.</h3>
 
   <p>Note that this service is currently used only by Cosmic Development emplyees.</p>
 

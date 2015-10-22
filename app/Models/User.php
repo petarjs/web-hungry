@@ -58,7 +58,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function approve() {
       $this->is_approved = true;
       $this->save();
-      Event::fire(new UserWasApproved($this));
+      \Event::fire(new UserWasApproved($this));
     }
 
     public static function withIncompleteOrders($week) {

@@ -127,4 +127,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
       return $usersArray;
     }
+
+    public static function getSuperAdmins() {
+      return self::whereHas(
+        'roles', function($q){
+          $q->where('name', 'super-admin');
+        }
+      )->get();
+    }
 }

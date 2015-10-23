@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 
 use Hungry\Events\UserWasRegistered;
 use Hungry\Handlers\Events\EmailUserConfirmation;
+use Hungry\Handlers\Events\EmailAdminUserRegistered;
 
 use Hungry\Events\MenuWasPublished;
 use Hungry\Handlers\Events\EmailNewMenu;
@@ -27,6 +28,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         UserWasRegistered::class => [
             EmailUserConfirmation::class,
+            EmailAdminUserRegistered::class
         ],
         MenuWasPublished::class => [
             EmailNewMenu::class

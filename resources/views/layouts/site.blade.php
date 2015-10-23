@@ -24,7 +24,7 @@
 </head>
 <body>
   <div class="container layout layout-row layout-align-center-center">
-    <div class="flex flex-70 flex-md flex-md-80 flex-sm flex-sm-100 ta-c">
+    <div class="flex flex-70 flex-md flex-md-80 flex-sm flex-sm-100">
       @yield('content')
     </div>
   </div>

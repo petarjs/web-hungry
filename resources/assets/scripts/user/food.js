@@ -76,7 +76,7 @@
       if(vm.week.isAfter(moment(), 'day')) {
         vm.orderingAllowed = true;
       } else {
-        vm.orderingAllowed = false;
+        // vm.orderingAllowed = false;
       }
 
       activate();

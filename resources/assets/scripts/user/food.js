@@ -29,7 +29,7 @@
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
     vm.orderingAllowed = true;
-    vm.orderDeadline = moment().add(4, 'days').endOf('day');
+    vm.orderDeadline = moment().startOf('isoWeek').add(4, 'days').endOf('day');
     if(moment().isAfter(vm.orderDeadline)) {
       vm.orderDeadline.add(1, 'week');
     }
@@ -76,7 +76,7 @@
       if(vm.week.isAfter(moment(), 'day')) {
         vm.orderingAllowed = true;
       } else {
-        // vm.orderingAllowed = false;
+        vm.orderingAllowed = false;
       }
 
       activate();

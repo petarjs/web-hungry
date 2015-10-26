@@ -136,4 +136,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         }
       )->get();
     }
+
+    public static function getApprovedUsers() {
+      return self::whereHas(
+        'roles', function($q){
+          $q->where('name', 'user');
+        }
+      )->get();
+    }
 }

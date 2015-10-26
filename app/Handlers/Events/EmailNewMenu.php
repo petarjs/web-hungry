@@ -31,9 +31,10 @@ class EmailNewMenu
     public function handle(MenuWasPublished $event)
     {
         $menu = $event->menu;
-        $allUsers = User::all()->lists('email')->toArray();
-        $userVars = User::all()->map(function($user) {
-          return [$user->email => [
+        $approvedUsers = User::getApprovedUsers();
+        $allUsers = $approvedUsers->lists('email')->toArray();
+        $userVars = $approvedUsers->map(function($user) {
+        return [$user->email => [
             'name' => $user->name
           ]];
         })->collapse()->toArray();

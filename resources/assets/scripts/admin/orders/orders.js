@@ -78,10 +78,11 @@
     }
 
     function getOrderedFoodForDay(user) {
-      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.formatServer);
+      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.format);
 
       var orderedMenuFood = _.find(user.menu_foods, function(menuFood) {
-        return menuFood.menu && (menuFood.menu.date === day);
+        return menuFood.menu && 
+          (moment(menuFood.menu.date, appConfig.date.formatServer).format(appConfig.date.format) === day);
       });
 
       if(orderedMenuFood) {

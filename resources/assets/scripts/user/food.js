@@ -113,9 +113,9 @@
     }
 
     function getMenuFoodsForDay(dayIndex) {
-      var day = vm.week.clone().add(dayIndex, 'days').format(appConfig.date.formatServer);
-      var menu = _.findWhere(vm.state.menus, {
-        date: day
+      var day = vm.week.clone().add(dayIndex, 'days').format(appConfig.date.format);
+      var menu = _.find(vm.state.menus, function(menu) {
+        return moment(menu.date, appConfig.date.formatServer).format(appConfig.date.format) === day;
       });
 
       if(menu) {
@@ -126,9 +126,10 @@
     }
 
     function getOrderedForDay(dayIndex) {
-      var day = vm.week.clone().add(dayIndex, 'days').format(appConfig.date.formatServer);
+      var day = vm.week.clone().add(dayIndex, 'days').format(appConfig.date.format);
       var ordered = _.find(vm.state.orders, function(menuFood) {
-        return menuFood.menu && (menuFood.menu.date === day);
+        return menuFood.menu && 
+          (moment(menuFood.menu.date, appConfig.date.formatServer).format(appConfig.date.format) === day);
       });
 
       if(ordered) {

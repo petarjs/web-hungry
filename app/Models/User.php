@@ -44,9 +44,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     public function eatenFoodForWeek($week) {
-      return $this->eatenFood()->with(['menu', 'food'])->get()->filter(function($menuFood) use($week) {
+      $array = $this->eatenFood()->with(['menu', 'food'])->get()->filter(function($menuFood) use($week) {
         return $menuFood->menu->week == $week;
       })->toArray();
+      return array_values($array);
     }
 
     public function eatenFoodForDay($day) {

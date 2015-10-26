@@ -62,6 +62,6 @@ class UserController extends Controller
     public function deleteUser($id) {
       \DB::table('eats')->where('user_id', '=', $id)->delete();
       User::destroy($id);
-      return User::with('roles');
+      return User::with('roles')->get();
     }
 }

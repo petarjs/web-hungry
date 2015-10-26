@@ -15,7 +15,7 @@ Hungry is a web app for ordering food. Intended use - Cosmic Development Belgrad
 - [x] User orders food for each day of the week
 - [ ] User likes foods
 - [ ] User sees the most popular foods
-- [ ] User gets email reminders to ordered food
+- [x] User gets email reminders to ordered food
 
 ### Admin
 
@@ -23,7 +23,7 @@ Hungry is a web app for ordering food. Intended use - Cosmic Development Belgrad
 - [x] Admin can mark food as a default food
 - [x] Admin makes daily menu
 - [x] Admin publishes menus for a week
-- [ ] Admin sees who ordered what, who didn't order, etc
+- [x] Admin sees who ordered what, who didn't order, etc
 - @include User
 
 ### Super Admin
@@ -32,3 +32,18 @@ Hungry is a web app for ordering food. Intended use - Cosmic Development Belgrad
 - @include Admin
 
 Happy coding!
+
+## Starting the project
+
+`composer install`
+
+`touch .env`  
+Fill out .env file with appropriate values
+
+`php artisan migrate`
+
+`sudo npm i`
+
+`bower install`
+
+`gulp`

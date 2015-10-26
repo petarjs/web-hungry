@@ -199,7 +199,8 @@
       size: _.size,
       loader: Loader,
       getPhpWeek: getPhpWeek,
-      appConfig: appConfig
+      appConfig: appConfig,
+      goHome: goHome
     };
 
     function getDayName(day) {
@@ -208,6 +209,10 @@
 
     function getPhpWeek(week) {
       return week / 1000;
+    }
+
+    function goHome() {
+      window.location.href = '/';
     }
   }
 

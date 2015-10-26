@@ -38,8 +38,10 @@
   <div class="container">
     <header class="header" layout="row" layout-align="center center" layout-padding>
       <div class="__logo" flex="70" flex-sm="100" flex-md="80">
-        HUNGRY
-        <span class="__subtitle">Cosmic</span>
+        <span class="cur-p" ng-click="$root.helpers.goHome()">
+          HUNGRY
+          <span class="__subtitle">Cosmic</span>
+        </span>
         <span class="right __menu">
           <md-menu md-position-mode="target-right target">
             <md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">

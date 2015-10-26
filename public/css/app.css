@@ -29,6 +29,9 @@
   height: 3px;
   border-top: 3px solid #ffa20f;
 }
+.header .__logo > span {
+  outline: none;
+}
 .header .__subtitle {
   color: #a7a7a7;
   font-size: 2rem;
@@ -137,6 +140,9 @@ body {
 }
 .h100 {
   height: 100%;
+}
+.cur-p {
+  cursor: pointer;
 }
 .md-button .material-icons {
   line-height: 36px;

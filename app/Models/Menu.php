@@ -28,7 +28,7 @@ class Menu extends Model
   }
 
   public static function createMenusForWeek($week) {
-    $now = Carbon::now('utc')->toDateTimeString();
+    $now = Carbon::now('Europe/Belgrade')->toDateTimeString();
 
     $weekMon = Carbon::createFromTimeStamp( (int) $week);
     $weekDays = [

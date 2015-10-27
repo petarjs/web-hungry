@@ -31,7 +31,7 @@ Route::get('t', function() {
   $date = Carbon\Carbon::createFromTimeStamp($week);
   $dateFormatted = $date->copy()->format('d.m.Y');
   $dateFormatted2 = $date->copy()->addDays(4)->format('d.m.Y');
-
+  return $date->startOfWeek();
   $users = Hungry\Models\User::getWeekPrintData($date);
   return $users;
 });

@@ -34,6 +34,6 @@ Route::get('t', function() {
 
   $users = Hungry\Models\User::getWeekPrintData($date);
 
-  return Hungry\Models\User::first()->eatenFood;
+  return Hungry\Models\Menu::all();
   return $users;
 });

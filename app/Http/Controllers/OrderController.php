@@ -31,9 +31,10 @@ class OrderController extends Controller {
    * @Get("/print/week")
    */
   public function printWeekOrders() {
-    $date = Carbon::now();
-    $dateFormatted = Carbon::now()->format('d.m.Y');
-    $dateFormatted2 = Carbon::now()->addDays(4)->format('d.m.Y');
+    $week = \Input::get('week');
+    $date = Carbon::createFromTimeStamp($week);
+    $dateFormatted = $date->copy()->format('d.m.Y');
+    $dateFormatted2 = $date->copy()->addDays(4)->format('d.m.Y');
 
     $users = User::getWeekPrintData($date);
     

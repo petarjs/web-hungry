@@ -4,7 +4,7 @@
   <h1>Food Orders for Week {{ $dateFormatted }} - {{ $dateFormatted2 }}</h1>
   <br>
   <table class="table table-bordered table-condensed">
-    <thead>
+    <thead style="display: table-header-group;">
       <th>Name</th>
       <th>Monday</th>
       <th>Tuesday</th>

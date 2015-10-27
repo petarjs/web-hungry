@@ -418,7 +418,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
      * Current week start date (monday)
      * @type Moment
      */
-    vm.week = moment().add(1, 'week').startOf('isoWeek');
+    vm.week = moment().startOf('isoWeek');
     vm.selectedTabIndex = moment().isoWeekday() - 1;
 
     vm.orderingAllowed = true;
@@ -545,6 +545,229 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       });
     }
 
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.catering')
+    .controller('AdminCateringController', AdminCateringController);
+
+  function AdminCateringController($sce, Orders, $state, $stateParams, Loader, SweetAlert) {
+    var vm = this;
+
+    vm.trustedHtmlEmail = '';
+
+    vm.sendEmail = sendEmail;
+    vm.goToDashboard = goToDashboard;
+
+    activate();
+
+    function activate() {
+      vm.week = $stateParams.week;
+      getHtmlEmail(vm.week);
+    }
+
+    function getHtmlEmail(week) {
+      Loader.start();
+      Orders
+        .getCateringEmail(week)
+        .then(function(emailHtml) {
+          vm.trustedHtmlEmail = $sce.trustAsHtml(emailHtml);
+        })
+        .then(Loader.stop);
+    }
+
+    function sendEmail(week) {
+
+      if(Loader.isLoading()) {
+        return;
+      }
+
+      SweetAlert.swal({
+         title: "Send email to catering?",
+         text: "Are you sure you want to send this order email to catering?",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonColor: "#DD6B55",
+         confirmButtonText: "Yes, send it!",
+         closeOnConfirm: false,
+         showLoaderOnConfirm: true
+      }, function(shouldSend) {
+        if(shouldSend) {
+          Orders
+            .sendCateringEmail(week)
+            .then(function() {
+              SweetAlert.swal('Email sent!');
+            }, function() {
+              SweetAlert.swal('Error!');
+            });
+        }
+      });
+    }
+
+    function goToDashboard() {
+      $state.go('app.admin-dashboard');
+    }
+  }
+})(); 
+(function () {
+  'use strict';
+
+  angular
+    .module('Hungry.admin.dashboard')
+    .controller('DashboardController', DashboardController);
+
+  function DashboardController($scope, user, Orders, appConfig, AppState, Loader) {
+    var vm = this;
+
+    var state = {};
+    vm.state = state;
+
+    var changeFoodOrders = AppState.change('foodOrders');
+    AppState.listen('foodOrders', function(foodOrders) { 
+      state.foodOrders = foodOrders;
+      vm.totalFoodOrders = getTotalOrdersNo(); 
+    });
+
+    var changeUsersIncompleteOrders = AppState.change('usersIncompleteOrders');
+    AppState.listen('usersIncompleteOrders', function(usersIncompleteOrders) { 
+      state.usersIncompleteOrders = usersIncompleteOrders; 
+    });
+
+    vm.user = user;
+
+    /**
+     * Number of orders for current week.
+     * @type {Number}
+     */
+    vm.numOrders = 0;
+
+    /**
+     * Total needed orders for a week.
+     * (number of users * 5 days in a week)
+     * @type {Number}
+     */
+    vm.numTotalOrders = 0;
+
+    vm.days = [{
+      title: 'Mon'
+    }, {
+      title: 'Tue'
+    }, {
+      title: 'Wed'
+    }, {
+      title: 'Thu'
+    }, {
+      title: 'Fri'
+    }];
+
+    /**
+     * Current week start date (monday)
+     * @type Moment
+     */
+    vm.week = moment().startOf('isoWeek');
+
+    vm.day = moment().isoWeekday() - 1;
+
+    // if it's weekend, default to monday next week.
+    if(vm.day > 4) {
+      vm.week = vm.week.add(1, 'week');
+      vm.day = 0;
+    }
+
+    vm.setNextWeek = setNextWeek;
+    vm.setPrevWeek = setPrevWeek;
+    vm.getNoOrdersForDay = getNoOrdersForDay;
+    vm.getFoodOrdersForWeek = getFoodOrdersForWeek;
+    vm.getFoodOrderPercentage = getFoodOrderPercentage;
+    vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
+    vm.getUsersWithIncompleteOrders = getUsersWithIncompleteOrders;
+    vm.sendMenuToCatering = sendMenuToCatering;
+
+    $scope.$watch(function() {
+      return vm.week;
+    }, function() {
+      vm.weekStart = vm.week.format(appConfig.date.format);
+      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
+
+      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
+        vm.day = moment().isoWeekday() - 1;
+      } else {
+        vm.day = 0;
+      }
+
+      activate();
+    });
+
+    function activate() {
+      vm.getOrderNumbersForWeek();
+      vm.getFoodOrdersForWeek();
+      vm.getUsersWithIncompleteOrders();
+    }
+
+    function setNextWeek() {
+      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
+    }
+
+    function setPrevWeek() {
+      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
+    }
+
+    function getNoOrdersForDay(week, day) {
+      return day * 3 + 10;
+    }
+
+    function getFoodOrdersForWeek() {
+      Loader.start();
+      Orders
+        .getFoodOrdersForWeek(vm.week.valueOf())
+        .then(changeFoodOrders)
+        .then(Loader.stop);
+    }
+
+    /**
+     * Calculates percentage of orders of certain food
+     * for the current week
+     * @param  {Number} foodOrders number of orders of the specifed food
+     * @return {Number}            percentage of orders, 0 <= x <= 100
+     */
+    function getFoodOrderPercentage(food) {
+      if(!vm.totalFoodOrders || vm.totalFoodOrders === 0) {
+        return 0;
+      }
+      return (food.num_orders / vm.totalFoodOrders) * 100;
+    }
+
+    function getTotalOrdersNo() {
+      return _.sum(vm.state.foodOrders, 'num_orders');
+    }
+
+    function getOrderNumbersForWeek(week) {
+      Loader.start();
+
+      Orders
+        .getOrderNumbersForWeek(vm.week.valueOf())
+        .then(function(orderNumbers) {
+          vm.numOrders = orderNumbers.num_orders;
+          vm.numTotalOrders = orderNumbers.num_total_orders;
+        })
+        .then(Loader.stop);
+    }
+    
+    function getUsersWithIncompleteOrders() {
+      Loader.start();
+
+      Orders
+        .getUsersWithIncompleteOrders(vm.week.valueOf())
+        .then(changeUsersIncompleteOrders)
+        .then(Loader.stop);
+    }
+  }
+
+  function sendMenuToCatering(week) {
+    // TODO
   }
 })(); 
 (function () {
@@ -705,71 +928,6 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         .then(Loader.stop);
     }
 
-  }
-})(); 
-(function () {
-  'use strict';
-
-  angular
-    .module('Hungry.admin.catering')
-    .controller('AdminCateringController', AdminCateringController);
-
-  function AdminCateringController($sce, Orders, $state, $stateParams, Loader, SweetAlert) {
-    var vm = this;
-
-    vm.trustedHtmlEmail = '';
-
-    vm.sendEmail = sendEmail;
-    vm.goToDashboard = goToDashboard;
-
-    activate();
-
-    function activate() {
-      vm.week = $stateParams.week;
-      getHtmlEmail(vm.week);
-    }
-
-    function getHtmlEmail(week) {
-      Loader.start();
-      Orders
-        .getCateringEmail(week)
-        .then(function(emailHtml) {
-          vm.trustedHtmlEmail = $sce.trustAsHtml(emailHtml);
-        })
-        .then(Loader.stop);
-    }
-
-    function sendEmail(week) {
-
-      if(Loader.isLoading()) {
-        return;
-      }
-
-      SweetAlert.swal({
-         title: "Send email to catering?",
-         text: "Are you sure you want to send this order email to catering?",
-         type: "warning",
-         showCancelButton: true,
-         confirmButtonColor: "#DD6B55",
-         confirmButtonText: "Yes, send it!",
-         closeOnConfirm: false,
-         showLoaderOnConfirm: true
-      }, function(shouldSend) {
-        if(shouldSend) {
-          Orders
-            .sendCateringEmail(week)
-            .then(function() {
-              SweetAlert.swal('Email sent!');
-            }, function() {
-              SweetAlert.swal('Error!');
-            });
-        }
-      });
-    }
-
-    function goToDashboard() {
-      $state.go('app.admin-dashboard');
-    }
   }
 })(); 
 (function () {
@@ -1012,180 +1170,41 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   'use strict';
 
   angular
-    .module('Hungry.admin.dashboard')
-    .controller('DashboardController', DashboardController);
+    .module('Hungry.admin.settings')
+    .controller('SettingsController', SettingsController);
 
-  function DashboardController($scope, user, Orders, appConfig, AppState, Loader) {
+  function SettingsController(Settings, AppState, Loader) {
     var vm = this;
 
-    var state = {};
-    vm.state = state;
+    vm.state = {};
 
-    var changeFoodOrders = AppState.change('foodOrders');
-    AppState.listen('foodOrders', function(foodOrders) { 
-      state.foodOrders = foodOrders;
-      vm.totalFoodOrders = getTotalOrdersNo(); 
-    });
+    var changeSettings = AppState.change('settings');
+    AppState.listen('settings', function(settings) { vm.state.settings = settings; });
 
-    var changeUsersIncompleteOrders = AppState.change('usersIncompleteOrders');
-    AppState.listen('usersIncompleteOrders', function(usersIncompleteOrders) { 
-      state.usersIncompleteOrders = usersIncompleteOrders; 
-    });
+    vm.saveCateringEmail = saveCateringEmail;
 
-    vm.user = user;
-
-    /**
-     * Number of orders for current week.
-     * @type {Number}
-     */
-    vm.numOrders = 0;
-
-    /**
-     * Total needed orders for a week.
-     * (number of users * 5 days in a week)
-     * @type {Number}
-     */
-    vm.numTotalOrders = 0;
-
-    vm.days = [{
-      title: 'Mon'
-    }, {
-      title: 'Tue'
-    }, {
-      title: 'Wed'
-    }, {
-      title: 'Thu'
-    }, {
-      title: 'Fri'
-    }];
-
-    /**
-     * Current week start date (monday)
-     * @type Moment
-     */
-    vm.week = moment().startOf('isoWeek');
-
-    vm.day = moment().isoWeekday() - 1;
-
-    // if it's weekend, default to monday next week.
-    if(vm.day > 4) {
-      vm.week = vm.week.add(1, 'week');
-      vm.day = 0;
-    }
-
-    vm.setNextWeek = setNextWeek;
-    vm.setPrevWeek = setPrevWeek;
-    vm.getNoOrdersForDay = getNoOrdersForDay;
-    vm.getFoodOrdersForWeek = getFoodOrdersForWeek;
-    vm.getFoodOrderPercentage = getFoodOrderPercentage;
-    vm.getOrderNumbersForWeek = getOrderNumbersForWeek;
-    vm.getUsersWithIncompleteOrders = getUsersWithIncompleteOrders;
-    vm.sendMenuToCatering = sendMenuToCatering;
-
-    $scope.$watch(function() {
-      return vm.week;
-    }, function() {
-      vm.weekStart = vm.week.format(appConfig.date.format);
-      vm.weekEnd = moment(vm.week).add(4, 'days').format(appConfig.date.format);
-
-      if(moment().isBetween(vm.week, moment(vm.week).add(4, 'days'))) {
-        vm.day = moment().isoWeekday() - 1;
-      } else {
-        vm.day = 0;
-      }
-
-      activate();
-    });
+    activate();
 
     function activate() {
-      vm.getOrderNumbersForWeek();
-      vm.getFoodOrdersForWeek();
-      vm.getUsersWithIncompleteOrders();
+      getSettings();
     }
 
-    function setNextWeek() {
-      vm.week = moment(vm.week).add(1, 'weeks').startOf('isoWeek');
-    }
-
-    function setPrevWeek() {
-      vm.week = moment(vm.week).subtract(1, 'weeks').startOf('isoWeek');
-    }
-
-    function getNoOrdersForDay(week, day) {
-      return day * 3 + 10;
-    }
-
-    function getFoodOrdersForWeek() {
+    function saveCateringEmail(email) {
       Loader.start();
-      Orders
-        .getFoodOrdersForWeek(vm.week.valueOf())
-        .then(changeFoodOrders)
-        .then(Loader.stop);
-    }
-
-    /**
-     * Calculates percentage of orders of certain food
-     * for the current week
-     * @param  {Number} foodOrders number of orders of the specifed food
-     * @return {Number}            percentage of orders, 0 <= x <= 100
-     */
-    function getFoodOrderPercentage(food) {
-      if(!vm.totalFoodOrders || vm.totalFoodOrders === 0) {
-        return 0;
-      }
-      return (food.num_orders / vm.totalFoodOrders) * 100;
-    }
-
-    function getTotalOrdersNo() {
-      return _.sum(vm.state.foodOrders, 'num_orders');
-    }
-
-    function getOrderNumbersForWeek(week) {
-      Loader.start();
-
-      Orders
-        .getOrderNumbersForWeek(vm.week.valueOf())
-        .then(function(orderNumbers) {
-          vm.numOrders = orderNumbers.num_orders;
-          vm.numTotalOrders = orderNumbers.num_total_orders;
+      Settings
+        .setSettings({
+          catering_email: email
         })
+        .then(changeSettings)
         .then(Loader.stop);
     }
-    
-    function getUsersWithIncompleteOrders() {
+
+    function getSettings() {
       Loader.start();
-
-      Orders
-        .getUsersWithIncompleteOrders(vm.week.valueOf())
-        .then(changeUsersIncompleteOrders)
+      Settings
+        .getSettings()
+        .then(changeSettings)
         .then(Loader.stop);
-    }
-  }
-
-  function sendMenuToCatering(week) {
-    // TODO
-  }
-})(); 
-(function () {
-  angular
-    .module('Hungry.core.auth')
-    .service('Auth', Auth);
-
-  function Auth ($window) {
-    var roles = $window.roles ? $window.roles.split(',') : [];
-
-    return {
-      hasRole: hasRole
-    };
-
-    function hasRole (role, user) {
-      if(!user) {
-        return roles.indexOf(role) !== -1;
-      } else {
-        return !!_.findWhere(user.roles, {
-          name: role
-        });
-      }
     }
   }
 })(); 
@@ -1528,44 +1547,25 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   }
 })(); 
 (function () {
-  'use strict';
-
   angular
-    .module('Hungry.admin.settings')
-    .controller('SettingsController', SettingsController);
+    .module('Hungry.core.auth')
+    .service('Auth', Auth);
 
-  function SettingsController(Settings, AppState, Loader) {
-    var vm = this;
+  function Auth ($window) {
+    var roles = $window.roles ? $window.roles.split(',') : [];
 
-    vm.state = {};
+    return {
+      hasRole: hasRole
+    };
 
-    var changeSettings = AppState.change('settings');
-    AppState.listen('settings', function(settings) { vm.state.settings = settings; });
-
-    vm.saveCateringEmail = saveCateringEmail;
-
-    activate();
-
-    function activate() {
-      getSettings();
-    }
-
-    function saveCateringEmail(email) {
-      Loader.start();
-      Settings
-        .setSettings({
-          catering_email: email
-        })
-        .then(changeSettings)
-        .then(Loader.stop);
-    }
-
-    function getSettings() {
-      Loader.start();
-      Settings
-        .getSettings()
-        .then(changeSettings)
-        .then(Loader.stop);
+    function hasRole (role, user) {
+      if(!user) {
+        return roles.indexOf(role) !== -1;
+      } else {
+        return !!_.findWhere(user.roles, {
+          name: role
+        });
+      }
     }
   }
 })(); 

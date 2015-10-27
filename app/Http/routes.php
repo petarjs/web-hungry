@@ -26,5 +26,12 @@ Route::get('m', function() {
 });
 
 Route::get('t', function() {
-  return \Hungry\Models\Menu::getCateringEmailData(1445814000);
+  // return \Hungry\Models\Menu::getCateringEmailData(1445814000);
+  $week = \Input::get('week');
+  $date = Carbon\Carbon::createFromTimeStamp($week);
+  $dateFormatted = $date->copy()->format('d.m.Y');
+  $dateFormatted2 = $date->copy()->addDays(4)->format('d.m.Y');
+
+  $users = Hungry\Models\User::getWeekPrintData($date);
+  return $users;
 });

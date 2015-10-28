@@ -34,7 +34,7 @@ class OrderController extends Controller
 
   /**
    * @Post("/create")
-   * @Middleware("admin")
+   * @Middleware("user")
    *
    * User creates his order for a specific day
    * 

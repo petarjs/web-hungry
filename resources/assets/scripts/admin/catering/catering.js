@@ -25,7 +25,9 @@
       Orders
         .getCateringEmail(week)
         .then(function(emailHtml) {
-          vm.trustedHtmlEmail = $sce.trustAsHtml(emailHtml);
+          if(emailHtml) {
+            vm.trustedHtmlEmail = $sce.trustAsHtml(emailHtml);
+          }
         })
         .then(Loader.stop);
     }

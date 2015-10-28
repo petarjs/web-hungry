@@ -92,17 +92,21 @@ class Menu extends Model
     })->collapse();
 
     $menuFoodsByDate = $allEatenFoodWeek->groupBy(function($menuFood) {
-      if($menuFood->menu) {
-        $menuFood->menu->date->format('d.m.Y');
+      if(isset($menuFood->menu)) {
+        return $menuFood->menu->date->format('d.m.Y');
       } else {
-        return '';
+        return Menu::find($menuFood['menu']['id'])->date->format('d.m.Y');
       }
     });
 
     // Group by food name
     $menuFoodsByDate = $menuFoodsByDate->map(function($menuFoods) {
       return $menuFoods->groupBy(function($mf) {
-        return $mf->food->description;
+        if(isset($mf->food)) {
+          return $mf->food->description;
+        } else {
+          return $mf['food']['description'];
+        }
       });
     });
 
@@ -112,6 +116,7 @@ class Menu extends Model
         return $menuFoods->count();
       });
     });
+
 
     return $menuFoodsByDate;
   }

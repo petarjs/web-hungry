@@ -2,7 +2,7 @@
   <div flex>
     <h3>Hello {{ vm.user.name }}!</h3>
     <md-button target="blank" class="md-primary" ng-href="/orders/print/week?week={{ $root.helpers.getPhpWeek(vm.week.valueOf()) }}">Print this Week's Orders</md-button>
-    <md-button class="md-primary" ui-sref="app.catering({ week: vm.week.valueOf() })">
+    <md-button class="md-primary" ui-sref="app.catering({ week: $root.helpers.getPhpWeek(vm.week.valueOf()) })">
       <md-tooltip>Send the menu order to catering</md-tooltip>
       Send to Catering
     </md-button>

@@ -92,7 +92,7 @@ class Menu extends Model
     })->collapse();
 
     $menuFoodsByDate = $allEatenFoodWeek->groupBy(function($menuFood) {
-      return $menuFood->menu->date->format('d.m.Y');
+      return $menuFood->menu ? $menuFood->menu->date->format('d.m.Y') : '';
     });
 
     // Group by food name

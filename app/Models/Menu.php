@@ -91,6 +91,10 @@ class Menu extends Model
       return $user->eatenFoodForWeek($week);
     })->collapse();
 
+    $allEatenFoodWeek = $allEatenFoodWeek->sortBy(function($menuFood) {
+      return $menuFood['menu']['date'];
+    });
+
     $menuFoodsByDate = $allEatenFoodWeek->groupBy(function($menuFood) {
       if(isset($menuFood->menu)) {
         return $menuFood->menu->date->format('d.m.Y');
@@ -114,9 +118,12 @@ class Menu extends Model
     $menuFoodsByDate = $menuFoodsByDate->map(function($differentMenuFoods) {
       return $differentMenuFoods->map(function($menuFoods) {
         return $menuFoods->count();
+      })->sortByDesc(function($count) {
+        return $count;
       });
     });
 
+    // dd($menuFoodsByDate);
 
     return $menuFoodsByDate;
   }

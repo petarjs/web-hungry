@@ -28,7 +28,7 @@ class OrderController extends Controller {
   }
 
   /**
-  * @Middleware("admin")
+   * @Middleware("admin")
    * @Get("/print/week")
    */
   public function printWeekOrders() {

@@ -14,13 +14,15 @@ use Hungry\Models\Settings;
 use Hungry\Events\AdminSentCateringEmail;
 
 /**
- * @Middleware("auth")
  * @Controller(prefix="api/admin/orders")
  */
 class OrderController extends Controller
 {
   /**
    * @Get("/")
+   * @Middleware("user")
+   *
+   * Return user's orders for a specific week
    */
   public function getIndex() {
     $week = \Input::get('week');
@@ -32,6 +34,10 @@ class OrderController extends Controller
 
   /**
    * @Post("/create")
+   * @Middleware("admin")
+   *
+   * User creates his order for a specific day
+   * 
    */
   public function createOrder() {
     $userId = \Input::get('user_id');
@@ -47,8 +53,10 @@ class OrderController extends Controller
 
   /**
    * @Get("/users")
+   * @Middleware("admin")
    *
    * Returns list of users with their ordered foods for the specified week
+   * 
    */
   public function getUserOrders() {
     $week = \Input::get('week');
@@ -65,6 +73,7 @@ class OrderController extends Controller
 
   /**
    * @Get("/food")
+   * @Middleware("admin")
    *
    * Returns number of orders for each food for the specified week
    * 
@@ -85,9 +94,11 @@ class OrderController extends Controller
 
   /**
    * @Get("/numbers")
+   * @Middleware("admin")
    *
    * Return the number of orders for a week and 
    * the total needed number of orders (numUsers * 5)
+   * 
    */
   public function getFoodOrdersNumber() {
     $week = \Input::get('week');
@@ -100,9 +111,11 @@ class OrderController extends Controller
 
   /**
    * @Get("/incomplete")
+   * @Middleware("admin")
    *
    * Return the users who didn't complete the orders
    * for the specified week
+   * 
    */
   public function getUsersWithIncompleteOrdersForWeek() {
     $week = \Input::get('week');
@@ -111,6 +124,7 @@ class OrderController extends Controller
 
   /**
    * @Get("/get-catering-email")
+   * @Middleware("admin")
    * 
    * Returns the html email to be sent to catering 
    * for the specified week
@@ -125,9 +139,11 @@ class OrderController extends Controller
 
   /**
    * @Get("/send-catering-email")
+   * @Middleware("admin")
    * 
    * Sends the catering email to catering's email
    * address from the settings
+   * 
    */
   public function sendCateringEmail() {
     $week = \Input::get('week');

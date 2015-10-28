@@ -20,6 +20,7 @@ class SettingsController extends Controller
 {
     /**
      * @Get("/")
+     * @Middleware("admin")
      */
     public function get() {
       return Settings::getAllSettings();
@@ -27,6 +28,7 @@ class SettingsController extends Controller
 
     /**
      * @Post("/")
+     * @Middleware("admin")
      */
     public function post(SettingsRequest $request) {
       Settings::setCateringEmail($request->catering_email);

@@ -5,11 +5,11 @@ namespace Hungry\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
-class Admin
+class User
 {
-  public function __construct(Guard $auth) {
-      $this->auth = $auth;
-  }
+    public function __construct(Guard $auth) {
+        $this->auth = $auth;
+    }
 
     /**
      * Handle an incoming request.
@@ -20,14 +20,14 @@ class Admin
      */
     public function handle($request, Closure $next)
     {
-        if($this->auth->check() && $this->auth->user()->hasRole('admin')) {
+        if($this->auth->check() && $this->auth->user()->hasRole('user')) {
           return $next($request);
         }
-        
+
         if ($request->ajax()) {
           return response('Unauthorized.', 401);
         }
 
-        return  redirect()->guest('auth/login');
+        return redirect()->guest('auth/login');
     }
 }

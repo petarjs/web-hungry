@@ -10,12 +10,12 @@ use Hungry\Models\User;
 use Carbon\Carbon;
 
 /**
- * @Middleware("auth")
  * @Controller(prefix="orders")
  */
 class OrderController extends Controller {
 
   /**
+   * @Middleware("admin")
    * @Get("/print/today")
    */
   public function printTodayOrders() {
@@ -28,6 +28,7 @@ class OrderController extends Controller {
   }
 
   /**
+  * @Middleware("admin")
    * @Get("/print/week")
    */
   public function printWeekOrders() {

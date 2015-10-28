@@ -23,6 +23,11 @@ class SuperAdmin
         if($this->auth->check() && $this->auth->user()->hasRole('super-admin')) {
           return $next($request);
         }
+
+        if ($request->ajax()) {
+          return response('Unauthorized.', 401);
+        }
+        
         return  redirect()->guest('auth/login');
     }
 }

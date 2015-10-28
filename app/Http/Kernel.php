@@ -31,5 +31,6 @@ class Kernel extends HttpKernel
         'guest' => \Hungry\Http\Middleware\RedirectIfAuthenticated::class,
         'admin' => \Hungry\Http\Middleware\Admin::class,
         'super-admin' => \Hungry\Http\Middleware\SuperAdmin::class,
+        'user' => \Hungry\Http\Middleware\User::class,
     ];
 }

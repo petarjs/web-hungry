@@ -26,6 +26,7 @@ class UserController extends Controller
 
     /**
      * @Get("/{id}")
+     * @Middleware("user")
      */
     public function getUser($id) {
       $user = User::with('roles')->find($id);

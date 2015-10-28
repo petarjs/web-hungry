@@ -12,13 +12,18 @@ use Hungry\Models\MenuFood;
 use Hungry\Http\Requests\FoodRequest;
 
 /**
- * @Middleware("auth")
  * @Controller(prefix="api/admin/menus")
  */
 class MenuController extends Controller
 {
     /**
      * @Get("/")
+     * @Middleware("admin")
+     *
+     * Return menus for a specific week.
+     * If there are no menus for that week,
+     * create them.
+     * 
      */
     public function getIndex() {
       $week = \Input::get('week');
@@ -33,6 +38,10 @@ class MenuController extends Controller
 
     /**
      * @Get("/user")
+     * @Middleware("user")
+     *
+     * Return menus for the specified week to user.
+     * 
      */
     public function getMenusUser() {
       $week = \Input::get('week');
@@ -46,6 +55,10 @@ class MenuController extends Controller
 
     /**
      * @Put("/{id}")
+     * @Middleware("admin")
+     *
+     * Admin adds a food to the menu.
+     * 
      */
     public function addFoodToMenu($id) {
       $foodId = \Input::get('food_id');
@@ -64,6 +77,10 @@ class MenuController extends Controller
 
     /**
      * @Post("/publish")
+     * @Middleware("admin")
+     *
+     * Admin publishes the menu.
+     * 
      */
     public function publishMenus() {
       $week = \Input::get('week');
@@ -74,6 +91,9 @@ class MenuController extends Controller
 
     /**
      * @Delete("/food/{id}")
+     * @Middleware("admin")
+     *
+     * Admin removes menuFood from the menu.
      *
      * @param  $id - id of the MenuFood to remove
      */

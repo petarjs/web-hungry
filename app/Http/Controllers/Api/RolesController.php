@@ -16,6 +16,7 @@ class RolesController extends Controller
 {
 
     /**
+     * @Middleware("user")
      * @Get("/")
      */
     public function getRoles() {

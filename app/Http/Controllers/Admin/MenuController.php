@@ -11,6 +11,8 @@ use Hungry\Models\Menu;
 use Hungry\Models\MenuFood;
 use Hungry\Http\Requests\FoodRequest;
 
+use Hungry\Events\MenuWasPublished;
+
 /**
  * @Controller(prefix="api/admin/menus")
  */
@@ -85,6 +87,8 @@ class MenuController extends Controller
     public function publishMenus() {
       $week = \Input::get('week');
       Menu::where('week', $week)->update(['published' => true]);
+
+      \Event::fire(new MenuWasPublished(Menu::where('week', $week)->first()));
 
       return Menu::with(['menuFoods', 'menuFoods.menu', 'menuFoods.food'])->where('week', $week)->get();
     }

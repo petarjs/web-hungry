@@ -50,6 +50,20 @@
 
             <md-menu-content width="4" ng-cloak>
 
+              <md-menu-item style="min-height: 100px;" ng-if="$root.user">
+                <div layout="row">
+                  <md-list class="users-list">
+                    <md-list-item class="user" layout-sm="column">
+                      <img ng-src="@{{ $root.user.avatar }}" class="md-avatar" />
+                      <div flex class="md-list-item-text" layout="column">
+                        <h3 class="user__name">@{{ $root.user.name }}</h3>
+                        <p class="user__email">@{{ $root.user.email }}</p>
+                      </div>
+                    </md-list-item>
+                  </md-list>
+                </div>
+              </md-menu-item>
+
               <md-menu-item ng-if="$root.helpers.hasRole('super-admin')" class="menu-header">
                 <p flex>Super Admin</p>
               </md-menu-item>

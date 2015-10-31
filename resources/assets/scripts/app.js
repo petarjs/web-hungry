@@ -77,7 +77,7 @@
         url: '/',
         abstract: true,
         template: '<div ui-view></div>',
-        controller: 'AppController',
+        controller: 'AppController as app',
         resolve: {
           user: function(Users, Loader) {
             Loader.start();

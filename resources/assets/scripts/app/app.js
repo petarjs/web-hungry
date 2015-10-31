@@ -3,8 +3,10 @@
     .module('Hungry.app')
     .controller('AppController', AppController);
 
-  function AppController(AppState, Auth, user, roles, foods, $state) {
+  function AppController(AppState, Auth, user, roles, foods, $state, $rootScope) {
     var vm = this;
+
+    $rootScope.user = user;
 
     if(!user.roles || !user.roles.length) {
       window.location.href = '/auth/login';

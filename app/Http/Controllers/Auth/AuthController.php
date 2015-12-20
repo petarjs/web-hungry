@@ -129,8 +129,14 @@ class AuthController extends Controller
             return $authUser;
         }
 
+        try {
+          $name = $user->name ? $user->name : $user->user['name']['givenName'] . ' ' . $user->user['name']['familyName'];
+        } catch(Exception $e) {
+          $name = '';
+        }
+
         $newUser = User::create([
-          'name' => $user->name ? $user->name : $userData->user['name']['givenName'] . ' ' . $userData->user['name']['familyName'],
+          'name' => $name,
           'email' => $user->email,
           'google_id' => $user->id,
           'avatar' => $user->avatar

@@ -7,12 +7,12 @@
   Menus for week {{ vm.weekStart }} - {{ vm.weekEnd }}
   <md-button ng-click="vm.setNextWeek()" class="md-fab md-raised md-mini"><i class="material-icons">chevron_right</i></md-button>
 </h3>
-
+ 
 <div>
   <md-button ng-repeat="day in vm.days" ng-click="vm.day = $index" ng-class="{ 'md-raised md-primary': $index === vm.day }">{{ day.title }}</md-button>
 </div>
 
-<div>
+<div> 
   <md-input-container>
     <label>Search (Name, Email, Food)</label>
     <input ng-model="vm.userFilter">
@@ -30,8 +30,14 @@
 
     <div flex class="md-list-item-text" layout="column">
       <p ng-if="!!vm.getOrderedFoodForDay(user)" class="user__text">Ordered:</p>
-      <p ng-if="!!vm.getOrderedFoodForDay(user)" class="user__text"><b>{{ vm.getOrderedFoodForDay(user).food.description }}</b></p>
+      <p ng-if="!!vm.getOrderedFoodForDay(user)" class="user__text">
+        <b>{{ vm.getOrderedFoodForDay(user).food.description }}</b>
+        <md-button class="md-raised md-mini change-btn md-info" ng-click="vm.changeFoodDialog(vm.getOrderedFoodForDay(user).id)">change</md-button>
+        <md-button class="md-raised md-mini danger-btn" ng-click="vm.deleteOrder(vm.getOrderedFoodForDay(user).id)">remove</md-button>
+      </p>
       <p ng-if="!vm.getOrderedFoodForDay(user)" class="user__text--warning">Hasn't ordered yet.</p>
     </div>
+
+
   </md-list-item>
 </md-list>

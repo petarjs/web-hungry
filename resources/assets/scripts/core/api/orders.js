@@ -3,11 +3,12 @@
     .module('Hungry.core.api.orders')
     .factory('Orders', OrdersFactory);
 
-  function OrdersFactory($http, appConfig, UrlReplacer, ApiHelpers) {
+  function OrdersFactory($http, appConfig, UrlReplacer, ApiHelpers) { 
     return {
       getOrders: getOrders,
       orderMenuFood: orderMenuFood,
       getUserOrders: getUserOrders,
+      deleteUserOrder: deleteUserOrder,
       getFoodOrdersForWeek: getFoodOrdersForWeek,
       getOrderNumbersForWeek: getOrderNumbersForWeek,
       getUsersWithIncompleteOrders: getUsersWithIncompleteOrders,
@@ -45,6 +46,19 @@
       });
 
       return $http.get(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function deleteUserOrder(menuFoodId){
+      var url = appConfig.api.concat('/admin/orders/food/delete?id=:menu_food_id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        menu_food_id: menuFoodId
+      });
+
+      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
+    }
+
+    function changeUserOrder(){
+      //
     }
 
     function getFoodOrdersForWeek(week) {

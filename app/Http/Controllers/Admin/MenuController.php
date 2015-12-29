@@ -11,7 +11,7 @@ use Hungry\Models\Menu;
 use Hungry\Models\MenuFood;
 use Hungry\Http\Requests\FoodRequest;
 
-use Hungry\Events\MenuWasPublished;
+use Hungry\Events\MenuWasPublished; 
 
 /**
  * @Controller(prefix="api/admin/menus")

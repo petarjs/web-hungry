@@ -5,13 +5,20 @@
     .module('Hungry.admin.orders')
     .controller('AdminOrdersController', AdminOrdersController);
 
-  function AdminOrdersController($scope, Loader, Orders, appConfig, AppState) {
+  function AdminOrdersController($scope, Loader, Orders, Menus, appConfig, AppState, $mdDialog, SweetAlert) {
     var vm = this;
-
+  
     var state = {};
     var changeUserOrders = AppState.change('userOrders');
+    var changeMenus      = AppState.change('menus');
     
-    AppState.listen('userOrders', function(userOrders) { state.userOrders = userOrders; });
+    AppState.listen('userOrders', function(userOrders) {
+      state.userOrders = userOrders;
+    });
+
+    AppState.listen('menus', function(menus) {
+      state.menus = menus;
+    });
 
     vm.state = state;
 
@@ -67,6 +74,10 @@
         .getUserOrders(vm.week.valueOf())
         .then(changeUserOrders)
         .then(Loader.stop);
+
+      Menus
+          .getMenus(vm.week.valueOf())
+          .then(changeMenus);
     }
 
     function setNextWeek() {
@@ -91,6 +102,88 @@
         return null;
       }
     }
+
+
+    function getOrdersForDay(){
+      var day = vm.week.clone().add(vm.day, 'days').format(appConfig.date.format);
+
+      var menu = _.find(vm.state.menus, function(menu) {
+        return moment(menu.date, appConfig.date.formatServer).format(appConfig.date.format) === day;
+      });
+
+      if(menu) {
+        return menu.menu_foods;
+      } else {
+        return [];
+      }
+    }
+
+    vm.changeFoodDialog = changeFoodDialog;
+    vm.deleteOrder      = deleteOrder;
+
+    function changeFoodDialog(id, ev) {
+
+      var parentEl = angular.element(document.body);
+      vm.dayOrders = getOrdersForDay();
+
+      $mdDialog.show({
+        parent: parentEl,
+        targetEvent: ev,
+        templateUrl: 'admin/food/change',
+        controller: 'ChangeFoodCtrl as vm',
+        clickOutsideToClose:true,
+        locals: {
+          orders: vm.dayOrders,
+          id: id
+        }
+      }).then(function(order){
+        Loader.start();
+        Orders
+          .changeOrder(order)
+          .then(function(){
+            refresh();
+            Loader.stop();
+          });
+      });
+    }
+
+    function refresh() {
+      Orders
+        .getUserOrders(vm.week.valueOf())
+        .then(changeUserOrders);
+
+      Menus
+          .getMenus(vm.week.valueOf())
+          .then(changeMenus);
+    }
+
+    function deleteOrder(menuFoodId) {
+      SweetAlert.swal({
+        title: "Delete this order?",
+        text: "Your will not be able to recover this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false,
+        closeOnCancel: false,
+        showLoaderOnConfirm: true
+      }, function(deleteOrder) {
+          if(deleteOrder){
+            Loader.start();
+            Orders
+              .deleteUserOrder(menuFoodId)
+              .then(function(){
+                refresh();
+                Loader.stop();
+                SweetAlert.swal('Order deleted!');
+              });
+          } 
+      });
+    }
+
+
+
   }
 
 })();

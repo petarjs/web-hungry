@@ -10,6 +10,7 @@ use Hungry\Models\MenuFood;
 use Hungry\Models\User;
 use Hungry\Models\Menu;
 use Hungry\Models\Food;
+use Hungry\Models\Eat;
 use Hungry\Models\Settings;
 use Hungry\Events\AdminSentCateringEmail;
 
@@ -27,7 +28,7 @@ class OrderController extends Controller
   public function getIndex() {
     $week = \Input::get('week');
     $userId = \Input::get('user_id');
-    $user = User::findOrFail($userId);
+    $user = User::findOrFail($userId); 
 
     return $user->eatenFoodForWeek($week);
   }
@@ -150,5 +151,32 @@ class OrderController extends Controller
     $cateringEmail = Settings::getCateringEmail();
 
     \Event::fire(new AdminSentCateringEmail($week, $cateringEmail));
+  }
+
+  /**
+   * @Post("/food/delete")
+   * @Middleware("admin")
+   * 
+   * Deletes one record form eats table
+   * 
+   * 
+   */
+
+  public function getDeleteOrder(){
+    $id   = \Input::get('id');
+    //$week = \Input::get('week');
+
+    $eat = Eat::where('menu_food_id',$id)->delete();
+    /*
+    $orderedFood = [];
+
+    Food::all()->each(function ($food) use($week, &$orderedFood) {
+      $arrayFood = $food->toArray();
+      $arrayFood['num_orders'] = Menu::getNumOrdersForWeekAndFood($week, $food);
+      $orderedFood[] = $arrayFood;
+    });
+
+    return $orderedFood;*/
+    
   }
 }

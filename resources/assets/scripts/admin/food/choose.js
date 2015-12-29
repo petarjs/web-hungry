@@ -11,7 +11,7 @@
 
     vm.state = state;
     vm.menu = menu;
-    vm.menuDate = moment(menu.date).format(appConfig.date.format)
+    vm.menuDate = moment(menu.date).format(appConfig.date.format) 
 
     vm.hide = hide;
     vm.cancel = cancel;

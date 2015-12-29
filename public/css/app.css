@@ -6,7 +6,7 @@
   font-family: 'Roboto Slab';
   font-weight: 700;
   font-size: 4rem;
-  color: #ffa20f;
+  color: #FFA20F;
   position: relative;
 }
 .header .__logo::before {
@@ -27,13 +27,13 @@
   right: 0;
   top: 24px;
   height: 3px;
-  border-top: 3px solid #ffa20f;
+  border-top: 3px solid #FFA20F;
 }
 .header .__logo > span {
   outline: none;
 }
 .header .__subtitle {
-  color: #a7a7a7;
+  color: #A7A7A7;
   font-size: 2rem;
   font-weight: 400;
   font-family: 'Roboto';
@@ -91,8 +91,8 @@
   height: 600px;
 }
 .menu-header {
-  background-color: #ffa20f;
-  color: #ffffff;
+  background-color: #FFA20F;
+  color: #FFFFFF;
   font-weight: bold;
 }
 .user.user--unapproved {

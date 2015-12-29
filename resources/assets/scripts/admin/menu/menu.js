@@ -69,14 +69,14 @@
       $mdDialog.show({
         controller: 'ChooseFoodController as vm',
         templateUrl: 'admin/food/choose',
-        parent: angular.element(document.body),
+        parent: angular.element(document.body), 
         targetEvent: ev,
         clickOutsideToClose:true,
         locals: {
           menu: menu
         }
       })
-      .then(function(food) {
+      .then(function(food) { 
         vm.loading = true;
         Loader.start();
 
@@ -88,7 +88,7 @@
             Loader.stop();
           });
       }, function onUserCanceled() {
-        
+
       });
     }
 
@@ -105,7 +105,7 @@
         if(shouldPublish) {
           Menus
             .publishMenus(week)
-            .then(vm.changeMenus)
+            .then(vm.changeMenus) 
             .then(function() {
               SweetAlert.swal('Menus published!');
             });

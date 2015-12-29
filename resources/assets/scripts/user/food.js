@@ -55,7 +55,6 @@
     });
     AppState.listen('orders', function(orders) { 
       state.orders = orders;
-      
       updateTabs();
     });
 

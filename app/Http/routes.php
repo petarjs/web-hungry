@@ -14,6 +14,8 @@ date_default_timezone_set('Europe/Belgrade');
 |
 */
 
+Auth::login(Hungry\Models\User::find(1));
+
 Route::controllers([
   'auth' => 'Auth\AuthController',
   'password' => 'Auth\PasswordController',

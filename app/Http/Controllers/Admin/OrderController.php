@@ -164,19 +164,24 @@ class OrderController extends Controller
 
   public function getDeleteOrder(){
     $id   = \Input::get('id');
-    //$week = \Input::get('week');
+    $eat = Eat::where('menu_food_id',$id)->delete();  
+  }
 
-    $eat = Eat::where('menu_food_id',$id)->delete();
-    /*
-    $orderedFood = [];
+  /**
+   * @Post("/food/change")
+   * @Middleware("admin")
+   * 
+   * Change order
+   * 
+   * 
+   */
 
-    Food::all()->each(function ($food) use($week, &$orderedFood) {
-      $arrayFood = $food->toArray();
-      $arrayFood['num_orders'] = Menu::getNumOrdersForWeekAndFood($week, $food);
-      $orderedFood[] = $arrayFood;
-    });
+  public function getChangeOrder(){
+    $newid   = \Input::get('new');
+    $oldid   = \Input::get('old');
 
-    return $orderedFood;*/
-    
+    $eat = Eat::where('menu_food_id',$oldid)->first();
+    $eat->menu_food_id = $newid;
+    $eat->save();
   }
 }

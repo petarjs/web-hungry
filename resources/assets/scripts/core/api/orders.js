@@ -8,6 +8,7 @@
       getOrders: getOrders,
       orderMenuFood: orderMenuFood,
       getUserOrders: getUserOrders,
+      changeUserOrder: changeUserOrder,
       deleteUserOrder: deleteUserOrder,
       getFoodOrdersForWeek: getFoodOrdersForWeek,
       getOrderNumbersForWeek: getOrderNumbersForWeek,
@@ -57,8 +58,14 @@
       return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
-    function changeUserOrder(){
-      //
+    function changeUserOrder(newId, oldId){
+      var url = appConfig.api.concat('/admin/orders/food/change?new=:new_id&old=:old_id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        new_id: newId,
+        old_id: oldId
+      });
+
+      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
     function getFoodOrdersForWeek(week) {

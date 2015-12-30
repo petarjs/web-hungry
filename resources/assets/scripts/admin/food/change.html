@@ -19,7 +19,7 @@
                             <h2 class="md-title">{{ food.food.description }}</h2>
                         </md-card-content>
                         <div class="md-actions" layout="row" layout-align="end center">
-                            <md-button flex ng-click="vm.selectFood(food.food)" ng-disabled="vm.orderId === food.id">Select</md-button>
+                            <md-button flex ng-click="vm.changeOrder(food.id)" ng-disabled="vm.orderId === food.id">Select</md-button>
                         </div>
                     </md-card>
                 </div>

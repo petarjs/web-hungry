@@ -5,7 +5,7 @@
     .module('Hungry.admin.orders')
     .controller('AdminOrdersController', AdminOrdersController);
 
-  function AdminOrdersController($scope, Loader, Orders, Menus, appConfig, AppState, $mdDialog, SweetAlert) {
+  function AdminOrdersController($scope, Loader, Orders, Menus, appConfig, AppState, $mdDialog, SweetAlert, $q) {
     var vm = this;
   
     var state = {};
@@ -70,14 +70,20 @@
     function activate() {
       Loader.start();
 
-      Orders
+      var ordersLoad = Orders
         .getUserOrders(vm.week.valueOf())
         .then(changeUserOrders)
         .then(Loader.stop);
 
-      Menus
+      var menuLoad = Menus
           .getMenus(vm.week.valueOf())
           .then(changeMenus);
+
+      $q
+        .all([ordersLoad, menuLoad])
+        .then(function() {
+          Loader.stop();
+        });
     }
 
     function setNextWeek() {
@@ -121,6 +127,16 @@
     vm.changeFoodDialog = changeFoodDialog;
     vm.deleteOrder      = deleteOrder;
 
+    function refresh() {
+      Orders
+        .getUserOrders(vm.week.valueOf())
+        .then(changeUserOrders);
+
+      Menus
+          .getMenus(vm.week.valueOf())
+          .then(changeMenus);
+    }
+
     function changeFoodDialog(id, ev) {
 
       var parentEl = angular.element(document.body);
@@ -136,25 +152,15 @@
           orders: vm.dayOrders,
           id: id
         }
-      }).then(function(order){
-        Loader.start();
+      }).then(function(newOrderId){
+        Loader.start();        
         Orders
-          .changeOrder(order)
+          .changeUserOrder(newOrderId, id)
           .then(function(){
             refresh();
             Loader.stop();
           });
       });
-    }
-
-    function refresh() {
-      Orders
-        .getUserOrders(vm.week.valueOf())
-        .then(changeUserOrders);
-
-      Menus
-          .getMenus(vm.week.valueOf())
-          .then(changeMenus);
     }
 
     function deleteOrder(menuFoodId) {
@@ -166,7 +172,7 @@
         confirmButtonColor: "#DD6B55",
         confirmButtonText: "Yes, delete it!",
         closeOnConfirm: false,
-        closeOnCancel: false,
+        //closeOnCancel: false,
         showLoaderOnConfirm: true
       }, function(deleteOrder) {
           if(deleteOrder){

@@ -32,7 +32,7 @@
       <p ng-if="!!vm.getOrderedFoodForDay(user)" class="user__text">Ordered:</p>
       <p ng-if="!!vm.getOrderedFoodForDay(user)" class="user__text">
         <b>{{ vm.getOrderedFoodForDay(user).food.description }}</b>
-        <md-button class="md-raised md-mini change-btn md-info" ng-click="vm.changeFoodDialog(vm.getOrderedFoodForDay(user).id)">change</md-button>
+        <md-button class="md-raised md-mini change-btn" ng-click="vm.changeFoodDialog(vm.getOrderedFoodForDay(user).id)">change</md-button>
         <md-button class="md-raised md-mini danger-btn" ng-click="vm.deleteOrder(vm.getOrderedFoodForDay(user).id)">remove</md-button>
       </p>
       <p ng-if="!vm.getOrderedFoodForDay(user)" class="user__text--warning">Hasn't ordered yet.</p>

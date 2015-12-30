@@ -84,7 +84,7 @@
     function activate() {
       Loader.start();
 
-      var menusLoading = Menus
+      var menusLoading = Menus 
         .getMenusForUser(vm.week.valueOf())
         .then(changeMenus);
 

@@ -180,3 +180,5 @@ md-progress-circular.light .md-inner .md-left .md-half-circle {
 .loader > div {
   margin-left: -50px;
 }
+.change-btn { background-color: #BDBDBD !important; }
+.danger-btn { background-color: #F44336 !important; }

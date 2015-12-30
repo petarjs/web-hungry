@@ -479,7 +479,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function activate() {
       Loader.start();
 
-      var menusLoading = Menus
+      var menusLoading = Menus 
         .getMenusForUser(vm.week.valueOf())
         .then(changeMenus);
 
@@ -782,21 +782,19 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       function change($mdDialog, AppState, orders, id) {
         var vm = this;
 
-        var state = {};
-        vm.state = state; 
-
         vm.orderId = id;
         vm.orders = orders;
-        console.log(vm.orders);
-        vm.selectFood = selectFood;
+        //console.log(vm.orders);
+
+        vm.changeOrder = changeOrder;
         vm.cancel = cancel;
 
         function cancel() {
           $mdDialog.cancel();
         }
 
-        function selectFood(food) {
-          $mdDialog.hide(food);
+        function changeOrder(newOrderId) {
+          $mdDialog.hide(newOrderId);
         }
 
 
@@ -1109,7 +1107,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     .module('Hungry.admin.orders')
     .controller('AdminOrdersController', AdminOrdersController);
 
-  function AdminOrdersController($scope, Loader, Orders, Menus, appConfig, AppState, $mdDialog, SweetAlert) {
+  function AdminOrdersController($scope, Loader, Orders, Menus, appConfig, AppState, $mdDialog, SweetAlert, $q) {
     var vm = this;
   
     var state = {};
@@ -1174,14 +1172,20 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     function activate() {
       Loader.start();
 
-      Orders
+      var ordersLoad = Orders
         .getUserOrders(vm.week.valueOf())
         .then(changeUserOrders)
         .then(Loader.stop);
 
-      Menus
+      var menuLoad = Menus
           .getMenus(vm.week.valueOf())
           .then(changeMenus);
+
+      $q
+        .all([ordersLoad, menuLoad])
+        .then(function() {
+          Loader.stop();
+        });
     }
 
     function setNextWeek() {
@@ -1225,6 +1229,16 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     vm.changeFoodDialog = changeFoodDialog;
     vm.deleteOrder      = deleteOrder;
 
+    function refresh() {
+      Orders
+        .getUserOrders(vm.week.valueOf())
+        .then(changeUserOrders);
+
+      Menus
+          .getMenus(vm.week.valueOf())
+          .then(changeMenus);
+    }
+
     function changeFoodDialog(id, ev) {
 
       var parentEl = angular.element(document.body);
@@ -1240,25 +1254,15 @@ angular.module('Hungry.core.state').factory('StateService', function() {
           orders: vm.dayOrders,
           id: id
         }
-      }).then(function(order){
-        Loader.start();
+      }).then(function(newOrderId){
+        Loader.start();        
         Orders
-          .changeOrder(order)
+          .changeUserOrder(newOrderId, id)
           .then(function(){
             refresh();
             Loader.stop();
           });
       });
-    }
-
-    function refresh() {
-      Orders
-        .getUserOrders(vm.week.valueOf())
-        .then(changeUserOrders);
-
-      Menus
-          .getMenus(vm.week.valueOf())
-          .then(changeMenus);
     }
 
     function deleteOrder(menuFoodId) {
@@ -1270,7 +1274,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         confirmButtonColor: "#DD6B55",
         confirmButtonText: "Yes, delete it!",
         closeOnConfirm: false,
-        closeOnCancel: false,
+        //closeOnCancel: false,
         showLoaderOnConfirm: true
       }, function(deleteOrder) {
           if(deleteOrder){
@@ -1485,6 +1489,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       getOrders: getOrders,
       orderMenuFood: orderMenuFood,
       getUserOrders: getUserOrders,
+      changeUserOrder: changeUserOrder,
       deleteUserOrder: deleteUserOrder,
       getFoodOrdersForWeek: getFoodOrdersForWeek,
       getOrderNumbersForWeek: getOrderNumbersForWeek,
@@ -1534,8 +1539,14 @@ angular.module('Hungry.core.state').factory('StateService', function() {
       return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
-    function changeUserOrder(){
-      //
+    function changeUserOrder(newId, oldId){
+      var url = appConfig.api.concat('/admin/orders/food/change?new=:new_id&old=:old_id');
+      var realUrl = UrlReplacer.replaceParams(url, {
+        new_id: newId,
+        old_id: oldId
+      });
+
+      return $http.post(realUrl).then(ApiHelpers.extractData, ApiHelpers.handleError);
     }
 
     function getFoodOrdersForWeek(week) {

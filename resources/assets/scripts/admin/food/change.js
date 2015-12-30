@@ -7,21 +7,19 @@
       function change($mdDialog, AppState, orders, id) {
         var vm = this;
 
-        var state = {};
-        vm.state = state; 
-
         vm.orderId = id;
         vm.orders = orders;
-        console.log(vm.orders);
-        vm.selectFood = selectFood;
+        //console.log(vm.orders);
+
+        vm.changeOrder = changeOrder;
         vm.cancel = cancel;
 
         function cancel() {
           $mdDialog.cancel();
         }
 
-        function selectFood(food) {
-          $mdDialog.hide(food);
+        function changeOrder(newOrderId) {
+          $mdDialog.hide(newOrderId);
         }
 
 

@@ -1,15 +1,25 @@
 <h3>Manage Users ({{ vm.state.users.length }})</h3>
 
-<div>
-  <md-input-container>
+<div layout="row">
+  <md-input-container flex-xs flex="70">
     <label>Search (Name, Email, Food)</label>
     <input ng-model="vm.userFilter">
   </md-input-container>
+  <div flex-xs flex-xs flex="30">
+    <md-input-container>
+      <label>Filter Users</label>
+      <md-select ng-model="vm.newFilter">
+        <md-option value="0">New Users</md-option>
+        <md-option value="1">Approved Users</md-option>
+        <md-option value="">All Users</md-option>
+      </md-select>
+    </md-input-container>
+  </div>
 </div>
 
 <md-list class="users-list">
   <md-subheader class="md-no-sticky">Users and Permissions</md-subheader>
-  <md-list-item ng-repeat="user in vm.state.users | filter: vm.userFilter" class="user" ng-class="{'user--unapproved': !user.roles.length }" layout-sm="column">
+  <md-list-item ng-repeat="user in vm.state.users | filter: {is_approved: vm.newFilter} | filter: vm.userFilter" class="user" ng-class="{'user--unapproved': !user.roles.length }" layout-sm="column">
 
     <img ng-src="{{ user.avatar }}" class="md-avatar" />
     <div flex class="md-list-item-text" layout="column">

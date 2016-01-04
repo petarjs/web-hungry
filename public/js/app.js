@@ -1775,7 +1775,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
   function UsersController(AppState, Users, user, $window, Loader) {
     var vm = this;
 
-    var state = {};
+    var state = {}; 
     var changeUsers = AppState.change('users');
 
     vm.state = state;
@@ -1788,7 +1788,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
     AppState.listen('roles', function(roles) { state.roles = roles; });
 
     activate();
-
+   
     function activate() {
       Loader.start();
       Users
@@ -1796,7 +1796,7 @@ angular.module('Hungry.core.state').factory('StateService', function() {
         .then(changeUsers)
         .then(Loader.stop);
     }
-
+   
     function isCurrentUser(user) {
       return user.id.toString() === $window.userId;
     }
